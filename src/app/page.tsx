@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { property, airbnbData } from "@/data/property";
+import { EmailGaryButton } from "@/components/email-gary-button";
 
 function Hero() {
   return (
@@ -464,12 +465,7 @@ function ContactSection() {
             Compass &middot; DRE# 01416748
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <a
-              href="mailto:gary.doss@compass.com?subject=Inquiry%20—%20399%20Rainier%20Road%2C%20Lake%20Arrowhead"
-              className="bg-accent text-white px-7 py-3 text-sm font-medium tracking-wider uppercase rounded-full hover:bg-accent-light transition-colors"
-            >
-              Email Gary
-            </a>
+            <EmailGaryButton />
             <a
               href="https://www.compass.com/agents/gary-doss/"
               target="_blank"

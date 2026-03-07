@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { DM_Sans } from "next/font/google";
 import Link from "next/link";
 import { Analytics } from "@vercel/analytics/next";
+import { FacebookPixelEvents } from "@/components/pixel-events";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -142,6 +144,9 @@ export default function RootLayout({
         {children}
         <Footer />
         <Analytics />
+        <Suspense>
+          <FacebookPixelEvents />
+        </Suspense>
       </body>
     </html>
   );
