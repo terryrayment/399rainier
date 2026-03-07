@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
-});
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
+  weight: ["300", "400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -27,9 +23,9 @@ export const metadata: Metadata = {
 
 function Nav() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-white/5">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-black/5">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="font-serif text-xl tracking-wide text-foreground">
+        <Link href="/" className="font-light text-xl tracking-wide text-foreground">
           399 <span className="text-accent">Rainier</span>
         </Link>
         <div className="hidden md:flex items-center gap-8 text-sm tracking-wide">
@@ -42,15 +38,15 @@ function Nav() {
           <Link href="/investment" className="text-muted hover:text-foreground transition-colors">
             Investment
           </Link>
+          <Link href="/calculator" className="text-muted hover:text-foreground transition-colors">
+            Calculator
+          </Link>
           <Link href="/neighborhood" className="text-muted hover:text-foreground transition-colors">
             Neighborhood
           </Link>
-          <Link href="/experience" className="text-muted hover:text-foreground transition-colors">
-            Stay &amp; Buy
-          </Link>
           <Link
             href="/#contact"
-            className="bg-accent text-background px-5 py-2 text-sm font-medium hover:bg-accent-light transition-colors"
+            className="bg-accent text-white px-5 py-2 text-sm font-medium rounded-full hover:bg-accent-light transition-colors"
           >
             Inquire
           </Link>
@@ -67,7 +63,7 @@ function MobileMenuButton() {
     <div className="md:hidden">
       <Link
         href="/#contact"
-        className="bg-accent text-background px-4 py-2 text-sm font-medium hover:bg-accent-light transition-colors"
+        className="bg-accent text-white px-4 py-2 text-sm font-medium rounded-full hover:bg-accent-light transition-colors"
       >
         Inquire
       </Link>
@@ -77,11 +73,11 @@ function MobileMenuButton() {
 
 function Footer() {
   return (
-    <footer className="bg-surface border-t border-white/5">
+    <footer className="bg-surface border-t border-black/5">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid md:grid-cols-3 gap-12">
           <div>
-            <h3 className="font-serif text-2xl mb-4">
+            <h3 className="font-light tracking-tight text-2xl mb-4">
               399 <span className="text-accent">Rainier</span>
             </h3>
             <p className="text-muted text-sm leading-relaxed">
@@ -100,11 +96,11 @@ function Footer() {
               <Link href="/investment" className="text-muted text-sm hover:text-foreground transition-colors">
                 Investment
               </Link>
+              <Link href="/calculator" className="text-muted text-sm hover:text-foreground transition-colors">
+                STR Calculator
+              </Link>
               <Link href="/neighborhood" className="text-muted text-sm hover:text-foreground transition-colors">
                 Neighborhood
-              </Link>
-              <Link href="/experience" className="text-muted text-sm hover:text-foreground transition-colors">
-                Stay Before You Buy
               </Link>
             </div>
           </div>
@@ -117,13 +113,13 @@ function Footer() {
             </p>
             <Link
               href="/#contact"
-              className="inline-block bg-accent text-background px-6 py-2 text-sm font-medium hover:bg-accent-light transition-colors"
+              className="inline-block bg-accent text-white px-6 py-2 text-sm font-medium rounded-full hover:bg-accent-light transition-colors"
             >
               Contact Us
             </Link>
           </div>
         </div>
-        <div className="mt-16 pt-8 border-t border-white/5 text-center">
+        <div className="mt-16 pt-8 border-t border-black/5 text-center">
           <p className="text-muted/50 text-xs">
             &copy; {new Date().getFullYear()} 399 Rainier Road. All rights reserved. MLS# IG25221884.
           </p>
@@ -140,7 +136,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${playfair.variable} antialiased`}>
+      <body className={`${dmSans.variable} antialiased`}>
         <Nav />
         {children}
         <Footer />

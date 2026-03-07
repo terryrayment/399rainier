@@ -20,74 +20,177 @@ export const property = {
     "Floor-to-ceiling windows with panoramic forest views",
     "Fully renovated with contemporary finishes throughout",
     "Open-concept living with soaring A-frame ceilings",
-    "Primary suite with loft and treetop views",
+    "Two masonry fireplaces — wood and gas capable",
     "Three serene decks for year-round outdoor living",
-    "Sleek modern kitchen with premium appliances",
-    "Proven Airbnb performer with strong rental history",
+    "Brand new HVAC system (2023) with central A/C",
+    "Proven Airbnb + VRBO performer — $42K in 2025",
     "90 minutes from downtown Los Angeles",
   ],
+
+  // Property details from inspection report & title docs
+  details: {
+    electrical: "200-amp service, copper branch wiring",
+    plumbing: "Copper supply and distribution throughout",
+    hvac: "Brand new gas-fired forced air (May 2023), American Standard central A/C",
+    fireplaces: "Two masonry fireplaces (living room + den) — wood and gas capable",
+    appliances: "Samsung suite: refrigerator, range/oven, dishwasher",
+    foundation: "Concrete footing with raised stemwall, wood framing",
+    roof: "Asphalt composition dimensional shingle, middle lifespan",
+    water: "Public water supply, natural gas service",
+    propertyTax: 7439, // annual, 2024-2025
+    noMelloRoos: true,
+    noFloodZone: true,
+    noEarthquakeFault: true,
+    facing: "South-facing",
+    tract: "Lot 127, Arrowhead Woods Tract No. 105",
+    jurisdiction: "Unincorporated San Bernardino County",
+    strCompliant: true,
+  },
+
   features: {
     interior: [
-      "Open-concept great room with fireplace",
-      "Floor-to-ceiling windows",
-      "Modern kitchen with quartz countertops",
+      "Open-concept great room with stone fireplace",
+      "Floor-to-ceiling A-frame windows",
+      "Modern kitchen with butcher block counters",
       "Primary suite on upper level with loft",
       "Two generous bedrooms on main level",
       "Three full bathrooms",
-      "Hardwood and tile flooring throughout",
+      "Lower-level den with brick fireplace",
+      "Hardwood flooring throughout",
     ],
     exterior: [
-      "Three expansive decks",
+      "Three expansive decks with string lights",
+      "Private hot tub among the pines",
       "Surrounded by mature pine trees",
-      "Private forest setting",
-      "Ample parking",
+      "Private forest setting on 0.25 acres",
     ],
   },
-  // Replace these with your actual property photos
-  // Drop images into /public/photos/ and update paths here
+
+  // Curated professional photos — best of 48 shots
   photos: [
     {
-      src: "https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?w=1200&q=80",
-      alt: "A-frame cabin nestled in pine trees",
-      caption: "Exterior",
+      src: "/photos/rainier_46.jpg",
+      alt: "A-frame exterior at twilight with full glass wall glowing warmly, deck furniture, and pine trees",
+      caption: "Twilight",
     },
     {
-      src: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=1200&q=80",
-      alt: "Modern cabin interior with large windows",
+      src: "/photos/rainier_5.jpg",
+      alt: "Living room with soaring A-frame ceiling, stone fireplace, cream sofas, and floor-to-ceiling windows",
       caption: "Living Room",
     },
     {
-      src: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1200&q=80",
-      alt: "Modern open kitchen",
-      caption: "Kitchen",
+      src: "/photos/rainier_2.jpg",
+      alt: "Aerial view of Lake Arrowhead at sunset with property marked among towering pines",
+      caption: "Lake Arrowhead",
     },
     {
-      src: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200&q=80",
-      alt: "Cozy bedroom with mountain views",
-      caption: "Primary Suite",
+      src: "/photos/rainier_9.jpg",
+      alt: "Open plan view showing loft, kitchen, dining area, and living room with natural light",
+      caption: "Open Plan",
     },
     {
-      src: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=80",
-      alt: "Deck overlooking forest",
+      src: "/photos/rainier_4.jpg",
+      alt: "Deck at twilight with string lights, dining table, and A-frame glass wall glowing",
       caption: "Deck",
     },
     {
-      src: "https://images.unsplash.com/photo-1542718610-a1d656d1884c?w=1200&q=80",
-      alt: "Snow-covered A-frame cabin",
-      caption: "Winter",
+      src: "/photos/rainier_6.jpg",
+      alt: "Modern kitchen with dark cabinets, butcher block counters, white tile backsplash, and Samsung appliances",
+      caption: "Kitchen",
+    },
+    {
+      src: "/photos/rainier_47.jpg",
+      alt: "A-frame exterior from deck showing full glass facade, warm interior glow, and pine trees at dusk",
+      caption: "A-Frame Glow",
+    },
+    {
+      src: "/photos/rainier_42.jpg",
+      alt: "Hot tub on lower deck surrounded by towering pine trees at golden hour",
+      caption: "Hot Tub",
+    },
+    {
+      src: "/photos/rainier_14.jpg",
+      alt: "Primary bedroom with queen bed, hardwood floors, and Samsung Serif TV",
+      caption: "Primary Suite",
+    },
+    {
+      src: "/photos/rainier_41.jpg",
+      alt: "Lower level den with brick fireplace, terracotta velvet sofas, and sliding glass doors to forest",
+      caption: "Den",
+    },
+    {
+      src: "/photos/rainier_33-2.jpg",
+      alt: "Guest bedroom with twin beds, warm textiles, and natural light through pine tree windows",
+      caption: "Guest Room",
+    },
+    {
+      src: "/photos/rainier_50.jpg",
+      alt: "A-frame cabin exterior at dusk with warm windows glowing against moody blue sky and pine trees",
+      caption: "Dusk",
+    },
+    {
+      src: "/photos/rainier_1.jpg",
+      alt: "Drone sunset panorama of Lake Arrowhead with golf course, mountains, and property pinned in forest",
+      caption: "Sunset Aerial",
+    },
+    {
+      src: "/photos/rainier_26.jpg",
+      alt: "Walkway approach to A-frame through fall foliage and mature trees at golden hour",
+      caption: "Approach",
+    },
+    {
+      src: "/photos/rainier_28.jpg",
+      alt: "Outdoor dining on upper deck surrounded by towering pines with mountain views",
+      caption: "Al Fresco",
+    },
+    {
+      src: "/photos/rainier_3.jpg",
+      alt: "Overhead drone shot of A-frame cabin and decks nestled among towering pine trees",
+      caption: "Bird's Eye",
     },
   ],
 };
 
 export const airbnbData = {
-  // PLACEHOLDER — Replace with your actual Airbnb data
-  averageNightlyRate: 340,
-  occupancyRate: 0.65,
-  annualRevenue: 72000,
+  // Real combined earnings data (Airbnb + VRBO)
+  annualRevenue2025: 42046.89, // Airbnb $38,565.63 + VRBO $3,481.26
+  airbnbRevenue2025: 38565.63,
+  vrboRevenue2025: 3481.26, // 3 completed VRBO stays (8 nights)
+  ytd2026: 5384.18,
+  superhostStatus: true,
+  // TODO: Replace with real review count and rating from your listing
   totalReviews: 85,
   averageRating: 4.9,
-  superhostStatus: true,
-  yearsOperating: 3,
+
+  // 2025 monthly earnings (Airbnb + VRBO combined)
+  monthly2025: [
+    { month: "Jan", revenue: 2064.74 },
+    { month: "Feb", revenue: 2684.87 },
+    { month: "Mar", revenue: 3020.78 },
+    { month: "Apr", revenue: 3084.92 }, // Airbnb $1,502.05 + VRBO $1,582.87
+    { month: "May", revenue: 3433.60 },
+    { month: "Jun", revenue: 3121.02 }, // Airbnb $1,222.63 + VRBO $1,898.39
+    { month: "Jul", revenue: 2586.04 },
+    { month: "Aug", revenue: 5491.03 },
+    { month: "Sep", revenue: 3710.40 },
+    { month: "Oct", revenue: 2665.61 },
+    { month: "Nov", revenue: 702.67 },
+    { month: "Dec", revenue: 9481.21 },
+  ],
+
+  // 2026 earnings (year-to-date)
+  monthly2026: [
+    { month: "Jan", revenue: 3434.58 },
+    { month: "Feb", revenue: 1949.60 },
+  ],
+
+  // Growth: Jan 2026 vs Jan 2025 = 66% increase
+  yoyGrowthJan: 0.66,
+
+  // Upcoming scheduled payouts (as of March 2026)
+  upcomingPayouts: 2854.13,
+
+  // TODO: Replace placeholder reviews with real Airbnb reviews
   topReviews: [
     {
       guest: "Sarah M.",
@@ -107,13 +210,6 @@ export const airbnbData = {
       text: "Best Airbnb we've ever stayed at. The A-frame design with those floor-to-ceiling windows is something else. Already planning our return trip.",
       rating: 5,
     },
-  ],
-  // Revenue projections at different occupancy levels
-  projections: [
-    { occupancy: 0.5, annual: 55000, monthly: 4583 },
-    { occupancy: 0.6, annual: 66000, monthly: 5500 },
-    { occupancy: 0.65, annual: 72000, monthly: 6000 },
-    { occupancy: 0.75, annual: 83000, monthly: 6917 },
   ],
 };
 
