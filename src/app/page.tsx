@@ -292,17 +292,19 @@ function InvestmentTeaser() {
               <span>Dec</span>
             </div>
             {/* VRBO feature badge */}
-            <div className="mt-6 pt-5 border-t border-black/5 flex items-center justify-center">
-              <a
-                href="https://www.instagram.com/p/DS2t45NCX08/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-xs text-muted/60 hover:text-muted transition-colors"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-accent/40 shrink-0" />
-                Featured in VRBO&apos;s official Instagram campaign
-              </a>
-            </div>
+            <a
+              href="https://www.instagram.com/p/DS2t45NCX08/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 flex items-center gap-3 bg-accent/8 hover:bg-accent/12 transition-colors rounded-xl px-4 py-3"
+            >
+              <span className="text-lg">📸</span>
+              <div>
+                <p className="text-xs font-medium text-foreground tracking-wide">Featured by VRBO</p>
+                <p className="text-[11px] text-muted leading-tight">Selected for VRBO&apos;s official Instagram campaign</p>
+              </div>
+              <span className="ml-auto text-muted/40 text-xs">↗</span>
+            </a>
           </div>
         </div>
       </div>
