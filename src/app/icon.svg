@@ -1,0 +1,10 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark rounded background -->
+  <rect width="32" height="32" rx="7" fill="#3C311D"/>
+  <!-- A-frame outer triangle (cream) -->
+  <path d="M16 5 L29 26 L3 26 Z" fill="#F5F4F2"/>
+  <!-- A-frame inner cutout — glass wall recess (same as bg) -->
+  <path d="M16 14 L23 26 L9 26 Z" fill="#3C311D"/>
+  <!-- Horizontal floor line -->
+  <rect x="8" y="25" width="16" height="1.5" rx="0.75" fill="#F5F4F2"/>
+</svg>
