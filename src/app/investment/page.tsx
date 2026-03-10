@@ -3,9 +3,15 @@ import Link from "next/link";
 import { property, airbnbData } from "@/data/property";
 
 export const metadata: Metadata = {
-  title: "Investment — 399 Rainier Road, Lake Arrowhead",
+  title: "STR Investment — 399 Rainier Road, Lake Arrowhead | $42K 2025 Revenue",
   description:
-    "Proven Airbnb performer with real rental income data. View the full investment details for 399 Rainier Road.",
+    "$42,047 in verified 2025 Airbnb + VRBO revenue. Superhost, 4.9★, 85 reviews, +66% YoY growth. Turnkey A-frame STR in Lake Arrowhead, CA. Listed at $889,000. Download the investor package.",
+  openGraph: {
+    title: "399 Rainier Road — Lake Arrowhead STR | $42K Verified 2025 Revenue",
+    description:
+      "Turnkey Airbnb Superhost A-frame generating $42,047 in verified 2025 revenue. 4.9★, 85 reviews, +66% YoY growth, VRBO featured. $889,000.",
+    type: "website",
+  },
 };
 
 function RevenueBar({
@@ -387,29 +393,45 @@ export default function InvestmentPage() {
         </div>
       </section>
 
-      <section className="py-16 md:py-24 bg-surface text-center">
+      {/* Investor Package Download */}
+      <section className="py-16 md:py-24 bg-accent text-white text-center">
         <div className="max-w-2xl mx-auto px-6">
-          <h2 className="text-3xl md:text-4xl font-light tracking-tight mb-6">
-            Ready to See More?
+          <p className="text-white/50 text-xs tracking-[0.4em] uppercase mb-4">Free Download</p>
+          <h2 className="text-3xl md:text-4xl font-light tracking-tight mb-4">
+            Investor Package
           </h2>
-          <p className="text-muted text-lg mb-8">
-            Request the full investment package with detailed financials,
-            operating costs, and comparable market analysis.
+          <p className="text-white/70 text-lg mb-8">
+            One-page PDF with verified revenue data, monthly breakdown, expense overview,
+            and property highlights — ready to share with your advisor or lender.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/#contact"
-              className="bg-accent text-white px-8 py-3 text-sm font-medium tracking-wider uppercase rounded-full hover:bg-accent-light transition-colors"
+            <a
+              href="/399-rainier-investor-package.pdf"
+              download="399-Rainier-Investor-Package.pdf"
+              className="bg-white text-accent px-8 py-3 text-sm font-medium tracking-wider uppercase rounded-full hover:bg-white/90 transition-colors"
             >
-              Request Full Prospectus
-            </Link>
+              ↓ Download PDF
+            </a>
             <Link
               href="/calculator"
-              className="border border-accent text-accent px-8 py-3 text-sm font-medium tracking-wider uppercase rounded-full hover:bg-accent hover:text-white transition-colors"
+              className="border border-white/40 text-white px-8 py-3 text-sm font-medium tracking-wider uppercase rounded-full hover:bg-white/10 transition-colors"
             >
-              Try the Calculator
+              Run the Numbers
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Agent / Co-Broke Bar */}
+      <section className="py-8 bg-foreground text-white/60 text-center text-xs tracking-wide">
+        <div className="max-w-4xl mx-auto px-6">
+          <p>
+            Co-broke welcome · Buyer&apos;s agents, contact Gary Doss at{" "}
+            <a href="mailto:gary.doss@compass.com" className="text-white hover:underline">
+              gary.doss@compass.com
+            </a>{" "}
+            · Compass · DRE# 01416748 · MLS# IG25221884
+          </p>
         </div>
       </section>
     </main>
