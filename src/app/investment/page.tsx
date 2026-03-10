@@ -5,11 +5,11 @@ import { property, airbnbData } from "@/data/property";
 export const metadata: Metadata = {
   title: "STR Investment — 399 Rainier Road, Lake Arrowhead | $42K 2025 Revenue",
   description:
-    "$42,047 in verified 2025 Airbnb + VRBO revenue. Superhost, 4.9★, 85 reviews, +66% YoY growth. Turnkey A-frame STR in Lake Arrowhead, CA. Listed at $889,000. Download the investor package.",
+    "$42,047 in verified 2025 Airbnb + VRBO revenue. Superhost, 4.9★, 85 reviews, +66% YoY growth. Turnkey A-frame STR in Lake Arrowhead, CA. Listed at $875,000. Download the investor package.",
   openGraph: {
     title: "399 Rainier Road — Lake Arrowhead STR | $42K Verified 2025 Revenue",
     description:
-      "Turnkey Airbnb Superhost A-frame generating $42,047 in verified 2025 revenue. 4.9★, 85 reviews, +66% YoY growth, VRBO featured. $889,000.",
+      "Turnkey Airbnb Superhost A-frame generating $42,047 in verified 2025 revenue. 4.9★, 85 reviews, +66% YoY growth, VRBO featured. $875,000.",
     type: "website",
   },
 };

@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "399 Rainier Road — Lake Arrowhead A-Frame",
     description:
-      "Fully renovated mountain retreat with floor-to-ceiling windows, three decks, and proven Airbnb income. $889,000.",
+      "Fully renovated mountain retreat with floor-to-ceiling windows, three decks, and proven Airbnb income. $875,000.",
     type: "website",
   },
 };

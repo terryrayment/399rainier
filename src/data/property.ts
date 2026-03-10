@@ -3,7 +3,7 @@ export const property = {
   city: "Lake Arrowhead",
   state: "CA",
   zip: "92352",
-  price: 889000,
+  price: 875000,
   beds: 3,
   baths: 3,
   sqft: 2106,
