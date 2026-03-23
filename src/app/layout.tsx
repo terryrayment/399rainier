@@ -2,9 +2,12 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { DM_Sans } from "next/font/google";
 import Link from "next/link";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { FacebookPixelEvents } from "@/components/pixel-events";
 import "./globals.css";
+
+const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID ?? "";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -139,6 +142,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {GOOGLE_ADS_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-ads-init" strategy="afterInteractive">{`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${GOOGLE_ADS_ID}');
+            `}</Script>
+          </>
+        )}
+      </head>
       <body className={`${dmSans.variable} antialiased`}>
         <Nav />
         {children}

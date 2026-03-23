@@ -11,6 +11,17 @@ export function EmailGaryButton() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).fbq("track", "Lead");
     }
+    // Fire Google Ads conversion event
+    if (
+      typeof window !== "undefined" &&
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      typeof (window as any).gtag === "function"
+    ) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).gtag("event", "conversion", {
+        send_to: `${process.env.NEXT_PUBLIC_GOOGLE_ADS_ID}/lead`,
+      });
+    }
   }
 
   return (
