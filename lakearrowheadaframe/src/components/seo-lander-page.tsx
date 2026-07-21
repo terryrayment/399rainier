@@ -100,7 +100,7 @@ export function SeoLanderPage({ lander }: { lander: SeoLander }) {
       </PageShell>
       <DarkCta
         title="Check dates on Airbnb"
-        description="Guest Favorite A-frame — indoor sauna, hot tub in the pines, dog-friendly, honest lake trails when registered."
+        description="Guest Favorite A-frame. Indoor sauna, hot tub in the pines, dog-friendly, honest lake trails when registered."
         campaign={lander.campaign}
       />
     </>

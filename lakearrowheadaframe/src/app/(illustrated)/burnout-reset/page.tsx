@@ -7,7 +7,7 @@ import { createMetadata, getBreadcrumbJsonLd } from "@/lib/seo";
 export const metadata = createMetadata({
   title: "48-Hour Burnout Reset Quiz",
   description:
-    "LA and OC weekend escape quiz — get a personalized 48-hour Lake Arrowhead reset itinerary with sauna, hot tub, and forest time at our cabin rental.",
+    "LA and OC weekend escape quiz. Get a personalized 48-hour Lake Arrowhead reset itinerary with sauna, hot tub, and forest time at our cabin rental.",
   path: "/burnout-reset",
   keywords: [
     "Lake Arrowhead weekend reset",
@@ -29,7 +29,7 @@ export default function BurnoutResetPage() {
       <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Burnout Reset" }]} />
       <PageShell
         title="Which 48-hour reset are you?"
-        description="Four quick questions. No wellness jargon — just an honest itinerary for sauna, hot tub, decks, and forest quiet ninety minutes from Los Angeles."
+        description="Four quick questions. No wellness jargon. Just an honest itinerary for sauna, hot tub, decks, and forest quiet ninety minutes from Los Angeles."
         campaign="burnout-reset"
         sceneFamily="quiet-morning"
       >
@@ -52,8 +52,8 @@ export default function BurnoutResetPage() {
         </section>
       </PageShell>
       <DarkCta
-        title="Skip the quiz — check dates"
-        description="Indoor sauna, hot tub in the pines, dog-friendly — book the Lake Arrowhead A-frame on Airbnb."
+        title="Skip the quiz. Check dates"
+        description="Indoor sauna, hot tub in the pines, dog-friendly. Book the Lake Arrowhead A-frame on Airbnb."
         campaign="burnout-reset"
       />
     </>

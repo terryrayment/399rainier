@@ -12,7 +12,7 @@ type ForestFrameProps = {
 
 /**
  * Decorative pine forest framing a real photo or panel.
- * Illustrative SVG only — never replaces photography.
+ * Illustrative SVG only. Never replaces photography.
  */
 export function ForestFrame({
   children,

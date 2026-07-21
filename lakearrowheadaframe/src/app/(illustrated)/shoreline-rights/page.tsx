@@ -48,7 +48,7 @@ export default function ShorelineRightsPage() {
         ]}
       />
       <PageShell
-        title="What you can — and cannot — do on the lake."
+        title="What you can, and cannot, do on the lake."
         description="Lake Arrowhead is private. Owner lake rights at this Arrowhead Woods A-frame include registered guest access to certain trails and shoreline areas. Beach clubs are not included. This page exists because most listings get that wrong."
         campaign="shoreline-rights"
         sceneFamily="lake-mist"
@@ -56,7 +56,7 @@ export default function ShorelineRightsPage() {
         <section className="mx-auto max-w-7xl px-6 pb-16">
           <SectionIntro
             title="YES · NO · VERIFY"
-            description="Use this matrix before you book anywhere in Lake Arrowhead — especially if a listing says lake pass included."
+            description="Use this matrix before you book anywhere in Lake Arrowhead. Especially if a listing says lake pass included."
           />
           <div className="grid gap-6 md:grid-cols-2">
             {shorelineZones.map((zone) => (
@@ -196,7 +196,7 @@ export default function ShorelineRightsPage() {
       </PageShell>
       <DarkCta
         title="Ready for an honest Lake Arrowhead stay?"
-        description="Indoor sauna, hot tub in the pines, owner lake trails when registered — book on Airbnb."
+        description="Indoor sauna, hot tub in the pines, owner lake trails when registered. Book on Airbnb."
         campaign="shoreline-rights"
       />
     </>

@@ -1,4 +1,4 @@
-# Authority Playbook — Lake Arrowhead cabin rental
+# Authority Playbook. Lake Arrowhead cabin rental
 
 Phase 3 of the climb plan. Do these in order; none require code changes unless noted.
 

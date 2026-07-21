@@ -1,6 +1,6 @@
 # Lake Arrowhead A-Frame
 
-Guest-facing STR site for **lakearrowheadaframe.com** — Bjerk-inspired editorial design driving bookings to [Airbnb](https://airbnb.com/h/lakearrowheadcabinrental).
+Guest-facing STR site for **lakearrowheadaframe.com**. Bjerk-inspired editorial design driving bookings to [Airbnb](https://airbnb.com/h/lakearrowheadcabinrental).
 
 ## Development
 
@@ -48,7 +48,7 @@ Domain is on **BasicDNS** at Namecheap. Point it to Vercel:
 
 | Route | Purpose |
 |-------|---------|
-| `/` | Hub — Lake Arrowhead cabin rental, Airbnb gallery order |
+| `/` | Hub. Lake Arrowhead cabin rental, Airbnb gallery order |
 | `/shoreline-rights` | Honest ALA lake access decoder for STR guests |
 | `/lake-arrowhead-cabin-with-sauna` | Sauna + hot tub SEO lander |
 | `/dog-friendly-lake-arrowhead-cabin` | Dog-friendly / fenced yard lander |
@@ -56,16 +56,18 @@ Domain is on **BasicDNS** at Namecheap. Point it to Vercel:
 | `/weekend-from-los-angeles` | LA drive-market weekend lander |
 | `/chapters` | Review anthology |
 | `/burnout-reset` | 48-hour recovery quiz |
+| `/holiday-ready` | Optional paid Holiday Ready kits (Airbnb add-on) |
 | `/llms.txt` | AI/crawler summary of property facts |
 
 Photos use **Airbnb gallery order** (see `src/data/photos.ts`).
 
 ## SEO ops
 
-- [docs/seo-launch-checklist.md](docs/seo-launch-checklist.md) — GSC/Bing, sitemap, verification
-- [docs/authority-playbook.md](docs/authority-playbook.md) — GBP, citations, PR, review loop
-- [docs/airbnb-listing-keyword-sync.md](docs/airbnb-listing-keyword-sync.md) — listing copy alignment
-- [docs/seo-measurement.md](docs/seo-measurement.md) — KPIs and UTM campaigns
+- [docs/seo-launch-checklist.md](docs/seo-launch-checklist.md). GSC/Bing, sitemap, verification
+- [docs/authority-playbook.md](docs/authority-playbook.md). GBP, citations, PR, review loop
+- [docs/airbnb-listing-keyword-sync.md](docs/airbnb-listing-keyword-sync.md). Listing copy alignment
+- [docs/holiday-kits-ops.md](docs/holiday-kits-ops.md). Holiday Ready tote checklists, saved replies, soft-launch
+- [docs/seo-measurement.md](docs/seo-measurement.md). KPIs and UTM campaigns
 
 ```bash
 bash scripts/check-seo.sh
@@ -74,5 +76,4 @@ bash scripts/check-seo.sh https://lakearrowheadaframe.vercel.app
 
 ## Related
 
-- Sale site: [399rainier.com](https://399rainier.com)
 - Design reference: [Bjerk case study](https://nordehq.com/case-studies/bjerk/)

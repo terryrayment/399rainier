@@ -43,7 +43,7 @@ export const cabin = {
     {
       step: "01",
       title: "Indoor Dynamic sauna",
-      body: "Heat up inside — rare in Lake Arrowhead.",
+      body: "Heat up inside. Rare in Lake Arrowhead.",
     },
     {
       step: "02",
@@ -60,13 +60,13 @@ export const cabin = {
   differentiators: [
     {
       title: "The glass wall",
-      body: "Guests call it \"on another level\" — forest light all day, glow at twilight.",
+      body: "Guests call it \"on another level\". Forest light all day, glow at twilight.",
       href: "/lake-arrowhead-a-frame-cabin",
       linkLabel: "A-frame cabin details →",
     },
     {
       title: "Honest lake trails",
-      body: "Owner trails when registered. Beach clubs excluded — we say so upfront.",
+      body: "Owner trails when registered. Beach clubs excluded. We say so upfront.",
       href: "/shoreline-rights",
       linkLabel: "Lake access, explained →",
     },
@@ -104,13 +104,13 @@ export const cabin = {
       title: "The Pines",
       image: getAirbnbPhoto("rainier_42.jpg").src,
       imageAlt: getAirbnbPhoto("rainier_42.jpg").alt,
-      body: "Three decks, string lights, a fenced yard for dogs. Owner lake trails when registered — beach clubs excluded, honesty included.",
+      body: "Three decks, string lights, a fenced yard for dogs. Owner lake trails when registered. Beach clubs excluded, honesty included.",
     },
     {
       title: "The Sauna",
       image: getAirbnbPhoto("rainier_sauna.jpg").src,
       imageAlt: getAirbnbPhoto("rainier_sauna.jpg").alt,
-      body: "Indoor Dynamic sauna — rare in Lake Arrowhead. The ritual: sauna, cool air on the deck, then the hot tub under the stars.",
+      body: "Indoor Dynamic sauna. Rare in Lake Arrowhead. The ritual: sauna, cool air on the deck, then the hot tub under the stars.",
     },
   ],
 

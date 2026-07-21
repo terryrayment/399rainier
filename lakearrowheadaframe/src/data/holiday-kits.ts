@@ -66,7 +66,7 @@ export const holidayKits: HolidayKit[] = [
     includes: [
       "Pre-lit tree with ornaments",
       "Stockings and garland",
-      "Cocoa bar — mixes, mugs, marshmallows",
+      "Cocoa bar. Mixes, mugs, marshmallows",
       "Throw blankets",
       "Fireplace Christmas staging",
     ],
@@ -240,7 +240,7 @@ export function isKitWindowActive(kit: HolidayKit, date: Date = new Date()): boo
   return isInFixedWindow(date, startMonth, startDay, endMonth, endDay);
 }
 
-/** Active kit for homepage strip — prefer live kits currently in window. */
+/** Active kit for homepage strip. Prefer live kits currently in window. */
 export function getActiveHolidayKit(date: Date = new Date()): HolidayKit | null {
   const active = holidayKits.filter(
     (kit) => kit.status === "live" && isKitWindowActive(kit, date),

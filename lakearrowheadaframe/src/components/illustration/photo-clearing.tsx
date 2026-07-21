@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { ParallaxImage } from "@/components/parallax-image";
 import { sceneAssets } from "@/data/illustration-scenes";
 
 type PhotoClearingProps = {
@@ -8,7 +9,9 @@ type PhotoClearingProps = {
   sizes?: string;
   aspectClassName?: string;
   className?: string;
-  /** Default none — use sparingly so branches never stamp every photo */
+  /** Subtle scroll drift inside the frame (reduced-motion safe). */
+  parallax?: boolean;
+  /** Default none. Use sparingly so branches never stamp every photo */
   overlap?: "none" | "tl" | "tr" | "bl" | "br" | "dual";
   children?: React.ReactNode;
 };
@@ -24,22 +27,37 @@ export function PhotoClearing({
   sizes = "(max-width: 768px) 100vw, 1100px",
   aspectClassName = "aspect-[4/5] md:aspect-[16/10]",
   className = "",
+  parallax = false,
   overlap = "none",
   children,
 }: PhotoClearingProps) {
   return (
     <div className={`photo-clearing ${className}`}>
-      <div className={`photo-clearing-frame relative overflow-hidden ${aspectClassName}`}>
-        <Image
-          src={src}
-          alt={alt}
-          fill
-          priority={priority}
-          className="object-cover"
-          sizes={sizes}
-        />
-        {children ? <div className="photo-clearing-copy">{children}</div> : null}
-      </div>
+      {parallax ? (
+        <div className="photo-clearing-parallax-wrap relative">
+          <ParallaxImage
+            src={src}
+            alt={alt}
+            priority={priority}
+            sizes={sizes}
+            strength={0.14}
+            className={`photo-clearing-frame ${aspectClassName}`}
+          />
+          {children ? <div className="photo-clearing-copy">{children}</div> : null}
+        </div>
+      ) : (
+        <div className={`photo-clearing-frame relative overflow-hidden ${aspectClassName}`}>
+          <Image
+            src={src}
+            alt={alt}
+            fill
+            priority={priority}
+            className="object-cover"
+            sizes={sizes}
+          />
+          {children ? <div className="photo-clearing-copy">{children}</div> : null}
+        </div>
+      )}
 
       {overlap !== "none" ? (
         <div className="photo-clearing-overlap" aria-hidden="true">

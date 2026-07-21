@@ -5,7 +5,7 @@ import { SceneChapter } from "@/components/illustration/scene-chapter";
 import { cabin } from "@/data/cabin";
 import { homeFaqs } from "@/lib/seo";
 
-/** Location, map, lake caveats, differentiators, FAQs — one field-guide landscape. */
+/** Location, map, lake caveats, differentiators, FAQs. One field-guide landscape. */
 export function PlaceAndPracticalTruth() {
   return (
     <>

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { formatKitPrice, getActiveHolidayKit } from "@/data/holiday-kits";
 
-/** Seasonal homepage strip — renders only when a live kit window is active. */
+/** Seasonal homepage strip. Renders only when a live kit window is active. */
 export function HolidayReadyStrip() {
   const kit = getActiveHolidayKit();
   if (!kit) return null;
@@ -14,7 +14,7 @@ export function HolidayReadyStrip() {
             Holiday Ready · {kit.windowLabel}
           </p>
           <p className="mt-1 font-serif text-xl tracking-tight md:text-2xl">
-            {kit.name} — {formatKitPrice(kit.price)}
+            {kit.name}. {formatKitPrice(kit.price)}
           </p>
           <p className="mt-1 max-w-xl text-sm leading-6 text-white/70">{kit.tagline}</p>
         </div>

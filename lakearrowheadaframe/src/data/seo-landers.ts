@@ -26,14 +26,14 @@ export const saunaLander: SeoLander = {
   title: "Lake Arrowhead cabin with sauna",
   metaTitle: "Lake Arrowhead Cabin with Sauna & Hot Tub",
   description:
-    "Book a Lake Arrowhead cabin with an indoor sauna and hot tub in the pines. Rare mountain ritual at our Guest Favorite A-frame in Arrowhead Woods — 90 minutes from LA.",
+    "Book a Lake Arrowhead cabin with an indoor sauna and hot tub in the pines. Rare mountain ritual at our Guest Favorite A-frame in Arrowhead Woods. 90 minutes from LA.",
   keywords: [
     "Lake Arrowhead cabin with sauna",
     "indoor sauna cabin Lake Arrowhead",
     "Lake Arrowhead hot tub and sauna",
     "sauna cabin near Los Angeles",
   ],
-  headline: "A Lake Arrowhead cabin with an indoor sauna — then hot tub under the pines.",
+  headline: "A Lake Arrowhead cabin with an indoor sauna. Then hot tub under the pines.",
   lead: "Most mountain rentals stop at a hot tub. This Arrowhead Woods A-frame adds an indoor Dynamic sauna so the weekend has a real ritual: heat, cool pine air, soak. Guest Favorite on Airbnb.",
   campaign: "sauna-lander",
   breadcrumbLabel: "Cabin with Sauna",
@@ -44,15 +44,15 @@ export const saunaLander: SeoLander = {
   sections: [
     {
       title: "Why an indoor sauna matters in Lake Arrowhead",
-      body: "Arrowhead weekends swing from sun on the deck to cold mountain nights. An indoor sauna means the ritual works in any season — after a Village walk, after Snow Valley, or when the weather turns. You are not waiting for a spa appointment; you are running a simple circuit at the cabin.",
+      body: "Arrowhead weekends swing from sun on the deck to cold mountain nights. An indoor sauna means the ritual works in any season. After a Village walk, after Snow Valley, or when the weather turns. You are not waiting for a spa appointment; you are running a simple circuit at the cabin.",
     },
     {
       title: "The ritual guests actually do",
-      body: "Heat in the Dynamic sauna. Step onto the deck for cool pine air. Finish in the hot tub under the trees. Guests describe it as the reason they stop shopping other listings — not a brochure amenity, a repeatable evening.",
+      body: "Heat in the Dynamic sauna. Step onto the deck for cool pine air. Finish in the hot tub under the trees. Guests describe it as the reason they stop shopping other listings. Not a brochure amenity, a repeatable evening.",
     },
     {
       title: "Paired with the rest of the cabin",
-      body: "Floor-to-ceiling glass, three decks, a fenced dog yard, and honest owner lake-trail access when registered. Beach clubs are not included — we say that upfront so the sauna weekend is not sold on a false lake pass.",
+      body: "Floor-to-ceiling glass, three decks, a fenced dog yard, and honest owner lake-trail access when registered. Beach clubs are not included. We say that upfront so the sauna weekend is not sold on a false lake pass.",
     },
     {
       title: "Who this page is for",
@@ -92,7 +92,7 @@ export const dogFriendlyLander: SeoLander = {
     "bring dog Lake Arrowhead Airbnb",
   ],
   headline: "A dog-friendly Lake Arrowhead cabin with a real fenced yard.",
-  lead: "Bring the dog without decoding vague pet policies at midnight. This Arrowhead Woods A-frame has a fenced yard, three decks, and host rules that say yes to dogs up front — plus sauna, hot tub, and Guest Favorite reviews.",
+  lead: "Bring the dog without decoding vague pet policies at midnight. This Arrowhead Woods A-frame has a fenced yard, three decks, and host rules that say yes to dogs up front. Plus sauna, hot tub, and Guest Favorite reviews.",
   campaign: "dog-friendly-lander",
   breadcrumbLabel: "Dog-Friendly Cabin",
   photo: {
@@ -106,7 +106,7 @@ export const dogFriendlyLander: SeoLander = {
     },
     {
       title: "Honest pet rules beat surprise fees",
-      body: "We would rather you know the house is dog-friendly before you drive up the mountain. Follow the Airbnb listing for current pet fees and house rules — then pack bowls, a bed, and a leash for Village walks.",
+      body: "We would rather you know the house is dog-friendly before you drive up the mountain. Follow the Airbnb listing for current pet fees and house rules. Then pack bowls, a bed, and a leash for Village walks.",
     },
     {
       title: "What dogs and humans share here",
@@ -150,7 +150,7 @@ export const aframeLander: SeoLander = {
     "A-frame Airbnb Lake Arrowhead",
   ],
   headline: "The Lake Arrowhead A-frame cabin guests call “on another level.”",
-  lead: "A renovated A-frame in Arrowhead Woods — soaring glass, pine light all day, indoor sauna, hot tub in the trees. Not a generic condo. A recognizable mountain silhouette you can feel from the driveway.",
+  lead: "A renovated A-frame in Arrowhead Woods. Soaring glass, pine light all day, indoor sauna, hot tub in the trees. Not a generic condo. A recognizable mountain silhouette you can feel from the driveway.",
   campaign: "aframe-lander",
   breadcrumbLabel: "A-Frame Cabin",
   photo: {
@@ -160,7 +160,7 @@ export const aframeLander: SeoLander = {
   sections: [
     {
       title: "Glass-wall A-frame, not a marketing label",
-      body: "The full glass wall is the reason guests stop scrolling. Vaulted living space, forest views, Ms Pac-Man and a piano when the weather turns. Architecture is the product — amenities support it.",
+      body: "The full glass wall is the reason guests stop scrolling. Vaulted living space, forest views, Ms Pac-Man and a piano when the weather turns. Architecture is the product. Amenities support it.",
     },
     {
       title: "Arrowhead Woods setting",
@@ -179,7 +179,7 @@ export const aframeLander: SeoLander = {
     {
       question: "Is this a true A-frame cabin in Lake Arrowhead?",
       answer:
-        "Yes. It is a renovated A-frame with a dramatic glass wall and vaulted living area in Arrowhead Woods — the silhouette people mean when they search for a Lake Arrowhead A-frame rental.",
+        "Yes. It is a renovated A-frame with a dramatic glass wall and vaulted living area in Arrowhead Woods. The silhouette people mean when they search for a Lake Arrowhead A-frame rental.",
     },
     {
       question: "How many guests does the A-frame sleep?",
@@ -199,7 +199,7 @@ export const weekendLaLander: SeoLander = {
   title: "Lake Arrowhead weekend from Los Angeles",
   metaTitle: "Lake Arrowhead Weekend Getaway from Los Angeles",
   description:
-    "Plan a Lake Arrowhead weekend getaway from Los Angeles — about 90 minutes to our sauna-and-hot-tub A-frame in Arrowhead Woods. Dog-friendly. Guest Favorite on Airbnb.",
+    "Plan a Lake Arrowhead weekend getaway from Los Angeles. About 90 minutes to our sauna-and-hot-tub A-frame in Arrowhead Woods. Dog-friendly. Guest Favorite on Airbnb.",
   keywords: [
     "Lake Arrowhead weekend from Los Angeles",
     "cabin 90 minutes from LA",
@@ -207,7 +207,7 @@ export const weekendLaLander: SeoLander = {
     "weekend cabin near Los Angeles",
   ],
   headline: "A Lake Arrowhead weekend getaway about 90 minutes from Los Angeles.",
-  lead: "Leave the basin Friday. Sauna, hot tub, pine decks, and Village dinner by evening. This Arrowhead Woods A-frame is built for Southern California drive-market weekends — not a flight, not a seven-hour trek.",
+  lead: "Leave the basin Friday. Sauna, hot tub, pine decks, and Village dinner by evening. This Arrowhead Woods A-frame is built for Southern California drive-market weekends. Not a flight, not a seven-hour trek.",
   campaign: "weekend-la-lander",
   breadcrumbLabel: "Weekend from LA",
   photo: {
@@ -225,7 +225,7 @@ export const weekendLaLander: SeoLander = {
     },
     {
       title: "What to pack for an LA-to-Arrowhead switch",
-      body: "Layers for mountain nights, dog gear if you are bringing a pet, and realistic expectations about private-lake rules. You do not need beach-club fantasies for a restorative weekend — you need quiet, heat, and pines.",
+      body: "Layers for mountain nights, dog gear if you are bringing a pet, and realistic expectations about private-lake rules. You do not need beach-club fantasies for a restorative weekend. You need quiet, heat, and pines.",
     },
     {
       title: "Winter and summer both work from LA",

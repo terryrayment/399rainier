@@ -156,7 +156,7 @@ export function HomePageClassic() {
             </h2>
             <p className="mt-6 max-w-md text-sm leading-7 text-white/70">
               Ninety minutes from Los Angeles. Five minutes to Lake Arrowhead Village. Owner lake
-              trails when registered — beach clubs are not included for short-term guests.
+              trails when registered. Beach clubs are not included for short-term guests.
             </p>
             <DriveTimeList />
           </div>

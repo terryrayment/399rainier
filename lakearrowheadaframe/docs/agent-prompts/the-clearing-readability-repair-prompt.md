@@ -64,7 +64,7 @@ This is a heavily modified working tree containing user-owned work.
 
 These are observed failures, not hypotheses. Address every item.
 
-### P0 — content is obscured by decoration
+### P0. Content is obscured by decoration
 
 The scene stacking contract is backwards:
 
@@ -80,7 +80,7 @@ Repair the layer model. Generic canopy, mist, rails, forest floor, and transitio
 
 Use a simple, documented z-index contract. For example: scene base 0, distant art 1, mist 2, environmental rails/floor 3, content 10, photo-local overlap 11 within its own isolated component, sticky booking 55, navigation 60. Keep grain behind text/chrome or prove that its opacity does not reduce contrast.
 
-### P0 — mobile dark scenes collapse into a narrow strip
+### P0. Mobile dark scenes collapse into a narrow strip
 
 The mobile `.forest-scene-bg { left: 0; right: 0; }` rule is overridden by later, more specific dusk/night rules. At 390px, the dark background is only about 278px wide, leaving roughly 56px mismatched strips on each side. Dense rail desktop rules also beat the mobile rail rule; ritual/night rails become about 168px **each** on a 390px screen.
 
@@ -92,19 +92,19 @@ Put definitive mobile overrides after all tone/density variants and match their 
 - Cap any mobile edge cluster around 20–24vw and keep the readable content column intact.
 - Do not create pale side stripes, a 54px text corridor, or any horizontal overflow.
 
-### P0 — dark-scene text inherits the wrong color
+### P0. Dark-scene text inherits the wrong color
 
 Dark tone text color is currently assigned to the empty `.forest-scene-bg` sibling, so it cannot inherit into `.forest-scene-content`. The final review and “Wake where the pines begin” render ink-on-night at roughly 1:1 contrast.
 
 Apply tone foreground colors to `.forest-scene` or `.forest-scene-content`, then explicitly style secondary copy, metadata, and links. Night and dusk headings/body must be visibly parchment/light; ember/amber remains an accent, not the default body color.
 
-### P0 — shoreline hero CTA is invisible
+### P0. Shoreline hero CTA is invisible
 
 On `/shoreline-rights`, the hero CTA’s foreground computes to the same dark color as its background. `.page-shell-hero .inline-flex { color: inherit; }` overrides the button’s intended light text on light/sage PageShell variants.
 
 Remove or narrow that override and preserve the explicit button variant color. Audit every PageShell route for the same regression.
 
-### P1 — font wiring is broken and typography is inconsistent
+### P1. Font wiring is broken and typography is inconsistent
 
 `src/app/layout.tsx` loads DM Sans and Cormorant Garamond correctly, but runtime `--font-sans` and `--font-serif` aliases are unresolved. Body copy falls back to Apple/system sans. Tailwind’s `.font-serif` behavior wins on many elements, and a late selector list in `globals.css` force-fixes only eight headings.
 
@@ -120,7 +120,7 @@ Create one reliable type system:
 
 Verify computed `font-family` in the browser, not merely class names in JSX.
 
-### P1 — low contrast and undersized type
+### P1. Low contrast and undersized type
 
 Known failures include:
 
@@ -133,7 +133,7 @@ Known failures include:
 
 Create surface-aware text tokens rather than solving contrast with random local overrides. Meet WCAG AA: 4.5:1 for normal text and 3:1 for large text. Use approximately 16px minimum for body copy, 14px for captions/supporting copy, and at least 12px with adequate weight/contrast for true uppercase kickers. Increase footer legal text to a readable size/color. Add a local image scrim behind hero copy when needed; do not blur or wash out the photograph.
 
-### P1 — mobile booking controls compete and overlap
+### P1. Mobile booking controls compete and overlap
 
 The homepage renders both the full hero `BookingPill` and a fixed mobile `BookingDock`. The 275px-tall mobile form retains `border-radius: 9999px`, creating a giant oval, while the fixed CTA covers its helper text and later page content.
 
@@ -147,15 +147,15 @@ At mobile widths:
 
 At desktop, keep the useful date/guest booking dock and ensure it remains visually attached to the hero without clipping.
 
-### P1 — mobile navigation is absent
+### P1. Mobile navigation is absent
 
 Below 768px, both the nav links and header CTA are hidden and no replacement exists. Add a compact, keyboard-operable mobile menu containing the same key routes. The trigger must be at least 44×44px, expose `aria-expanded`/`aria-controls`, have a visible focus state, close with Escape and route selection, and manage focus correctly. Do not cover the sticky booking action.
 
-### P1 — fixed nav covers anchor headings
+### P1. Fixed nav covers anchor headings
 
 The site uses fixed navigation and smooth scrolling without an offset. Clicking Gallery places its heading partly beneath the ~85px nav. Add `scroll-padding-top` and/or section `scroll-margin-top` for `#gallery`, `#ritual`, `#location`, `#reviews`, and any other anchored chapter. Respect `prefers-reduced-motion` by disabling smooth scrolling and parallax/drift.
 
-### P1 — illustration is multiplied instead of composed
+### P1. Illustration is multiplied instead of composed
 
 The homepage currently mounts:
 
@@ -169,11 +169,11 @@ Choose one environmental owner per region. Make scene-level `ForestScene` the pr
 
 Full-page screenshots and print capture must show one continuous journey, not fixed trees/nav stamped repeatedly into capture segments.
 
-### P1 — repeated photography weakens the editorial rhythm
+### P1. Repeated photography weakens the editorial rhythm
 
 `rainier_46.jpg` is the hero and `rainier_5.jpg` is the narrative image, but both appear again immediately in the homepage gallery because it takes the first six photos unchanged. Exclude hero/narrative sources from the homepage gallery or reorder around unique room, deck, hot tub, sauna, and detail proof. Do not invent or relabel property imagery.
 
-### P1 — guest-facing copy contains internal instructions
+### P1. Guest-facing copy contains internal instructions
 
 On `/chapters`, remove or rewrite this internal maintenance note:
 
@@ -181,7 +181,7 @@ On `/chapters`, remove or rewrite this internal maintenance note:
 
 “Issue 85 of 85” and “Write chapter 86” also read like release bookkeeping. Replace them with polished, guest-centered wording using only facts already present in the data. Do not fabricate review counts or claims.
 
-### P2 — accessibility and interaction cleanup
+### P2. Accessibility and interaction cleanup
 
 - Add a visible-on-focus “Skip to main content” link and a stable main-content target.
 - Add explicit high-contrast `:focus-visible` treatment to every link, button, input, select, checkbox, calendar control, menu trigger, and menu item. Remove `outline-none` unless an equivalent ring is present.
@@ -190,20 +190,20 @@ On `/chapters`, remove or rewrite this internal maintenance note:
 - Preserve meaningful alt text for property photography and the explicit distinction between authentic property proof and atmospheric artwork.
 - No focusable element may be hidden behind a rail, transition, fixed CTA, or nav.
 
-### P2 — performance and motion
+### P2. Performance and motion
 
 The fully scrolled mobile page currently transfers the same approximately 2.6MB of raw illustration assets as desktop. Largest plates are roughly 316–609KB. Runtime also has many blend/filter/transform layers and ten active animations.
 
 - Replace raw full-size decorative `<img>` usage with appropriately sized `next/image` or `<picture>` sources and accurate `sizes` values.
 - Mobile should receive mobile-sized art, not desktop-width source files.
 - Lazy-load offscreen chapter art; only the actual above-fold LCP asset for a route/viewport may be eager/priority.
-- Resolve Next’s LCP warnings for `/illustrations/heat-soak.webp` on the sauna route and `/photos/rainier_46.jpg` by identifying the real above-fold LCP per route—not by making every image eager.
+- Resolve Next’s LCP warnings for `/illustrations/heat-soak.webp` on the sauna route and `/photos/rainier_46.jpg` by identifying the real above-fold LCP per route - not by making every image eager.
 - Reduce stacked full-screen blur, blend mode, live-filter, and transform work where it does not materially improve the composition.
 - Replace the fixed live SVG turbulence overlay with a small pre-rendered texture, or otherwise ensure it is cheap and sits behind readable content.
 - Use scene-local intersection/progress for motion, or remove parallax on mobile. Do not drive every on- and off-screen scene from one page-level scroll value capped at 4000px.
 - Under `prefers-reduced-motion: reduce`, disable smooth scrolling, mist drift, and parallax transforms.
 
-### P2 — repair lint configuration
+### P2. Repair lint configuration
 
 `npm run build` and TypeScript currently pass, but `npm run lint` crashes before checking files with `TypeError: Converting circular structure to JSON`. The cause is the legacy `FlatCompat` configuration in `eslint.config.mjs` with Next 16 / ESLint 9.
 

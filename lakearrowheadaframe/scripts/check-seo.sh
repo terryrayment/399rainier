@@ -27,6 +27,7 @@ check "/lake-arrowhead-a-frame-cabin"
 check "/weekend-from-los-angeles"
 check "/chapters"
 check "/burnout-reset"
+check "/holiday-ready"
 
 echo "-- sitemap sample --"
 curl -s "$BASE/sitemap.xml" | head -n 40

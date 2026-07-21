@@ -18,6 +18,7 @@
 
 - Primary booking: https://airbnb.com/h/lakearrowheadcabinrental
 - This website converts to Airbnb only (no direct booking engine)
+- Optional Holiday Ready kits (paid add-on after booking): Thanksgiving, Christmas, New Year’s, Valentine’s, Halloween, July 4th. See /holiday-ready
 
 ## Lake access (important)
 
@@ -30,15 +31,12 @@ Canonical honest guide: https://lakearrowheadaframe.com/shoreline-rights
 
 ## Key pages
 
-- https://lakearrowheadaframe.com/ — Lake Arrowhead cabin rental hub
-- https://lakearrowheadaframe.com/shoreline-rights — STR shoreline / lake access decoder
-- https://lakearrowheadaframe.com/lake-arrowhead-cabin-with-sauna — sauna + hot tub cabin
-- https://lakearrowheadaframe.com/dog-friendly-lake-arrowhead-cabin — dog-friendly cabin with fenced yard
-- https://lakearrowheadaframe.com/lake-arrowhead-a-frame-cabin — A-frame cabin rental
-- https://lakearrowheadaframe.com/weekend-from-los-angeles — weekend getaway from Los Angeles
-- https://lakearrowheadaframe.com/chapters — guest review anthology
-- https://lakearrowheadaframe.com/burnout-reset — 48-hour reset quiz
-
-## Related (sale, not rental)
-
-- https://399rainier.com — same cabin listed for sale / investment (different intent)
+- https://lakearrowheadaframe.com/. Lake Arrowhead cabin rental hub
+- https://lakearrowheadaframe.com/shoreline-rights. STR shoreline / lake access decoder
+- https://lakearrowheadaframe.com/lake-arrowhead-cabin-with-sauna. Sauna + hot tub cabin
+- https://lakearrowheadaframe.com/dog-friendly-lake-arrowhead-cabin. Dog-friendly cabin with fenced yard
+- https://lakearrowheadaframe.com/lake-arrowhead-a-frame-cabin. A-frame cabin rental
+- https://lakearrowheadaframe.com/weekend-from-los-angeles. Weekend getaway from Los Angeles
+- https://lakearrowheadaframe.com/chapters. Guest review anthology
+- https://lakearrowheadaframe.com/burnout-reset. 48-hour reset quiz
+- https://lakearrowheadaframe.com/holiday-ready. Optional paid Holiday Ready kits (Thanksgiving, Christmas, and more); book stay on Airbnb, then message to add a kit

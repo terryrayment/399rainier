@@ -17,9 +17,9 @@ export const burnoutQuestions: QuizQuestion[] = [
     id: "pace",
     prompt: "What kind of tired are you?",
     options: [
-      { id: "pace-a", label: "Screen-fatigued — I need quiet", profile: "reset" },
-      { id: "pace-b", label: "Over-scheduled — I need space with my people", profile: "reconnect" },
-      { id: "pace-c", label: "Wired — I need to move and soak", profile: "recharge" },
+      { id: "pace-a", label: "Screen-fatigued. I need quiet", profile: "reset" },
+      { id: "pace-b", label: "Over-scheduled. I need space with my people", profile: "reconnect" },
+      { id: "pace-c", label: "Wired. I need to move and soak", profile: "recharge" },
     ],
   },
   {

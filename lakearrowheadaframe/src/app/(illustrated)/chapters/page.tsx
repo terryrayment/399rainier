@@ -6,7 +6,7 @@ import { createMetadata, getBreadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata = createMetadata({
   title: "Guest Review Anthology",
-  description: `Read the story of ${anthologyMeta.issue} Guest Favorite stays at our Lake Arrowhead A-frame cabin rental — verbatim Airbnb guest quotes, chapter by chapter.`,
+  description: `Read the story of ${anthologyMeta.issue} Guest Favorite stays at our Lake Arrowhead A-frame cabin rental. Verbatim Airbnb guest quotes, chapter by chapter.`,
   path: "/chapters",
   keywords: [
     "Lake Arrowhead A-frame reviews",
@@ -35,7 +35,7 @@ export default function ChaptersPage() {
         <section className="mx-auto max-w-7xl px-6 pb-16">
           <SectionIntro
             title="What guests remember"
-            description="Every quote below comes from public guest feedback on the listing — organized by the themes that define a stay here."
+            description="Every quote below comes from public guest feedback on the listing. Organized by the themes that define a stay here."
           />
           <div className="space-y-8">
             {reviewChapters.map((chapter) => (
@@ -85,7 +85,7 @@ export default function ChaptersPage() {
       </PageShell>
       <DarkCta
         title="Become the next quiet stay"
-        description="Guest Favorite A-frame — book on Airbnb and write the next chapter."
+        description="Guest Favorite A-frame. Book on Airbnb and write the next chapter."
         campaign="chapters"
       />
     </>

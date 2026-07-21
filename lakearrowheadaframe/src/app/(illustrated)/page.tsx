@@ -16,7 +16,7 @@ import {
 const homeMeta = createMetadata({
   title: "Lake Arrowhead Cabin Rental | A-Frame with Sauna & Hot Tub",
   description:
-    "Lake Arrowhead cabin rental in Arrowhead Woods — indoor sauna, hot tub in the pines, dog-friendly fenced yard, honest lake trails. Guest Favorite A-frame, 90 minutes from Los Angeles.",
+    "Lake Arrowhead cabin rental in Arrowhead Woods. Indoor sauna, hot tub in the pines, dog-friendly fenced yard, honest lake trails. Guest Favorite A-frame, 90 minutes from Los Angeles.",
   path: "/",
   keywords: [
     "Lake Arrowhead cabin rentals",

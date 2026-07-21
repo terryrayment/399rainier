@@ -1,4 +1,4 @@
-/** Shared SVG pine primitives — lineless editorial style. */
+/** Shared SVG pine primitives. Lineless editorial style. */
 
 export function SpindlePine({
   x = 0,

@@ -12,7 +12,7 @@ type EditorialGalleryProps = {
 };
 
 /**
- * Dominant / medium / detail roles — not six equal ecommerce cards.
+ * Dominant / medium / detail roles. Not six equal ecommerce cards.
  */
 export function EditorialGallery({
   photos,

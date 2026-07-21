@@ -1,0 +1,31 @@
+---
+description: Never use em dashes in copy, UI strings, or comments
+alwaysApply: true
+---
+
+# No em dashes
+
+Do not use the em dash character (`—`, U+2014) anywhere in this repo: user-facing copy, metadata, alt text, comments, or docs.
+
+## Prefer
+
+- Periods for a new clause: `Indoor Dynamic sauna. Rare in Lake Arrowhead.`
+- Commas for asides: `Beach clubs excluded, we say so upfront.`
+- Colons for labels or lists: `Christmas Ready: $249`
+- Hyphens (`-`) only for true compounds or numeric ranges: `90-minute drive`, `Dec 15-26`
+- Pipes for title templates: `Shoreline rights | Lake Arrowhead A-Frame`
+
+## Examples
+
+```text
+❌ Guest Favorite A-frame — indoor sauna, hot tub in the pines
+✅ Guest Favorite A-frame. Indoor sauna, hot tub in the pines
+
+❌ What you can — and cannot — do on the lake.
+✅ What you can, and cannot, do on the lake.
+
+❌ SEO Measurement — lakearrowheadaframe.com
+✅ SEO Measurement | lakearrowheadaframe.com
+```
+
+If you find an existing em dash while editing, replace it in the same change.

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AirbnbButton } from "@/components/airbnb-button";
 import { cabin } from "@/data/cabin";
 
-/** Photo-only chrome — zero illustration layers. */
+/** Photo-only chrome. Zero illustration layers. */
 export default function ClassicLayout({
   children,
 }: Readonly<{

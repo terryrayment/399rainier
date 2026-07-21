@@ -5,7 +5,7 @@ export const metadata = {
   ...createMetadata({
     title: "Classic View | Lake Arrowhead Cabin Rental",
     description:
-      "Photo-only classic view of our Lake Arrowhead A-frame cabin rental — no illustration layers.",
+      "Photo-only classic view of our Lake Arrowhead A-frame cabin rental. No illustration layers.",
     path: "/classic",
     keywords: ["Lake Arrowhead cabin rental"],
   }),

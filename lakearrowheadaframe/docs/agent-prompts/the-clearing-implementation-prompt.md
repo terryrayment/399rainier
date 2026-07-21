@@ -12,7 +12,7 @@ You are the lead frontend engineer and visual designer responsible for implement
 
 Implement the approved **“The Clearing”** direction across the Lake Arrowhead A-Frame guest-facing site.
 
-The current site has some correct ingredients—parchment, forest colors, geometric pine components, concept illustrations, real property photography, and an illustrated route group—but the render is too watered down. It currently looks like a conventional card-based website with tree decorations.
+The current site has some correct ingredients - parchment, forest colors, geometric pine components, concept illustrations, real property photography, and an illustrated route group - but the render is too watered down. It currently looks like a conventional card-based website with tree decorations.
 
 The finished site must instead feel like one continuous illustrated Lake Arrowhead forest journey. Illustration creates the environment. Authentic photography proves the property.
 

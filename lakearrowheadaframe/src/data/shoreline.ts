@@ -3,12 +3,12 @@ export const shorelineZones = [
     status: "YES" as const,
     title: "Owner lake trails & shoreline recreation",
     body: "Registered short-term guests at eligible Arrowhead Woods properties may access certain ALA trails and shoreline areas when the host complies with registration and RFID rules.",
-    detail: "This is owner lake rights exercised correctly — not a public lake pass.",
+    detail: "This is owner lake rights exercised correctly. Not a public lake pass.",
   },
   {
     status: "NO" as const,
     title: "Private beach clubs",
-    body: "STR guests cannot use Tavern Bay, Burnt Mill, or other private beach clubs — regardless of what competing listings imply with \"lake pass included\" language.",
+    body: "STR guests cannot use Tavern Bay, Burnt Mill, or other private beach clubs. Regardless of what competing listings imply with \"lake pass included\" language.",
     detail: "If a listing promises beach club access, read the fine print.",
   },
   {
@@ -20,7 +20,7 @@ export const shorelineZones = [
   {
     status: "YES" as const,
     title: "Village, SkyPark, and public-adjacent outings",
-    body: "Lake Arrowhead Village, SkyPark, hiking, and dining are straightforward — five to fifteen minutes from the cabin without lake membership confusion.",
+    body: "Lake Arrowhead Village, SkyPark, hiking, and dining are straightforward. Five to fifteen minutes from the cabin without lake membership confusion.",
     detail: "Most weekend resets never need the lake at all.",
   },
 ];
@@ -29,7 +29,7 @@ export const shorelineSteps = [
   {
     step: "01",
     title: "Confirm the property is in Arrowhead Woods",
-    body: "Lake access for short-term guests is tied to eligible Arrowhead Woods ownership and ALA membership — not every Lake Arrowhead rental. This A-frame is in Arrowhead Woods with owner lake rights.",
+    body: "Lake access for short-term guests is tied to eligible Arrowhead Woods ownership and ALA membership. Not every Lake Arrowhead rental. This A-frame is in Arrowhead Woods with owner lake rights.",
   },
   {
     step: "02",
@@ -48,7 +48,7 @@ export const shorelineSteps = [
   },
   {
     step: "05",
-    title: "Stay on trails and shoreline — skip beach clubs",
+    title: "Stay on trails and shoreline. Skip beach clubs",
     body: "Registered guests may use designated trails and shoreline areas for walking, shoreline recreation, and related allowed uses. Beach clubs, parks, Lone Pine Island, and courtesy docks remain off-limits for STR guests.",
   },
 ];
@@ -87,17 +87,17 @@ export const shorelineFaqs = [
   {
     question: "Can Airbnb guests use Lake Arrowhead?",
     answer:
-      "Sometimes — with limits. Registered short-term guests at eligible Arrowhead Woods homes may access certain ALA trails and shoreline areas. They cannot use private beach clubs. Always verify the listing’s Arrowhead Woods status and the host’s registration process.",
+      "Sometimes. With limits. Registered short-term guests at eligible Arrowhead Woods homes may access certain ALA trails and shoreline areas. They cannot use private beach clubs. Always verify the listing’s Arrowhead Woods status and the host’s registration process.",
   },
   {
     question: "What does “lake rights” mean for a rental guest?",
     answer:
-      "For owners, lake rights are deed- and membership-linked privileges through the Arrowhead Lake Association. For STR guests, that usually translates to registered shoreline and trail access — not a transferable beach-club pass.",
+      "For owners, lake rights are deed- and membership-linked privileges through the Arrowhead Lake Association. For STR guests, that usually translates to registered shoreline and trail access. Not a transferable beach-club pass.",
   },
   {
     question: "Do we need a boat for a good Lake Arrowhead weekend?",
     answer:
-      "No. Many of our best guest weekends never touch the water: sauna, hot tub, Village dinner, SkyPark, and pine-deck mornings. Shoreline walks are a bonus when you want them — not the only reason to book.",
+      "No. Many of our best guest weekends never touch the water: sauna, hot tub, Village dinner, SkyPark, and pine-deck mornings. Shoreline walks are a bonus when you want them. Not the only reason to book.",
   },
 ];
 
@@ -119,7 +119,7 @@ export const shorelineSources = [
     href: "https://www.ala-ca.org/boating.php",
   },
   {
-    label: "Visit SB Mountains — Lake Access Guide for STR Guests",
+    label: "Visit SB Mountains. Lake Access Guide for STR Guests",
     href: "https://visitsbmountains.com/lake-access-guide-for-str-guests-lake-arrowhead-vs-lake-gregory/",
   },
 ];

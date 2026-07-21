@@ -62,7 +62,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ——— Classic (zero illustration) ——— */
+/* --- Classic (zero illustration) --- */
 .site-classic {
   background: var(--color-parchment);
 }
@@ -71,7 +71,7 @@ body {
   display: none !important;
 }
 
-/* ——— Illustrated site grain (behind content/chrome) ——— */
+/* --- Illustrated site grain (behind content/chrome) --- */
 .site-illustrated {
   position: relative;
   min-height: 100vh;
@@ -92,7 +92,7 @@ body {
   mix-blend-mode: multiply;
 }
 
-/* Semantic display type — wins over utility font-serif conflicts */
+/* Semantic display type. Wins over utility font-serif conflicts */
 .font-display,
 .font-serif,
 h1,
@@ -216,7 +216,7 @@ h3 {
   background: transparent;
 }
 
-/* ——— Persistent Clearing world (full-page forest) ——— */
+/* --- Persistent Clearing world (full-page forest) --- */
 .illustrated-world {
   pointer-events: none;
   position: fixed;
@@ -314,7 +314,7 @@ h3 {
 }
 
 @media (max-width: 767px) {
-  /* Corner clusters — never bury copy or booking */
+  /* Corner clusters. Never bury copy or booking */
   .world-forest {
     width: clamp(3.5rem, 24vw, 6.5rem);
     opacity: 0.7;
@@ -356,7 +356,7 @@ h3 {
   }
 }
 
-/* ——— Navigation (lodge bar) ——— */
+/* --- Navigation (lodge bar) --- */
 .site-nav {
   position: fixed;
   top: 0;
@@ -508,7 +508,7 @@ a.airbnb-button.site-nav-cta:hover {
   flex-shrink: 0;
 }
 
-/* ——— ForestScene layering ——— */
+/* --- ForestScene layering --- */
 .forest-scene {
   position: relative;
   isolation: isolate;
@@ -802,7 +802,7 @@ a.airbnb-button.bg-parchment {
   }
 }
 
-/* Hide dense side rails on small screens — use corners instead */
+/* Hide dense side rails on small screens. Use corners instead */
 @media (max-width: 767px) {
   .forest-scene-rail {
     width: clamp(4.5rem, 28vw, 7.5rem);
@@ -821,7 +821,7 @@ a.airbnb-button.bg-parchment {
   }
 }
 
-/* ——— PhotoClearing ——— */
+/* --- PhotoClearing --- */
 .photo-clearing {
   position: relative;
   isolation: isolate;
@@ -913,7 +913,7 @@ a.airbnb-button.bg-parchment {
   bottom: -4%;
 }
 
-/* ——— Atmospheric art ——— */
+/* --- Atmospheric art --- */
 .atmospheric-artwork-frame {
   border-radius: 0.2rem;
   box-shadow: 0 18px 40px rgba(14, 20, 18, 0.18);
@@ -941,7 +941,7 @@ a.airbnb-button.bg-parchment {
   color: var(--color-muted);
 }
 
-/* ——— Forest transition ——— */
+/* --- Forest transition --- */
 .forest-transition {
   position: relative;
   height: clamp(7.5rem, 18vw, 14rem);
@@ -968,7 +968,7 @@ a.airbnb-button.bg-parchment {
   filter: brightness(0.55) contrast(1.1);
 }
 
-/* Night close: gradient dissolve only — hills plate was leaving a hard center seam */
+/* Night close: gradient dissolve only. Hills plate was leaving a hard center seam */
 .forest-transition--night {
   height: clamp(5.5rem, 12vw, 9rem);
   background: linear-gradient(
@@ -1029,7 +1029,7 @@ a.airbnb-button.bg-parchment {
   );
 }
 
-/* ——— Booking dock ——— */
+/* --- Booking dock --- */
 .booking-dock--hero {
   position: relative;
   z-index: 6;
@@ -1058,7 +1058,7 @@ a.airbnb-button.bg-parchment {
   }
 }
 
-/* ——— Arrival ——— */
+/* --- Arrival --- */
 .arrival-clearing .scene-chapter-inner {
   max-width: min(72rem, calc(100vw - clamp(8rem, 28vw, 30rem)));
   padding-top: 6.5rem;
@@ -1192,10 +1192,10 @@ a.airbnb-button.bg-parchment {
   color: rgba(255, 255, 255, 0.88);
 }
 
-/* ——— Trust forest floor ——— */
+/* --- Trust forest floor --- */
 .trust-forest-floor .scene-chapter-inner {
-  padding-top: 1.25rem;
-  padding-bottom: 4.5rem;
+  padding-top: 2.25rem;
+  padding-bottom: 2.5rem;
 }
 
 .trust-featured {
@@ -1253,88 +1253,48 @@ a.airbnb-button.bg-parchment {
   background: transparent;
 }
 
-/* Soft dissolve trust → interior; pine rails crest through the seam */
+/*
+ * Trust band: one continuous wash into parchment. No stacked fades,
+ * no negative-margin overlap with the interior chapter.
+ */
 .trust-forest-floor {
   position: relative;
   z-index: 0;
 }
 
-.trust-forest-floor .forest-scene {
-  overflow: visible;
-}
-
 .trust-forest-floor .forest-scene-bg {
-  /* Paint the fade into the fill itself so the seam can't read as a hard cut */
   -webkit-mask-image: none;
   mask-image: none;
-  background:
-    radial-gradient(ellipse 60% 40% at 30% 0%, rgba(240, 197, 109, 0.08), transparent 50%),
-    linear-gradient(
-      180deg,
-      #1e271f 0%,
-      var(--color-forest-deep) 38%,
-      rgba(26, 29, 22, 0.72) 62%,
-      rgba(26, 29, 22, 0.28) 82%,
-      transparent 100%
-    );
+  background: linear-gradient(
+    180deg,
+    var(--color-parchment) 0%,
+    #1a1d16 14%,
+    #1a1d16 72%,
+    var(--color-parchment) 100%
+  );
 }
 
 .inside-glass-chapter {
   position: relative;
   z-index: 1;
-  margin-top: -5rem;
-  padding-top: 5rem;
-}
-
-.inside-glass-chapter::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 10rem;
-  pointer-events: none;
-  z-index: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(26, 29, 22, 0.22) 0%,
-    rgba(26, 29, 22, 0.08) 28%,
-    rgba(227, 230, 216, 0.45) 58%,
-    transparent 100%
-  );
 }
 
 .inside-glass-chapter .forest-scene {
   overflow: visible;
 }
 
-.inside-glass-chapter .forest-scene-bg {
-  -webkit-mask-image: none;
-  mask-image: none;
-  background:
-    linear-gradient(
-      180deg,
-      transparent 0%,
-      rgba(227, 230, 216, 0.35) 3rem,
-      rgba(234, 231, 216, 0.92) 8rem,
-      var(--color-parchment) 12rem,
-      var(--color-parchment) 100%
-    ),
-    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(53, 94, 69, 0.12), transparent 55%);
-}
-
 @media (min-width: 768px) {
   .inside-glass-chapter .forest-scene-rail {
-    top: -9rem;
+    top: -3.5rem;
     bottom: -10%;
   }
 
   .inside-glass-chapter .forest-scene-rail .forest-scene-plate {
-    object-position: center 8%;
+    object-position: center 20%;
   }
 }
 
-/* ——— Inside the glass ——— */
+/* --- Inside the glass --- */
 .inside-glass-layout {
   display: grid;
   gap: 2.5rem;
@@ -1402,7 +1362,7 @@ a.airbnb-button.bg-parchment {
   color: var(--color-muted);
 }
 
-/* ——— Editorial gallery ——— */
+/* --- Editorial gallery --- */
 .editorial-gallery-title {
   text-align: center;
   font-size: clamp(2.1rem, 4vw, 3.4rem);
@@ -1461,7 +1421,7 @@ a.airbnb-button.bg-parchment {
   text-underline-offset: 4px;
 }
 
-/* ——— Ritual ——— */
+/* --- Ritual --- */
 .ritual-sequence {
   position: relative;
   color: var(--color-parchment);
@@ -1537,7 +1497,7 @@ a.airbnb-button.bg-parchment {
   animation: mist-drift 22s ease-in-out infinite alternate;
 }
 
-/* ——— Place / map / FAQ ——— */
+/* --- Place / map / FAQ --- */
 .illustrated-map-panel {
   display: grid;
   gap: 2rem;
@@ -1675,7 +1635,7 @@ a.airbnb-button.bg-parchment {
   color: rgba(234, 231, 216, 0.7);
 }
 
-/* ——— Night close ——— */
+/* --- Night close --- */
 .night-booking-close {
   margin-top: -2.5rem;
 }
@@ -1770,7 +1730,7 @@ a.airbnb-button.bg-parchment {
   text-underline-offset: 4px;
 }
 
-/* ——— Footer in night world ——— */
+/* --- Footer in night world --- */
 .site-footer--night {
   position: relative;
   z-index: 10;
@@ -1846,7 +1806,7 @@ a.airbnb-button.bg-parchment {
   color: rgba(234, 231, 216, 0.72);
 }
 
-/* ——— Page shell / landers ——— */
+/* --- Page shell / landers --- */
 .page-shell-hero {
   margin: 0 auto;
   max-width: 72rem;
@@ -1993,7 +1953,7 @@ a.airbnb-button.bg-parchment {
   color: var(--color-amber);
 }
 
-/* Desktop forest edge occupancy ~20–28% via rails — always behind content */
+/* Desktop forest edge occupancy ~20–28% via rails. Always behind content */
 @media (min-width: 1100px) {
   .clearing-home .forest-scene--dense .forest-scene-rail {
     width: clamp(12rem, 15vw, 18rem);
@@ -2012,7 +1972,7 @@ a.airbnb-button.bg-parchment {
   }
 }
 
-/* ——— Focus, skip link, anchors ——— */
+/* --- Focus, skip link, anchors --- */
 .skip-link {
   position: absolute;
   left: 1rem;
@@ -2067,7 +2027,7 @@ a.airbnb-button.bg-parchment {
   white-space: nowrap;
 }
 
-/* Arrival photo-local overlaps only — never page-level rails above content */
+/* Arrival photo-local overlaps only. Never page-level rails above content */
 .arrival-clearing-overlap-left,
 .arrival-clearing-overlap-right {
   z-index: var(--z-photo-overlap);
@@ -2107,7 +2067,7 @@ a.airbnb-button.bg-parchment {
   }
 }
 
-/* ——— Definitive mobile cascade (must win over tone/density rules) ——— */
+/* --- Definitive mobile cascade (must win over tone/density rules) --- */
 @media (max-width: 767px) {
   .forest-scene--tone-dusk .forest-scene-bg,
   .forest-scene--tone-night .forest-scene-bg,

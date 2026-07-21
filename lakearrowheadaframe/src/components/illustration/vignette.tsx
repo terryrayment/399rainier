@@ -8,7 +8,7 @@ type VignetteProps = {
   priority?: boolean;
 };
 
-/** Standalone illustrative vignette — sits beside photos, never replaces them. */
+/** Standalone illustrative vignette. Sits beside photos, never replaces them. */
 export function IllustratedVignette({
   name,
   className = "",

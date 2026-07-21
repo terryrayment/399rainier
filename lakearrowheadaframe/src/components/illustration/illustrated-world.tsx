@@ -1,5 +1,5 @@
 /**
- * Subtle non-fixed underlay — paper mist only.
+ * Subtle non-fixed underlay. Paper mist only.
  * Dense forests are owned by ForestScene so fixed walls don’t stamp full-page captures
  * or pile on mobile content.
  */

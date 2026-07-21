@@ -3,7 +3,7 @@ import { PhotoClearing } from "@/components/illustration/photo-clearing";
 import { cabin } from "@/data/cabin";
 import { getAirbnbPhoto } from "@/data/photos";
 
-/** Heat → cold air → soak as one dusk narrative — authentic proof photos only. */
+/** Heat → cold air → soak as one dusk narrative. Authentic proof photos only. */
 export function RitualSequence() {
   const sauna = getAirbnbPhoto("rainier_sauna.jpg");
   const deck = getAirbnbPhoto("rainier_4.jpg");
@@ -60,7 +60,7 @@ export function RitualSequence() {
         )}
       </ol>
 
-      {/* Steam / ember accents — CSS only, non-literal */}
+      {/* Steam / ember accents. CSS only, non-literal */}
       <div className="ritual-steam" aria-hidden="true" />
     </div>
   );

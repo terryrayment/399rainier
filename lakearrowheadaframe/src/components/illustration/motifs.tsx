@@ -1,4 +1,4 @@
-/** Recurring marks from the heavy site mockup — triple pine, gold spark, cabin emblem. */
+/** Recurring marks from the heavy site mockup. Triple pine, gold spark, cabin emblem. */
 
 export function GoldSpark({ className = "" }: { className?: string }) {
   return (

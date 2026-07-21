@@ -13,7 +13,7 @@ const proofItems = [
   { label: "Dog-friendly yard", href: "/dog-friendly-lake-arrowhead-cabin" },
 ];
 
-/** Calmer responsive proof band — replaces clipping marquee. */
+/** Calmer responsive proof band. Replaces clipping marquee. */
 export function TrustForestFloor() {
   return (
     <SceneChapter

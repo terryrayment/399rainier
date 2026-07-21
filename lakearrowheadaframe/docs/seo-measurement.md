@@ -1,4 +1,4 @@
-# SEO Measurement — lakearrowheadaframe.com
+# SEO Measurement. Lakearrowheadaframe.com
 
 Phase 4 tracking plan. Vercel Analytics is already installed site-wide.
 
@@ -27,10 +27,11 @@ Every CTA uses `buildAirbnbUrl()` with:
 | Weekend LA lander | `weekend-la-lander` |
 | Chapters | `chapters` |
 | Burnout quiz | `burnout-reset` |
+| Holiday Ready | `holiday-ready` (utm_content = kit slug) |
 
 In Airbnb or your link analytics, group by `utm_campaign` to see which SEO pages drive booking intent.
 
-## Google Search Console — 90 day KPIs
+## Google Search Console. 90 day KPIs
 
 Track weekly:
 

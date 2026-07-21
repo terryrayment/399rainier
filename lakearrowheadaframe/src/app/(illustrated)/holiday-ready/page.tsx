@@ -8,7 +8,7 @@ import { createMetadata, getBreadcrumbJsonLd } from "@/lib/seo";
 export const metadata = createMetadata({
   title: "Holiday Ready Kits | Lake Arrowhead Cabin",
   description:
-    "Optional paid holiday kits for our Lake Arrowhead A-frame — Thanksgiving table for 8, Christmas tree and cocoa bar, and more. Book on Airbnb, then message to add a kit.",
+    "Optional paid holiday kits for our Lake Arrowhead A-frame. Thanksgiving table for 8, Christmas tree and cocoa bar, and more. Book on Airbnb, then message to add a kit.",
   path: "/holiday-ready",
   keywords: [
     "Lake Arrowhead Christmas cabin rental",
@@ -30,7 +30,7 @@ export default function HolidayReadyPage() {
       <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Holiday Ready" }]} />
       <PageShell
         title="The cabin shows up ready."
-        description="Optional paid Holiday Ready kits — staged before you arrive. Book the stay on Airbnb, then message us to add a kit. Not a hotel spa package — just the A-frame dressed for the holiday."
+        description="Optional paid Holiday Ready kits. Staged before you arrive. Book the stay on Airbnb, then message us to add a kit. Not a hotel spa package. Just the A-frame dressed for the holiday."
         campaign="holiday-ready"
         sceneFamily="winter-forest"
       >
@@ -54,7 +54,7 @@ export default function HolidayReadyPage() {
               {
                 step: "03",
                 title: "We stage before arrival",
-                body: "Accept the Special Offer — we set up before you walk in. Tear-down is on us after checkout.",
+                body: "Accept the Special Offer. We set up before you walk in. Tear-down is on us after checkout.",
               },
             ].map((item) => (
               <li key={item.step}>
@@ -71,7 +71,7 @@ export default function HolidayReadyPage() {
         <section className="mx-auto max-w-7xl px-6 pb-16">
           <SectionIntro
             title="The kits"
-            description="Shelf-stable first. Artificial tree only. No cooked feasts — we leave the turkey to you or a caterer."
+            description="Shelf-stable first. Artificial tree only. No cooked feasts. We leave the turkey to you or a caterer."
           />
           <div className="space-y-12 border-t border-line pt-12">
             {holidayKits.map((kit) => (
@@ -102,7 +102,7 @@ export default function HolidayReadyPage() {
                       label={
                         kit.status === "live"
                           ? "Book stay on Airbnb"
-                          : "Book stay — kit next window"
+                          : "Book stay. Kit next window"
                       }
                     />
                   </div>
@@ -136,7 +136,7 @@ export default function HolidayReadyPage() {
 
         <section className="mx-auto max-w-7xl px-6 pb-8">
           <p className="max-w-2xl text-sm leading-7 text-muted">
-            Prefer a quiet reset without holiday décor? Skip the kit — the sauna, hot tub, and
+            Prefer a quiet reset without holiday décor? Skip the kit. The sauna, hot tub, and
             glass wall are always there. Or try the{" "}
             <Link
               href="/burnout-reset"

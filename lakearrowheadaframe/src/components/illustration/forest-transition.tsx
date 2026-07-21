@@ -5,7 +5,7 @@ type ForestTransitionProps = {
   className?: string;
 };
 
-/** Full-width continuous scene change — mist / cabin / hills like the motif mockup. */
+/** Full-width continuous scene change. Mist / cabin / hills like the motif mockup. */
 export function ForestTransition({
   variant = "mist",
   className = "",

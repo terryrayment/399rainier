@@ -1,4 +1,4 @@
-# Illustration asset manifest — The Clearing
+# Illustration asset manifest. The Clearing
 
 Audit date: 2026-07-21
 

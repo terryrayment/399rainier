@@ -36,6 +36,7 @@ export function InsideTheGlassChapter() {
           aspectClassName="aspect-[4/5]"
           sizes="(max-width: 768px) 100vw, 48vw"
           overlap="tr"
+          parallax
           className="inside-glass-photo"
         />
         <div className="inside-glass-copy">

@@ -1,4 +1,4 @@
-# SEO Launch Checklist — lakearrowheadaframe.com
+# SEO Launch Checklist. Lakearrowheadaframe.com
 
 Use this after deploying the guest site SEO work.
 
@@ -50,6 +50,7 @@ Expect:
    - `/weekend-from-los-angeles`
    - `/chapters`
    - `/burnout-reset`
+   - `/holiday-ready`
 
 ## Bing Webmaster Tools
 
