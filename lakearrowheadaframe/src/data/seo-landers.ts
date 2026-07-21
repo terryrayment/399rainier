@@ -11,7 +11,6 @@ export type SeoLander = {
   metaTitle: string;
   description: string;
   keywords: string[];
-  eyebrow: string;
   headline: string;
   lead: string;
   campaign: string;
@@ -34,7 +33,6 @@ export const saunaLander: SeoLander = {
     "Lake Arrowhead hot tub and sauna",
     "sauna cabin near Los Angeles",
   ],
-  eyebrow: "Sauna cabin",
   headline: "A Lake Arrowhead cabin with an indoor sauna — then hot tub under the pines.",
   lead: "Most mountain rentals stop at a hot tub. This Arrowhead Woods A-frame adds an indoor Dynamic sauna so the weekend has a real ritual: heat, cool pine air, soak. Guest Favorite on Airbnb.",
   campaign: "sauna-lander",
@@ -93,7 +91,6 @@ export const dogFriendlyLander: SeoLander = {
     "pet friendly Lake Arrowhead vacation rental",
     "bring dog Lake Arrowhead Airbnb",
   ],
-  eyebrow: "Dog-friendly",
   headline: "A dog-friendly Lake Arrowhead cabin with a real fenced yard.",
   lead: "Bring the dog without decoding vague pet policies at midnight. This Arrowhead Woods A-frame has a fenced yard, three decks, and host rules that say yes to dogs up front — plus sauna, hot tub, and Guest Favorite reviews.",
   campaign: "dog-friendly-lander",
@@ -152,7 +149,6 @@ export const aframeLander: SeoLander = {
     "modern A-frame cabin Lake Arrowhead",
     "A-frame Airbnb Lake Arrowhead",
   ],
-  eyebrow: "A-frame cabin",
   headline: "The Lake Arrowhead A-frame cabin guests call “on another level.”",
   lead: "A renovated A-frame in Arrowhead Woods — soaring glass, pine light all day, indoor sauna, hot tub in the trees. Not a generic condo. A recognizable mountain silhouette you can feel from the driveway.",
   campaign: "aframe-lander",
@@ -210,7 +206,6 @@ export const weekendLaLander: SeoLander = {
     "Lake Arrowhead getaway from LA",
     "weekend cabin near Los Angeles",
   ],
-  eyebrow: "Weekend from LA",
   headline: "A Lake Arrowhead weekend getaway about 90 minutes from Los Angeles.",
   lead: "Leave the basin Friday. Sauna, hot tub, pine decks, and Village dinner by evening. This Arrowhead Woods A-frame is built for Southern California drive-market weekends — not a flight, not a seven-hour trek.",
   campaign: "weekend-la-lander",

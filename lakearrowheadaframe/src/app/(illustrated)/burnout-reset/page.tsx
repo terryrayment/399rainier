@@ -28,14 +28,13 @@ export default function BurnoutResetPage() {
       />
       <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Burnout Reset" }]} />
       <PageShell
-        eyebrow="Weekend protocol"
         title="Which 48-hour reset are you?"
         description="Four quick questions. No wellness jargon — just an honest itinerary for sauna, hot tub, decks, and forest quiet ninety minutes from Los Angeles."
         campaign="burnout-reset"
+        sceneFamily="quiet-morning"
       >
         <section className="mx-auto max-w-7xl px-6 pb-16">
           <SectionIntro
-            eyebrow="Quiz"
             title="Reset · Reconnect · Recharge"
             description="Each result ends at Airbnb with your protocol ready to picture before you book."
           />

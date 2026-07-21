@@ -101,7 +101,7 @@ export function BookingCalendarFields({ checkIn, checkOut, onChange }: BookingCa
           aria-expanded={open}
           aria-controls={labelId}
         >
-          <span className="text-[11px] uppercase tracking-[0.18em] text-muted-light">
+          <span className="booking-calendar-label uppercase text-muted">
             Check-in
           </span>
           <span className="mt-1 block text-sm text-ink">
@@ -116,7 +116,7 @@ export function BookingCalendarFields({ checkIn, checkOut, onChange }: BookingCa
           aria-expanded={open}
           aria-controls={labelId}
         >
-          <span className="text-[11px] uppercase tracking-[0.18em] text-muted-light">
+          <span className="booking-calendar-label uppercase text-muted">
             Check-out
           </span>
           <span className="mt-1 block text-sm text-ink">

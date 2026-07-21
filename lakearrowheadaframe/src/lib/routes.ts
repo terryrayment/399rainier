@@ -32,6 +32,11 @@ export const seoRoutes = [
     priority: 0.7,
     changeFrequency: "monthly" as const,
   },
+  {
+    path: "/holiday-ready",
+    priority: 0.7,
+    changeFrequency: "monthly" as const,
+  },
 ] as const;
 
 export const clusterNavLinks = [
@@ -41,4 +46,5 @@ export const clusterNavLinks = [
   { href: "/lake-arrowhead-a-frame-cabin", label: "A-Frame" },
   { href: "/weekend-from-los-angeles", label: "Weekend from LA" },
   { href: "/chapters", label: "Reviews" },
+  { href: "/holiday-ready", label: "Holiday Ready" },
 ] as const;

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import { SiteFooter, SiteNav } from "@/components/site-chrome";
 import { cabin } from "@/data/cabin";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import "./globals.css";
@@ -12,7 +11,7 @@ const BING_SITE_VERIFICATION = process.env.BING_SITE_VERIFICATION;
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "500", "600"],
 });
 
 const cormorant = Cormorant_Garamond({
@@ -77,11 +76,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${dmSans.variable} ${cormorant.variable} antialiased`}>
-        <SiteNav />
+    <html lang="en" className={`${dmSans.variable} ${cormorant.variable}`}>
+      <body className={`${dmSans.className} antialiased`}>
         {children}
-        <SiteFooter />
         <Analytics />
       </body>
     </html>

@@ -10,6 +10,7 @@ type AirbnbButtonProps = {
   label?: string;
   className?: string;
   variant?: "dark" | "light";
+  onNavigate?: () => void;
 };
 
 export function AirbnbButton({
@@ -18,19 +19,21 @@ export function AirbnbButton({
   label = "Check availability",
   className = "",
   variant = "dark",
+  onNavigate,
 }: AirbnbButtonProps) {
   const href = buildAirbnbUrl(campaign, content);
   const base =
     variant === "dark"
       ? "bg-ink text-parchment hover:bg-forest"
-      : "bg-parchment text-ink border border-line hover:bg-white";
+      : "bg-parchment text-ink border border-[#d9d3c2] shadow-[0_10px_30px_rgba(0,0,0,0.25)] hover:bg-white";
 
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex h-12 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-8 text-center text-sm font-medium leading-none tracking-wide transition-colors ${base} ${className}`}
+      onClick={onNavigate}
+      className={`airbnb-button inline-flex h-12 shrink-0 items-center justify-center whitespace-nowrap rounded-full px-8 text-center text-sm font-medium leading-none tracking-wide transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-copper ${base} ${className}`}
     >
       {label}
     </a>
@@ -38,14 +41,13 @@ export function AirbnbButton({
 }
 
 const fieldClass =
-  "mt-1 w-full bg-transparent text-sm text-ink outline-none [color-scheme:light]";
+  "mt-1 w-full rounded-md bg-transparent text-sm text-ink [color-scheme:light] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper";
 
 export function BookingPill() {
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [adults, setAdults] = useState(2);
   const [bringingDog, setBringingDog] = useState(false);
-  const [touched, setTouched] = useState(false);
 
   const datesValid = Boolean(checkIn && checkOut && checkOut > checkIn);
   const href = useMemo(
@@ -61,8 +63,6 @@ export function BookingPill() {
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
-    setTouched(true);
-    if (!datesValid) return;
     window.open(href, "_blank", "noopener,noreferrer");
   }
 
@@ -83,7 +83,7 @@ export function BookingPill() {
 
         <div>
           <label>
-            <span className="text-[11px] uppercase tracking-[0.18em] text-muted-light">
+            <span className="booking-calendar-label uppercase text-muted">
               Guests
             </span>
             <select
@@ -99,12 +99,12 @@ export function BookingPill() {
               ))}
             </select>
           </label>
-          <label className="mt-2 flex items-center gap-2 text-xs text-muted">
+          <label className="mt-2 flex items-center gap-2 text-sm text-muted">
             <input
               type="checkbox"
               checked={bringingDog}
               onChange={(e) => setBringingDog(e.target.checked)}
-              className="accent-ink"
+              className="size-4 accent-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper"
             />
             Bringing a dog?
           </label>
@@ -114,14 +114,15 @@ export function BookingPill() {
       <div className="flex shrink-0 flex-col items-stretch gap-2 md:items-end">
         <button
           type="submit"
-          disabled={!datesValid}
-          className="inline-flex h-12 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-ink px-8 text-center text-sm font-medium leading-none tracking-wide text-parchment transition-colors hover:bg-forest disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex h-12 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-ink px-8 text-center text-sm font-medium leading-none tracking-wide text-parchment transition-colors hover:bg-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-copper"
         >
           Check availability
         </button>
-        {touched && !datesValid && (
-          <p className="text-xs text-copper">Choose check-in and check-out dates</p>
-        )}
+        {!datesValid ? (
+          <p className="text-sm text-muted">
+            Add dates for a direct stay link, or browse open weekends.
+          </p>
+        ) : null}
       </div>
     </form>
   );

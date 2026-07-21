@@ -27,29 +27,26 @@ export default function ChaptersPage() {
       />
       <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Chapters" }]} />
       <PageShell
-        eyebrow="Review anthology"
-        title={`Issue ${anthologyMeta.issue} of ${anthologyMeta.issue}.`}
-        description={`${anthologyMeta.label} · ${anthologyMeta.rating} average · Superhost Terry. These are real guest lines, grouped by the themes that show up again and again in ${anthologyMeta.issue} stays.`}
+        title={`${anthologyMeta.issue} Guest Favorite stays, in their words.`}
+        description={`${anthologyMeta.label} · ${anthologyMeta.rating} average · Superhost Terry. Real guest lines from our Lake Arrowhead A-frame, grouped by the themes that keep showing up.`}
         campaign="chapters"
+        sceneFamily="dark-lodge"
       >
         <section className="mx-auto max-w-7xl px-6 pb-16">
           <SectionIntro
-            eyebrow="Chapters"
-            title={`Write chapter ${anthologyMeta.issue + 1}`}
-            description="Every quote below is taken from public guest feedback themes on the listing. When the Airbnb review count grows, refresh anthologyMeta.issue and add a new chapter so search language stays current."
+            title="What guests remember"
+            description="Every quote below comes from public guest feedback on the listing — organized by the themes that define a stay here."
           />
           <div className="space-y-8">
             {reviewChapters.map((chapter) => (
               <article
                 key={chapter.id}
-                className="rounded-[1.25rem] border border-line bg-white/60 p-8 md:p-10"
+                className="illustrative-card p-8 md:p-10"
               >
-                <p className="text-[11px] uppercase tracking-[0.18em] text-muted-light">
-                  Chapter {chapter.id} · {chapter.theme}
-                </p>
-                <h2 className="font-serif mt-3 text-3xl tracking-tight md:text-4xl">
+                <h2 className="font-serif text-3xl tracking-tight md:text-4xl">
                   {chapter.title}
                 </h2>
+                <p className="mt-2 text-sm text-muted">Chapter {chapter.id} · {chapter.theme}</p>
                 <ul className="mt-8 space-y-5">
                   {chapter.quotes.map((quote) => (
                     <li key={quote} className="text-base leading-8 text-muted">

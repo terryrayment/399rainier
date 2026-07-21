@@ -11,14 +11,13 @@ export function ReviewStrip() {
     >
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:gap-8">
         <div className="shrink-0 md:w-52 md:border-r md:border-white/15 md:pr-8">
-          <p className="text-[11px] uppercase tracking-[0.18em] text-copper-light">
-            Guest Favorite
-          </p>
-          <p className="font-serif mt-1 text-3xl tracking-tight">
+          <p className="font-serif text-3xl tracking-tight">
             {cabin.rating}
             <span className="text-copper">★</span>
           </p>
-          <p className="mt-1 text-xs text-white/55">{cabin.reviewCount} quiet stays · Superhost</p>
+          <p className="mt-1 text-xs text-white/55">
+            Guest Favorite · {cabin.reviewCount} stays · Superhost
+          </p>
         </div>
 
         <div className="review-marquee min-w-0 flex-1 overflow-hidden">

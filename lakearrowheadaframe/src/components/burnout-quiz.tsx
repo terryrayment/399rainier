@@ -35,8 +35,7 @@ export function BurnoutQuiz() {
   if (finished && result) {
     return (
       <div className="rounded-[1.75rem] border border-line bg-white/60 p-8 md:p-12">
-        <p className="text-[11px] uppercase tracking-[0.18em] text-muted-light">Your protocol</p>
-        <h2 className="font-serif mt-3 text-3xl tracking-tight md:text-4xl">{result.title}</h2>
+        <h2 className="font-serif text-3xl tracking-tight md:text-4xl">{result.title}</h2>
         <ul className="mt-8 space-y-3">
           {result.itinerary.map((item) => (
             <li key={item} className="flex gap-3 text-sm leading-7 text-muted">
@@ -54,7 +53,7 @@ export function BurnoutQuiz() {
 
   return (
     <div className="rounded-[1.75rem] border border-line bg-white/60 p-8 md:p-12">
-      <p className="text-[11px] uppercase tracking-[0.18em] text-muted-light">
+      <p className="text-sm text-muted">
         Question {step + 1} of {burnoutQuestions.length}
       </p>
       <h2 className="font-serif mt-3 text-3xl tracking-tight md:text-4xl">{question.prompt}</h2>

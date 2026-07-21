@@ -48,14 +48,13 @@ export default function ShorelineRightsPage() {
         ]}
       />
       <PageShell
-        eyebrow="Lake access decoder"
         title="What you can — and cannot — do on the lake."
         description="Lake Arrowhead is private. Owner lake rights at this Arrowhead Woods A-frame include registered guest access to certain trails and shoreline areas. Beach clubs are not included. This page exists because most listings get that wrong."
         campaign="shoreline-rights"
+        sceneFamily="lake-mist"
       >
         <section className="mx-auto max-w-7xl px-6 pb-16">
           <SectionIntro
-            eyebrow="Decoder"
             title="YES · NO · VERIFY"
             description="Use this matrix before you book anywhere in Lake Arrowhead — especially if a listing says lake pass included."
           />
@@ -80,7 +79,6 @@ export default function ShorelineRightsPage() {
 
         <section className="mx-auto max-w-7xl px-6 pb-16">
           <SectionIntro
-            eyebrow="How it works"
             title="Registration steps before shoreline time"
             description="Treat lake access as a checklist, not a surprise at the trailhead."
           />
@@ -100,7 +98,6 @@ export default function ShorelineRightsPage() {
         <section className="mx-auto max-w-7xl px-6 pb-16">
           <div className="dark-panel p-8 md:p-12">
             <SectionIntro
-              eyebrow="Myth busting"
               title="Three lines that mislead guests"
             />
             <div className="grid gap-6 md:grid-cols-3">
@@ -116,18 +113,26 @@ export default function ShorelineRightsPage() {
 
         <section className="mx-auto max-w-7xl px-6 pb-16">
           <SectionIntro
-            eyebrow="Compare"
             title="Lake Arrowhead vs Lake Gregory for STR guests"
             description="If your group needs a public swim beach, plan Lake Gregory. If you want Arrowhead Woods pines and registered shoreline walks, stay honest about ALA limits."
           />
-          <div className="overflow-x-auto rounded-[1.25rem] border border-line">
+          <div
+            className="comparison-scroll rounded-[1.25rem] border border-line"
+            tabIndex={0}
+            role="region"
+            aria-label="Lake Arrowhead versus Lake Gregory comparison table. Scroll horizontally to see all columns."
+          >
+            <p className="sr-only">
+              Keyboard tip: focus this region, then use arrow keys or trackpad to scroll
+              horizontally on narrow screens.
+            </p>
             <table className="min-w-full text-left text-sm">
-              <thead className="bg-white/70 text-[11px] uppercase tracking-[0.14em] text-muted-light">
+              <thead className="bg-white/70 text-xs font-medium uppercase tracking-[0.12em] text-muted">
                 <tr>
-                  <th className="px-6 py-4 font-medium">Lake</th>
-                  <th className="px-6 py-4 font-medium">Access</th>
-                  <th className="px-6 py-4 font-medium">STR guests</th>
-                  <th className="px-6 py-4 font-medium">Best for</th>
+                  <th className="px-6 py-4">Lake</th>
+                  <th className="px-6 py-4">Access</th>
+                  <th className="px-6 py-4">STR guests</th>
+                  <th className="px-6 py-4">Best for</th>
                 </tr>
               </thead>
               <tbody>
@@ -145,7 +150,7 @@ export default function ShorelineRightsPage() {
         </section>
 
         <section className="mx-auto max-w-7xl px-6 pb-16">
-          <SectionIntro eyebrow="FAQ" title="Straight answers" />
+          <SectionIntro title="Straight answers" />
           <div className="grid gap-6 md:grid-cols-3">
             {shorelineFaqs.map((faq) => (
               <article
@@ -160,7 +165,7 @@ export default function ShorelineRightsPage() {
         </section>
 
         <section className="mx-auto max-w-7xl px-6 pb-8">
-          <SectionIntro eyebrow="Sources" title="Verify against ALA directly" />
+          <SectionIntro title="Verify against ALA directly" />
           <ul className="space-y-3">
             {shorelineSources.map((source) => (
               <li key={source.href}>

@@ -23,7 +23,13 @@ export const cabin = {
 
   heroHeadline: "Above the pines, beneath the glass.",
   heroSubhead:
-    "Lake Arrowhead cabin rental in Arrowhead Woods — indoor sauna, hot tub among the pines, dog-friendly yard, and honest lake trail access.",
+    "LA weekend reset: sauna, hot tub, fenced yard. Guest Favorite · 4.95★",
+
+  featuredReview: {
+    quote: "Best Airbnb we've ever stayed at.",
+    author: "Airbnb guest",
+    detail: "Guest Favorite · 85 stays",
+  },
 
   featureBar: [
     "Arrowhead Woods",
@@ -114,37 +120,32 @@ export const cabin = {
     {
       place: "Downtown Los Angeles",
       time: "90 min",
-      image:
-        "https://images.unsplash.com/photo-1534190239940-9ba8944ea261?auto=format&fit=crop&w=160&h=160&q=80",
-      imageAlt: "Downtown Los Angeles skyline at dusk",
+      image: "/photos/drive/downtown-los-angeles.jpg",
+      imageAlt: "Downtown Los Angeles skyline at night",
     },
     {
       place: "Lake Arrowhead Village",
       time: "5 min",
-      image:
-        "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=160&h=160&q=80",
-      imageAlt: "Mountain lake village among pines",
+      image: "/photos/drive/lake-arrowhead-village.jpg",
+      imageAlt: "Lake Arrowhead Village on the water",
     },
     {
       place: "Ontario International Airport",
       time: "60 min",
-      image:
-        "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=160&h=160&q=80",
-      imageAlt: "Commercial airplane on a runway",
+      image: "/photos/drive/ontario-airport.jpg",
+      imageAlt: "Ontario International Airport terminal",
     },
     {
       place: "Snow Valley Ski Resort",
       time: "20 min",
-      image:
-        "https://images.unsplash.com/photo-1551524559-8af4e6624178?auto=format&fit=crop&w=160&h=160&q=80",
-      imageAlt: "Skiers on a snowy mountain slope",
+      image: "/photos/drive/snow-valley.jpg",
+      imageAlt: "Snow-covered pines at Snow Valley",
     },
     {
       place: "SkyPark at Santa's Village",
       time: "15 min",
-      image:
-        "https://images.unsplash.com/photo-1513889961551-628c1e5e2ee9?auto=format&fit=crop&w=160&h=160&q=80",
-      imageAlt: "Festive mountain amusement park lights",
+      image: "/photos/drive/skypark-santas-village.jpg",
+      imageAlt: "Mountain cabin decks among the pines near SkyPark",
     },
   ],
 
