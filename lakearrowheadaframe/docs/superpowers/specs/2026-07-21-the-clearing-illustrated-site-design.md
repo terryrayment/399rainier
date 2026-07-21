@@ -190,6 +190,21 @@ The homepage uses maximum visual density. Supporting pages use the same scene sy
 
 Shared page templates must carry the system so every SEO page does not require bespoke artwork or duplicated layout code.
 
+Map the current routes explicitly:
+
+| Route | Scene family | Intensity |
+| --- | --- | --- |
+| `/` | Full arrival-to-night journey | Maximum |
+| `/lake-arrowhead-a-frame-cabin` | Arrival and interior clearing | Medium |
+| `/lake-arrowhead-cabin-with-sauna` | Ritual, dusk, and ember | High |
+| `/dog-friendly-lake-arrowhead-cabin` | Morning trail and forest floor | Medium |
+| `/weekend-from-los-angeles` | Arrival and evening lights | Medium-high |
+| `/shoreline-rights` | Lake mist, shoreline, and water | Medium |
+| `/chapters` | Dark lodge storytelling | Medium-high |
+| `/burnout-reset` | Quiet morning clearing | Medium |
+| `/holiday-ready` | Winter forest variation | Medium-high |
+| `/classic` | No illustrated system | None |
+
 ## Component Architecture
 
 Replace the single fixed world plus repeated frame pattern with scene-level components:
@@ -250,7 +265,7 @@ Every decorative layer must use `pointer-events: none` and be hidden from assist
 
 ### Desktop
 
-- Forest occupies at least 20% of the viewport edges collectively.
+- Forest should occupy 20–28% of the viewport edges collectively, with 20% as the minimum acceptance threshold.
 - Central content remains readable between forest layers.
 - Major photos include intentional foreground overlap.
 

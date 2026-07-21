@@ -93,7 +93,7 @@ At 1440px:
 
 - The opening must immediately read as being inside a forest.
 - The real cabin photo must remain the strongest focal point.
-- Illustrated forest should occupy at least 20% of the viewport edges collectively.
+- Illustrated forest should occupy 20–28% of the viewport edges collectively, with 20% as the minimum acceptance threshold.
 - Use irregular, asymmetrical, layered silhouettes.
 - Allow selected foreground branches, shrubs, or rocks to overlap major photos by 3–8%.
 - Avoid obvious mirrored copies and repeated identical clusters.
@@ -313,6 +313,21 @@ Extend `PageShell` and `SeoLanderPage` with scene/intensity options and map page
 - General SEO landers → lighter scene treatment optimized for long-form reading.
 
 Do not independently rewrite dozens of SEO pages. The shared shell must provide most of the transformation.
+
+Apply this exact current-route mapping:
+
+| Route | Scene family | Intensity |
+| --- | --- | --- |
+| `/` | Full arrival-to-night journey | Maximum |
+| `/lake-arrowhead-a-frame-cabin` | Arrival and interior clearing | Medium |
+| `/lake-arrowhead-cabin-with-sauna` | Ritual, dusk, and ember | High |
+| `/dog-friendly-lake-arrowhead-cabin` | Morning trail and forest floor | Medium |
+| `/weekend-from-los-angeles` | Arrival and evening lights | Medium-high |
+| `/shoreline-rights` | Lake mist, shoreline, and water | Medium |
+| `/chapters` | Dark lodge storytelling | Medium-high |
+| `/burnout-reset` | Quiet morning clearing | Medium |
+| `/holiday-ready` | Winter forest variation | Medium-high |
+| `/classic` | No illustrated system | None |
 
 ## Navigation and footer
 
