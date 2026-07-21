@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-parchment: #eae7d8;
+  --color-parchment-elevated: #f1e9d2;
+  --color-ink: #241f1a;
+  --color-forest: #1e231f;
+  --color-forest-deep: #1a1d16;
+  --color-muted: #6f6b63;
+  --color-muted-light: #9a958c;
+  /* Accent: deep pine on parchment; sage lift on forest panels (was copper) */
+  --color-copper: #355e45;
+  --color-copper-light: #a8b89a;
+  --color-line: rgba(26, 29, 22, 0.1);
+  --font-sans: var(--font-dm-sans);
+  --font-serif: var(--font-cormorant);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-parchment);
+  color: var(--color-ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-serif {
+  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
+}
+
+.accent-word {
+  color: var(--color-copper);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.dark-panel {
+  background: var(--color-forest-deep);
+  color: var(--color-parchment);
+  border-radius: 1.75rem;
+}
+
+.booking-pill {
+  background: rgba(234, 231, 216, 0.96);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-line);
+  border-radius: 9999px;
+  box-shadow: 0 24px 60px rgba(26, 29, 22, 0.12);
+}
+
+.gallery-label {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.booking-calendar {
+  background: var(--color-parchment);
+  border: 1px solid var(--color-line);
+  border-radius: 1.25rem;
+  box-shadow: 0 24px 60px rgba(26, 29, 22, 0.14);
+}
+
+.booking-calendar-day {
+  aspect-ratio: 1;
+  min-height: 2.5rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  color: var(--color-ink);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.booking-calendar-day:hover:not(:disabled) {
+  background: rgba(194, 106, 74, 0.16);
+}
+
+.booking-calendar-day.is-disabled {
+  color: var(--color-muted-light);
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.booking-calendar-day.is-in-range {
+  background: rgba(26, 29, 22, 0.08);
+  border-radius: 0.35rem;
+}
+
+.booking-calendar-day.is-endpoint {
+  background: var(--color-ink);
+  color: var(--color-parchment);
+  font-weight: 500;
+}
+
+@keyframes reviewMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.review-marquee-track {
+  display: flex;
+  width: max-content;
+  gap: 3rem;
+  animation: reviewMarquee 60s linear infinite;
+}
+
+.review-marquee:hover .review-marquee-track {
+  animation-play-state: paused;
+}
+
+.review-marquee-item {
+  max-width: 22rem;
+  padding-right: 3rem;
+  border-right: 1px solid rgba(234, 231, 216, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .review-marquee-track {
+    animation: none;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 1.5rem 2rem;
+  }
+
+  .review-marquee-item {
+    max-width: none;
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .review-marquee-item:nth-child(n + 5) {
+    display: none;
+  }
+}
+
+/* Google Maps–style pin with photo face */
+.drive-pin {
+  width: 3.25rem;
+  height: 3.9rem;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
+}
+
+.drive-pin-face {
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  overflow: hidden;
+  border: 2px solid #eae7d8;
+  background: #1a1d16;
+}
+
+.drive-pin-image {
+  transform: rotate(45deg) scale(1.45);
+  transform-origin: center;
+}

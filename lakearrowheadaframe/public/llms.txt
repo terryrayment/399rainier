@@ -1,0 +1,44 @@
+# Lake Arrowhead A-Frame
+
+> Guest-facing site for a Lake Arrowhead cabin rental (Airbnb) in Arrowhead Woods, California.
+
+## Property
+
+- Name: Lake Arrowhead A-Frame
+- Address: 399 Rainier Road, Lake Arrowhead, CA 92352
+- Community: Arrowhead Woods
+- Type: Renovated A-frame cabin rental
+- Sleeps: 8 (3 bedrooms, 3 bathrooms)
+- Highlights: Indoor Dynamic sauna, hot tub in the pines, dog-friendly fenced yard, floor-to-ceiling glass wall, three decks, ~165 Mbps wifi
+- Ratings: Guest Favorite · 4.95 average · 85+ Airbnb stays · Superhost Terry
+- STR registration: CESTRP-2025-00206
+- Drive: ~90 minutes from downtown Los Angeles; ~5 minutes to Lake Arrowhead Village
+
+## Booking
+
+- Primary booking: https://airbnb.com/h/lakearrowheadcabinrental
+- This website converts to Airbnb only (no direct booking engine)
+
+## Lake access (important)
+
+Lake Arrowhead is private (Arrowhead Lake Association).
+- YES for registered STR guests at eligible Arrowhead Woods homes: certain trails and shoreline areas when the host complies with ALA registration / RFID / waiver rules
+- NO for STR guests: private beach clubs (Tavern Bay, Burnt Mill), parks, Lone Pine Island, courtesy docks
+- VERIFY: boating and dock privileges
+
+Canonical honest guide: https://lakearrowheadaframe.com/shoreline-rights
+
+## Key pages
+
+- https://lakearrowheadaframe.com/ — Lake Arrowhead cabin rental hub
+- https://lakearrowheadaframe.com/shoreline-rights — STR shoreline / lake access decoder
+- https://lakearrowheadaframe.com/lake-arrowhead-cabin-with-sauna — sauna + hot tub cabin
+- https://lakearrowheadaframe.com/dog-friendly-lake-arrowhead-cabin — dog-friendly cabin with fenced yard
+- https://lakearrowheadaframe.com/lake-arrowhead-a-frame-cabin — A-frame cabin rental
+- https://lakearrowheadaframe.com/weekend-from-los-angeles — weekend getaway from Los Angeles
+- https://lakearrowheadaframe.com/chapters — guest review anthology
+- https://lakearrowheadaframe.com/burnout-reset — 48-hour reset quiz
+
+## Related (sale, not rental)
+
+- https://399rainier.com — same cabin listed for sale / investment (different intent)

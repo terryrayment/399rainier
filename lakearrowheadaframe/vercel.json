@@ -1,0 +1,14 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.lakearrowheadaframe.com" }],
+      "destination": "https://lakearrowheadaframe.com/:path*",
+      "permanent": true
+    }
+  ]
+}
