@@ -31,8 +31,8 @@ export function EditorialGallery({
           <PhotoClearing
             src={dominant.src}
             alt={dominant.alt}
-            aspectClassName="aspect-[16/11]"
-            sizes="(max-width: 768px) 100vw, 70vw"
+            aspectClassName="aspect-[3/4]"
+            sizes="(max-width: 768px) 100vw, 55vw"
             overlap="tl"
           />
           {dominant.caption ? (
@@ -46,8 +46,8 @@ export function EditorialGallery({
               <PhotoClearing
                 src={mediumA.src}
                 alt={mediumA.alt}
-                aspectClassName="aspect-[5/4]"
-                sizes="(max-width: 768px) 100vw, 30vw"
+                aspectClassName="aspect-[4/3]"
+                sizes="(max-width: 768px) 100vw, 32vw"
                 overlap="none"
               />
               {mediumA.caption ? (
@@ -60,8 +60,8 @@ export function EditorialGallery({
               <PhotoClearing
                 src={mediumB.src}
                 alt={mediumB.alt}
-                aspectClassName="aspect-[5/4]"
-                sizes="(max-width: 768px) 100vw, 30vw"
+                aspectClassName="aspect-[4/3]"
+                sizes="(max-width: 768px) 100vw, 32vw"
                 overlap="none"
               />
               {mediumB.caption ? (

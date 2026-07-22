@@ -89,10 +89,13 @@ body {
   inset: 0;
   pointer-events: none;
   z-index: var(--z-grain);
-  opacity: 0.08;
+  /* Soft paper tooth — avoid harsh salt-and-pepper tiling */
+  opacity: 0.045;
   background-image: url("/illustrations/scenes/paper-grain.png");
-  background-size: 280px 280px;
+  background-size: 420px 420px;
+  background-repeat: repeat;
   mix-blend-mode: multiply;
+  filter: contrast(0.82) brightness(1.04);
 }
 
 /* Semantic display type. Wins over utility font-serif conflicts */
@@ -562,6 +565,24 @@ a.airbnb-button.site-nav-cta:hover {
   background:
     radial-gradient(ellipse 70% 50% at 70% 20%, rgba(232, 135, 58, 0.18), transparent 50%),
     linear-gradient(180deg, #243748 0%, var(--color-dusk) 45%, #152018 100%);
+}
+
+/* Gallery → Ritual: dusk opens from parchment without a hills banner strip */
+.clearing-home .scene-chapter--ritual .forest-scene-bg {
+  left: 0;
+  right: 0;
+  -webkit-mask-image: none;
+  mask-image: none;
+  background:
+    radial-gradient(ellipse 70% 50% at 70% 20%, rgba(232, 135, 58, 0.16), transparent 50%),
+    linear-gradient(
+      180deg,
+      var(--color-parchment) 0%,
+      #b8bcae 8%,
+      #4a5560 22%,
+      var(--color-dusk) 42%,
+      #152018 100%
+    );
 }
 
 .forest-scene--tone-forest .forest-scene-bg {
@@ -1778,6 +1799,32 @@ a.airbnb-button.bg-parchment {
   color: var(--color-copper);
   text-decoration: underline;
   text-underline-offset: 4px;
+}
+
+/* Soft 10% zoom on gallery photos (frames already clip overflow) */
+.editorial-gallery .photo-clearing-frame img,
+.editorial-gallery .editorial-gallery-detail img {
+  transform: scale(1);
+  transition: transform 0.45s ease;
+  will-change: transform;
+}
+
+.editorial-gallery .photo-clearing-frame:hover img,
+.editorial-gallery .editorial-gallery-detail:hover img {
+  transform: scale(1.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editorial-gallery .photo-clearing-frame img,
+  .editorial-gallery .editorial-gallery-detail img {
+    transition: none;
+    will-change: auto;
+  }
+
+  .editorial-gallery .photo-clearing-frame:hover img,
+  .editorial-gallery .editorial-gallery-detail:hover img {
+    transform: none;
+  }
 }
 
 /* --- Ritual --- */

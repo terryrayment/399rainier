@@ -38,7 +38,7 @@ export const metadata = {
  * 1. Arrival → Trust: forest floor from hero/booking
  * 2. Trust → Interior: mist lift into sage/parchment
  * 3. Interior → Gallery: restrained clearing
- * 4. Gallery → Ritual: hills into dusk
+ * 4. Gallery → Ritual: no banner; Ritual dusk wash owns the open-in
  * 5. Ritual → Place: lake mist
  * 6. Place → Night: nightfall
  * 7. Night → Footer: shared night base (no bridge; color continuity)
@@ -82,15 +82,6 @@ export default function HomePage() {
         className="scene-bridge--interior-gallery"
       />
       <PhotographicClearing />
-      <SceneBridge
-        fromTone="paper"
-        toTone="dusk"
-        motif="hills-dusk"
-        height="8rem"
-        mobileHeight="5.25rem"
-        edgeDensity="dense"
-        className="scene-bridge--gallery-ritual"
-      />
       <RitualAtDusk />
       <SceneBridge
         fromTone="dusk"
