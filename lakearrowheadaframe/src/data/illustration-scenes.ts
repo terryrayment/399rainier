@@ -1,5 +1,6 @@
 export type SceneName =
   | "arrival"
+  | "trust"
   | "interior"
   | "gallery"
   | "ritual"
@@ -38,6 +39,16 @@ export const homeScenes = {
     mist: "medium",
     intensity: 1,
     canopy: true,
+    sideRails: true,
+  },
+  trust: {
+    name: "trust",
+    tone: "forest",
+    density: "medium",
+    foreground: "none",
+    mist: "none",
+    intensity: 1,
+    canopy: false,
     sideRails: true,
   },
   interior: {

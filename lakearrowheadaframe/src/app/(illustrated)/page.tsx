@@ -6,6 +6,7 @@ import { PlaceAndPracticalTruth } from "@/components/home/place-and-practical-tr
 import { RitualAtDusk } from "@/components/home/ritual-at-dusk";
 import { TrustForestFloor } from "@/components/home/trust-forest-floor";
 import { BookingDock } from "@/components/illustration/booking-dock";
+import { SceneBridge } from "@/components/illustration/scene-bridge";
 import { JsonLd } from "@/components/json-ld";
 import {
   createMetadata,
@@ -32,6 +33,16 @@ export const metadata = {
   },
 };
 
+/**
+ * Homepage chapter map (one SceneBridge owns each boundary):
+ * 1. Arrival → Trust: forest floor from hero/booking
+ * 2. Trust → Interior: mist lift into sage/parchment
+ * 3. Interior → Gallery: restrained clearing
+ * 4. Gallery → Ritual: hills into dusk
+ * 5. Ritual → Place: lake mist
+ * 6. Place → Night: nightfall
+ * 7. Night → Footer: shared night base (no bridge; color continuity)
+ */
 export default function HomePage() {
   return (
     <div className="illustrated-page clearing-home">
@@ -39,11 +50,67 @@ export default function HomePage() {
       <JsonLd id="lodging-json-ld" data={getLodgingJsonLd()} />
 
       <ArrivalClearing />
+      <SceneBridge
+        fromTone="paper"
+        toTone="forest"
+        motif="forest-floor"
+        height="9rem"
+        mobileHeight="5.75rem"
+        edgeDensity="dense"
+        overlap="up"
+        className="scene-bridge--arrival-trust"
+      />
       <TrustForestFloor />
+      <SceneBridge
+        fromTone="forest"
+        toTone="sage"
+        motif="mist-lift"
+        height="8.5rem"
+        mobileHeight="5.25rem"
+        edgeDensity="medium"
+        overlap="none"
+        className="scene-bridge--trust-interior"
+      />
       <InsideTheGlassChapter />
+      <SceneBridge
+        fromTone="sage"
+        toTone="paper"
+        motif="clearing"
+        height="5rem"
+        mobileHeight="3.5rem"
+        edgeDensity="open"
+        className="scene-bridge--interior-gallery"
+      />
       <PhotographicClearing />
+      <SceneBridge
+        fromTone="paper"
+        toTone="dusk"
+        motif="hills-dusk"
+        height="8rem"
+        mobileHeight="5.25rem"
+        edgeDensity="dense"
+        className="scene-bridge--gallery-ritual"
+      />
       <RitualAtDusk />
+      <SceneBridge
+        fromTone="dusk"
+        toTone="sage"
+        motif="lake-mist"
+        height="7rem"
+        mobileHeight="4.75rem"
+        edgeDensity="medium"
+        className="scene-bridge--ritual-place"
+      />
       <PlaceAndPracticalTruth />
+      <SceneBridge
+        fromTone="sage"
+        toTone="night"
+        motif="nightfall"
+        height="7.5rem"
+        mobileHeight="5rem"
+        edgeDensity="dense"
+        className="scene-bridge--place-night"
+      />
       <NightBookingClose />
 
       <BookingDock variant="mobile-bar" content="mobile-sticky" />

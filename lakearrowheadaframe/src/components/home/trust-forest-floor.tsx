@@ -13,20 +13,14 @@ const proofItems = [
   { label: "Dog-friendly yard", href: "/dog-friendly-lake-arrowhead-cabin" },
 ];
 
-/** Calmer responsive proof band. Replaces clipping marquee. */
+const proofPrimary = proofItems.slice(0, 4);
+const proofSecondary = proofItems.slice(4);
+
+/** Proof band inside the forest floor. Not a dashboard of equal chips. */
 export function TrustForestFloor() {
   return (
     <SceneChapter
-      scene={{
-        name: "arrival",
-        tone: "forest",
-        density: "medium",
-        foreground: "none",
-        mist: "none",
-        intensity: 0.95,
-        canopy: false,
-        sideRails: false,
-      }}
+      scene="trust"
       className="trust-forest-floor"
       contentClassName="trust-forest-floor-inner"
     >
@@ -39,15 +33,26 @@ export function TrustForestFloor() {
         </footer>
       </blockquote>
 
-      <ul className="trust-proof-list">
-        {proofItems.map((item) => (
-          <li key={item.label}>
-            <Link href={item.href} className="trust-proof-chip">
-              {item.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <div className="trust-proof-trail" role="list">
+        <ul className="trust-proof-row" role="presentation">
+          {proofPrimary.map((item) => (
+            <li key={item.label} role="listitem">
+              <Link href={item.href} className="trust-proof-chip">
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <ul className="trust-proof-row trust-proof-row--secondary" role="presentation">
+          {proofSecondary.map((item) => (
+            <li key={item.label} role="listitem">
+              <Link href={item.href} className="trust-proof-chip">
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
 
       {/* Seasonal strip mounts only when a kit window is active */}
       <div className="trust-holiday">

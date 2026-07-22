@@ -76,7 +76,10 @@ body {
   position: relative;
   min-height: 100vh;
   background: var(--color-parchment);
-  overflow-x: clip;
+  /*
+   * Do not set overflow-x: clip here. With overflow-y visible, CSS computes
+   * overflow-y to auto and clips booking shadows / bridge overlaps.
+   */
   --scene-scroll: 0;
 }
 
@@ -139,7 +142,8 @@ h3 {
   backdrop-filter: blur(14px);
   border: 1px solid var(--color-line);
   border-radius: 9999px;
-  box-shadow: 0 24px 60px rgba(26, 29, 22, 0.18);
+  /* Soft shadow that settles into forest; avoid bright horizontal glow */
+  box-shadow: 0 14px 32px rgba(26, 29, 22, 0.22);
 }
 
 .booking-calendar {
@@ -565,9 +569,10 @@ a.airbnb-button.site-nav-cta:hover {
   right: 0;
   -webkit-mask-image: none;
   mask-image: none;
+  /* Stable forest floor. Transitions own boundary fades, not this section. */
   background:
     radial-gradient(ellipse 60% 40% at 30% 0%, rgba(240, 197, 109, 0.08), transparent 50%),
-    linear-gradient(180deg, #1e271f 0%, var(--color-forest-deep) 100%);
+    linear-gradient(180deg, #1e271f 0%, var(--color-forest-deep) 40%, var(--color-forest-deep) 100%);
 }
 
 .forest-scene--tone-night .forest-scene-bg {
@@ -575,15 +580,10 @@ a.airbnb-button.site-nav-cta:hover {
   right: 0;
   -webkit-mask-image: none;
   mask-image: none;
+  /* Solid night base; Place→Night bridge owns the dissolve in. */
   background:
     radial-gradient(ellipse 45% 35% at 55% 35%, rgba(240, 197, 109, 0.14), transparent 55%),
-    linear-gradient(
-      180deg,
-      rgba(213, 221, 208, 0.35) 0%,
-      #152028 22%,
-      var(--color-night) 55%,
-      #0a100e 100%
-    );
+    linear-gradient(180deg, var(--color-night) 0%, #0a100e 100%);
 }
 
 /* Tone text colors inherit into content (not the empty bg sibling) */
@@ -615,9 +615,9 @@ a.airbnb-button.site-nav-cta:hover {
   color: rgba(234, 231, 216, 0.82);
 }
 
-.forest-scene--tone-dusk .forest-scene-content a:not(.airbnb-button),
-.forest-scene--tone-forest .forest-scene-content a:not(.airbnb-button),
-.forest-scene--tone-night .forest-scene-content a:not(.airbnb-button) {
+.forest-scene--tone-dusk .forest-scene-content a:not(.airbnb-button):not(.trust-proof-chip),
+.forest-scene--tone-forest .forest-scene-content a:not(.airbnb-button):not(.trust-proof-chip),
+.forest-scene--tone-night .forest-scene-content a:not(.airbnb-button):not(.trust-proof-chip) {
   color: var(--color-amber);
 }
 
@@ -941,92 +941,292 @@ a.airbnb-button.bg-parchment {
   color: var(--color-muted);
 }
 
-/* --- Forest transition --- */
-.forest-transition {
+/* --- SceneBridge: one owner per chapter boundary --- */
+.scene-bridge {
   position: relative;
-  height: clamp(7.5rem, 18vw, 14rem);
+  /* Below chapter content / booking dock; above page underlay */
+  z-index: 1;
+  width: 100%;
+  height: var(--bridge-height, 7.5rem);
+  margin: 0;
   overflow: hidden;
   pointer-events: none;
-  margin: -1px 0;
-  z-index: 6;
+  background: var(--bridge-from);
 }
 
-.forest-transition-plate {
-  width: 100%;
-  height: 160%;
-  object-fit: cover;
-  object-position: center 40%;
-  mix-blend-mode: multiply;
-  opacity: 0.88;
-  transform: translateY(-18%);
+@media (max-width: 767px) {
+  .scene-bridge {
+    height: var(--bridge-height-mobile, 5rem);
+  }
 }
 
-.forest-transition--ember .forest-transition-plate,
-.forest-transition--hills .forest-transition-plate {
-  mix-blend-mode: multiply;
-  opacity: 0.95;
-  filter: brightness(0.55) contrast(1.1);
-}
-
-/* Night close: gradient dissolve only. Hills plate was leaving a hard center seam */
-.forest-transition--night {
-  height: clamp(5.5rem, 12vw, 9rem);
+.scene-bridge-wash {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   background: linear-gradient(
     180deg,
-    rgba(213, 221, 208, 0.65) 0%,
-    rgba(28, 42, 56, 0.45) 45%,
-    var(--color-night) 100%
+    var(--bridge-from) 0%,
+    color-mix(in srgb, var(--bridge-from) 50%, var(--bridge-to)) 48%,
+    var(--bridge-to) 100%
   );
 }
 
-.forest-transition--night .forest-transition-plate {
-  display: none;
+.scene-bridge-art {
+  position: absolute;
+  inset: -18% 0 -12%;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 130%;
 }
 
-.forest-transition--cabin-mist .forest-transition-plate,
-.forest-transition--mist .forest-transition-plate,
-.forest-transition--canopy .forest-transition-plate {
-  mix-blend-mode: multiply;
+.scene-bridge-plate {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 130%;
+  object-fit: cover;
+  object-position: center bottom;
+  opacity: 0.78;
+  -webkit-mask-image:
+    linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%),
+    linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+  mask-image:
+    linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%),
+    linear-gradient(90deg, transparent 0%, #000 10%, #000 90%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+.scene-bridge-edge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(3.5rem, 12vw, 10rem);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.scene-bridge-edge--left {
+  left: 0;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--bridge-to) 55%, transparent), transparent);
+}
+
+.scene-bridge-edge--right {
+  right: 0;
+  background: linear-gradient(270deg, color-mix(in srgb, var(--bridge-to) 55%, transparent), transparent);
+}
+
+.scene-bridge--edges-open .scene-bridge-edge {
+  width: clamp(2rem, 8vw, 6rem);
+  opacity: 0.45;
+}
+
+.scene-bridge--edges-dense .scene-bridge-edge {
+  width: clamp(5rem, 16vw, 13rem);
   opacity: 0.9;
 }
 
-.forest-transition-veil {
-  position: absolute;
-  inset: 0;
+/* Pull bridge under outgoing chapter; outgoing bg must fade so bridge shows */
+.scene-bridge--overlap-up {
+  margin-top: -6.5rem;
+  z-index: 0;
+}
+
+.scene-bridge--overlap-down {
+  margin-bottom: -2.5rem;
+  z-index: 0;
+}
+
+.scene-bridge--overlap-both {
+  margin-top: -3rem;
+  margin-bottom: -2rem;
+  z-index: 0;
+}
+
+@media (max-width: 767px) {
+  .scene-bridge--overlap-up {
+    margin-top: -4.5rem;
+  }
+
+  .scene-bridge--overlap-down {
+    margin-bottom: -1.5rem;
+  }
+
+  .scene-bridge-edge {
+    width: clamp(2.5rem, 18vw, 5rem);
+    opacity: 0.55;
+  }
+
+  .scene-bridge-plate {
+    opacity: 0.45;
+  }
+
+  .arrival-clearing .forest-scene-bg {
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      #000 0%,
+      #000 calc(100% - 5.5rem),
+      transparent 100%
+    ) !important;
+    mask-image: linear-gradient(
+      180deg,
+      #000 0%,
+      #000 calc(100% - 5.5rem),
+      transparent 100%
+    ) !important;
+    -webkit-mask-composite: source-in !important;
+    mask-composite: intersect !important;
+  }
+}
+
+/* Arrival → Trust: forest floor grows from parchment into deep floor */
+.scene-bridge--arrival-trust {
+  /* Extra height so pull-up still leaves a full bridge after dock */
+  min-height: var(--bridge-height, 9rem);
+}
+
+.scene-bridge--forest-floor .scene-bridge-wash {
+  /* Irregular floor darkening: skip long muddy mid-gray bands */
+  background:
+    radial-gradient(ellipse 55% 90% at 8% 85%, rgba(26, 29, 22, 0.9), transparent 62%),
+    radial-gradient(ellipse 48% 80% at 92% 90%, rgba(26, 29, 22, 0.78), transparent 58%),
+    radial-gradient(ellipse 100% 55% at 50% 100%, rgba(30, 34, 24, 0.82), transparent 55%),
+    radial-gradient(ellipse 50% 45% at 30% 40%, rgba(45, 52, 36, 0.55), transparent 70%),
+    radial-gradient(ellipse 40% 40% at 70% 50%, rgba(38, 44, 30, 0.45), transparent 65%),
+    linear-gradient(
+      180deg,
+      var(--bridge-from) 0%,
+      #a8ad96 10%,
+      #5c634c 28%,
+      #343a2e 52%,
+      #22261e 78%,
+      var(--bridge-to) 100%
+    );
+}
+
+.scene-bridge--forest-floor .scene-bridge-plate {
+  mix-blend-mode: multiply;
+  opacity: 0.8;
+  filter: brightness(0.42) contrast(1.12) saturate(1.1);
+  object-position: center 70%;
+}
+
+.scene-bridge--forest-floor .scene-bridge-edge--left {
+  background: linear-gradient(90deg, rgba(26, 29, 22, 0.75), transparent 85%);
+}
+
+.scene-bridge--forest-floor .scene-bridge-edge--right {
+  background: linear-gradient(270deg, rgba(26, 29, 22, 0.75), transparent 85%);
+}
+
+/* Trust → Interior: low mist lifts; sage clearing opens (no grainy plate) */
+.scene-bridge--mist-lift .scene-bridge-wash {
+  background:
+    radial-gradient(ellipse 120% 85% at 50% 100%, rgba(227, 230, 216, 1), transparent 58%),
+    radial-gradient(ellipse 45% 95% at 4% 30%, rgba(26, 29, 22, 0.7), transparent 72%),
+    radial-gradient(ellipse 40% 85% at 97% 45%, rgba(26, 29, 22, 0.55), transparent 68%),
+    radial-gradient(ellipse 70% 40% at 50% 20%, rgba(26, 29, 22, 0.35), transparent 70%),
+    linear-gradient(
+      180deg,
+      var(--bridge-from) 0%,
+      #1f231c 22%,
+      #3a4036 48%,
+      #8a9080 72%,
+      #c9cdc0 88%,
+      var(--bridge-to) 100%
+    );
+}
+
+.scene-bridge--mist-lift .scene-bridge-art {
+  display: none;
+}
+
+.scene-bridge--mist-lift .scene-bridge-edge--left {
+  background: linear-gradient(90deg, rgba(26, 29, 22, 0.55), transparent 90%);
+  width: clamp(4rem, 14vw, 11rem);
+}
+
+.scene-bridge--mist-lift .scene-bridge-edge--right {
+  background: linear-gradient(270deg, rgba(26, 29, 22, 0.4), transparent 90%);
+  width: clamp(3rem, 11vw, 9rem);
+}
+
+/* Interior → Gallery: restrained light clearing */
+.scene-bridge--clearing .scene-bridge-wash {
   background: linear-gradient(
     180deg,
-    rgba(234, 231, 216, 0.15),
-    transparent 40%,
-    rgba(234, 231, 216, 0.2)
+    var(--bridge-from) 0%,
+    color-mix(in srgb, var(--bridge-from) 70%, var(--bridge-to)) 45%,
+    var(--bridge-to) 100%
   );
 }
 
-.forest-transition--ember .forest-transition-veil,
-.forest-transition--hills .forest-transition-veil {
+.scene-bridge--clearing .scene-bridge-plate {
+  mix-blend-mode: multiply;
+  opacity: 0.35;
+}
+
+/* Gallery → Ritual: pine density / hills into dusk */
+.scene-bridge--hills-dusk .scene-bridge-wash {
+  background:
+    radial-gradient(ellipse 80% 50% at 70% 80%, rgba(232, 135, 58, 0.12), transparent 50%),
+    linear-gradient(
+      180deg,
+      var(--bridge-from) 0%,
+      #a8aea0 22%,
+      #4a5560 55%,
+      var(--bridge-to) 100%
+    );
+}
+
+.scene-bridge--hills-dusk .scene-bridge-plate {
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  filter: brightness(0.5) contrast(1.1);
+}
+
+/* Ritual → Place: steam / cool mist into lake sage */
+.scene-bridge--lake-mist .scene-bridge-wash {
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 60%, rgba(213, 221, 208, 0.45), transparent 60%),
+    linear-gradient(
+      180deg,
+      var(--bridge-from) 0%,
+      #3a4a52 35%,
+      #9aa898 70%,
+      var(--bridge-to) 100%
+    );
+}
+
+.scene-bridge--lake-mist .scene-bridge-plate {
+  mix-blend-mode: soft-light;
+  opacity: 0.65;
+}
+
+/* Place → Night: silhouettes darken; no centered pale seam */
+.scene-bridge--nightfall .scene-bridge-wash {
   background: linear-gradient(
     180deg,
-    rgba(234, 231, 216, 0.25),
-    rgba(28, 42, 56, 0.35),
-    rgba(18, 28, 40, 0.55)
+    var(--bridge-from) 0%,
+    #6a7468 18%,
+    #2a3230 48%,
+    #152018 78%,
+    var(--bridge-to) 100%
   );
 }
 
-.forest-transition--night .forest-transition-veil {
-  background: linear-gradient(
-    180deg,
-    rgba(234, 231, 216, 0.2) 0%,
-    rgba(21, 32, 40, 0.35) 50%,
-    var(--color-night) 100%
-  );
+.scene-bridge--nightfall .scene-bridge-plate {
+  mix-blend-mode: multiply;
+  opacity: 0.7;
+  filter: brightness(0.35) contrast(1.15);
 }
 
-.forest-transition--lake .forest-transition-veil {
-  background: linear-gradient(
-    180deg,
-    transparent,
-    rgba(213, 221, 208, 0.4),
-    transparent
-  );
+.scene-bridge--none .scene-bridge-art,
+.scene-bridge--none .scene-bridge-edge {
+  display: none;
 }
 
 /* --- Booking dock --- */
@@ -1035,6 +1235,23 @@ a.airbnb-button.bg-parchment {
   z-index: 6;
   margin-top: -1.75rem;
   padding: 0 0.5rem;
+}
+
+/* Hang booking dock into Arrival→Trust bridge (~32–40px) */
+.arrival-clearing .booking-dock--hero {
+  margin-bottom: -2.25rem;
+}
+
+.arrival-clearing .booking-pill {
+  box-shadow:
+    0 10px 28px rgba(26, 29, 22, 0.28),
+    0 2px 8px rgba(26, 29, 22, 0.12);
+}
+
+@media (max-width: 767px) {
+  .arrival-clearing .booking-dock--hero {
+    margin-bottom: -1.5rem;
+  }
 }
 
 .booking-dock--inline {
@@ -1059,10 +1276,47 @@ a.airbnb-button.bg-parchment {
 }
 
 /* --- Arrival --- */
+.arrival-clearing {
+  position: relative;
+  z-index: 1;
+}
+
+/* Let booking shadow settle into the bridge; do not clip at section edge */
+.arrival-clearing .forest-scene,
+.arrival-clearing-stage,
+.arrival-clearing .forest-scene-content {
+  overflow: visible;
+}
+
+.arrival-clearing .forest-scene {
+  isolation: auto;
+}
+
+/*
+ * Fade Arrival's opaque parchment at the bottom so the Arrival→Trust bridge
+ * can show through under the booking dock (bridge owns the darkening).
+ * Intersect with side feather so forest walls still read.
+ */
+.arrival-clearing .forest-scene-bg {
+  -webkit-mask-image:
+    linear-gradient(180deg, #000 0%, #000 calc(100% - 8.5rem), transparent 100%),
+    linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  mask-image:
+    linear-gradient(180deg, #000 0%, #000 calc(100% - 8.5rem), transparent 100%),
+    linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+.arrival-clearing .forest-scene-content {
+  position: relative;
+  z-index: 3;
+}
+
 .arrival-clearing .scene-chapter-inner {
   max-width: min(72rem, calc(100vw - clamp(8rem, 28vw, 30rem)));
   padding-top: 6.5rem;
-  padding-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
   min-height: min(100svh, 56rem);
   display: flex;
   flex-direction: column;
@@ -1192,10 +1446,38 @@ a.airbnb-button.bg-parchment {
   color: rgba(255, 255, 255, 0.88);
 }
 
-/* --- Trust forest floor --- */
+/* --- Trust forest floor (stable dark proof band) --- */
+.trust-forest-floor {
+  position: relative;
+  z-index: 1;
+}
+
+.trust-forest-floor .forest-scene-bg {
+  -webkit-mask-image: none;
+  mask-image: none;
+  /* Solid forest. Arrival→Trust and Trust→Interior bridges own the fades. */
+  background:
+    radial-gradient(ellipse 55% 35% at 28% 8%, rgba(240, 197, 109, 0.07), transparent 55%),
+    var(--color-forest-deep);
+}
+
 .trust-forest-floor .scene-chapter-inner {
-  padding-top: 2.25rem;
-  padding-bottom: 2.5rem;
+  /* Content stays on stable dark; ≥64px from bridge fades via section padding */
+  padding-top: 3.25rem;
+  padding-bottom: 4rem;
+}
+
+@media (max-width: 767px) {
+  .trust-forest-floor .scene-chapter-inner {
+    padding-top: 2.5rem;
+    padding-bottom: 3.25rem;
+  }
+}
+
+/* Soften trust side rails into mist at chapter ends (decoration only) */
+.trust-forest-floor .forest-scene-rail {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
 }
 
 .trust-featured {
@@ -1212,40 +1494,125 @@ a.airbnb-button.bg-parchment {
 
 .trust-featured-meta {
   margin-top: 0.85rem;
-  font-size: 0.8rem;
-  color: rgba(234, 231, 216, 0.55);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: rgba(234, 231, 216, 0.78);
 }
 
-.trust-proof-list {
+/* Intentional 4 + 3 proof trail (never accidental 5 + 2 wrap) */
+.trust-proof-trail {
+  margin-top: 2rem;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.trust-proof-row {
+  display: flex;
+  flex-wrap: nowrap;
   justify-content: center;
-  gap: 0.65rem 0.75rem;
-  margin-top: 1.75rem;
+  align-items: baseline;
+  gap: 0;
   list-style: none;
+  margin: 0;
   padding: 0;
+}
+
+.trust-proof-row li {
+  display: flex;
+  align-items: baseline;
+}
+
+.trust-proof-row li:not(:last-child)::after {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 0.85em;
+  margin: 0 0.85rem;
+  background: rgba(234, 231, 216, 0.22);
+  align-self: center;
 }
 
 .trust-proof-chip {
   display: inline-flex;
   align-items: center;
-  padding: 0.45rem 0.85rem;
-  border: 1px solid rgba(234, 231, 216, 0.18);
-  border-radius: 4px;
-  background: rgba(14, 20, 18, 0.35);
-  color: rgba(234, 231, 216, 0.9);
-  font-size: 0.78rem;
+  padding: 0.2rem 0.15rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: rgba(234, 231, 216, 0.92);
+  font-size: 0.8125rem;
   letter-spacing: 0.02em;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  line-height: 1.4;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
 }
 
-.trust-proof-chip:hover {
-  border-color: rgba(240, 197, 109, 0.45);
-  background: rgba(14, 20, 18, 0.55);
+.forest-scene--tone-forest .forest-scene-content a.trust-proof-chip {
+  color: rgba(234, 231, 216, 0.92);
+}
+
+.trust-proof-chip:hover,
+.trust-proof-chip:focus-visible {
+  color: rgba(255, 248, 230, 0.98);
+  text-decoration: underline;
+  text-decoration-color: rgba(240, 197, 109, 0.55);
+  background: transparent;
+}
+
+@media (max-width: 1099px) {
+  .trust-proof-trail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem 1.25rem;
+    max-width: 28rem;
+    margin-inline: auto;
+  }
+
+  .trust-proof-row {
+    display: contents;
+  }
+
+  .trust-proof-row li::after {
+    display: none;
+  }
+
+  .trust-proof-chip {
+    width: 100%;
+    justify-content: center;
+    padding: 0.45rem 0.5rem;
+    border-radius: 4px;
+    background: rgba(14, 20, 18, 0.28);
+    border: 1px solid rgba(234, 231, 216, 0.14);
+    text-align: center;
+  }
+
+  /* 7 items: last chip spans full width so no orphan half-row */
+  .trust-proof-row--secondary li:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 389px) {
+  .trust-proof-trail {
+    grid-template-columns: 1fr;
+  }
+
+  .trust-proof-row--secondary li:last-child {
+    grid-column: auto;
+  }
+}
+
+@media (min-width: 1100px) {
+  .trust-proof-row--secondary {
+    /* Center the 3-item second row under the 4-item first row */
+    padding-inline: 2.5rem;
+  }
 }
 
 .trust-holiday {
-  margin-top: 1.5rem;
+  margin-top: 1.75rem;
 }
 
 .trust-holiday > section {
@@ -1253,45 +1620,40 @@ a.airbnb-button.bg-parchment {
   background: transparent;
 }
 
-/*
- * Trust band: one continuous wash into parchment. No stacked fades,
- * no negative-margin overlap with the interior chapter.
- */
-.trust-forest-floor {
-  position: relative;
-  z-index: 0;
-}
-
-.trust-forest-floor .forest-scene-bg {
-  -webkit-mask-image: none;
-  mask-image: none;
-  background: linear-gradient(
-    180deg,
-    var(--color-parchment) 0%,
-    #1a1d16 14%,
-    #1a1d16 72%,
-    var(--color-parchment) 100%
-  );
-}
-
+/* Inside the Glass: starts after Trust→Interior bridge; no uncontrolled overlap */
 .inside-glass-chapter {
   position: relative;
   z-index: 1;
 }
 
 .inside-glass-chapter .forest-scene {
-  overflow: visible;
+  overflow: clip;
+}
+
+/* Interior top opens after mist bridge; fade section bg in so no hard card edge */
+.inside-glass-chapter .forest-scene-bg {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 4.5rem, #000 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 4.5rem, #000 100%);
+}
+
+.inside-glass-photo {
+  /* Photograph may rise slightly into the clearing; stays in normal flow */
+  margin-top: -1.25rem;
 }
 
 @media (min-width: 768px) {
-  .inside-glass-chapter .forest-scene-rail {
-    top: -3.5rem;
-    bottom: -10%;
+  .inside-glass-photo {
+    margin-top: -2rem;
   }
+}
 
-  .inside-glass-chapter .forest-scene-rail .forest-scene-plate {
-    object-position: center 20%;
-  }
+.inside-glass-inner {
+  padding-top: 2rem;
+}
+
+.inside-glass-chapter .forest-scene-content {
+  position: relative;
+  z-index: 2;
 }
 
 /* --- Inside the glass --- */
@@ -1372,24 +1734,21 @@ a.airbnb-button.bg-parchment {
 .editorial-gallery-grid {
   margin-top: 2.5rem;
   display: grid;
-  gap: 1.25rem;
+  gap: 1.15rem;
 }
 
 @media (min-width: 900px) {
   .editorial-gallery-grid {
-    grid-template-columns: 1.45fr 0.9fr;
-    grid-template-rows: auto auto;
-    gap: 1.35rem;
-  }
-
-  .editorial-gallery-dominant {
-    grid-row: span 2;
+    /* Side-by-side columns: tall left + two stacked rights of matching height */
+    grid-template-columns: 1.12fr 1fr;
+    gap: 1.15rem 1.25rem;
+    align-items: start;
   }
 }
 
 .editorial-gallery-mediums {
   display: grid;
-  gap: 1.25rem;
+  gap: 1.15rem;
 }
 
 .editorial-gallery-details {
@@ -1635,13 +1994,15 @@ a.airbnb-button.bg-parchment {
   color: rgba(234, 231, 216, 0.7);
 }
 
-/* --- Night close --- */
+/* --- Night close (continuous with footer; no pull-up seam) --- */
 .night-booking-close {
-  margin-top: -2.5rem;
+  margin-top: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .night-booking-close .forest-scene {
-  overflow: visible;
+  overflow: clip;
 }
 
 .night-booking-inner {
@@ -1730,11 +2091,11 @@ a.airbnb-button.bg-parchment {
   text-underline-offset: 4px;
 }
 
-/* --- Footer in night world --- */
+/* --- Footer in night world (same base as Night chapter; final floor) --- */
 .site-footer--night {
   position: relative;
-  z-index: 10;
-  margin-top: -1px;
+  z-index: 1;
+  margin-top: 0;
   padding: 2rem 1.5rem 5rem;
   background:
     linear-gradient(180deg, var(--color-night) 0%, #070b09 100%);
@@ -2082,6 +2443,28 @@ a.airbnb-button.bg-parchment {
     mask-image: none !important;
   }
 
+  /* Arrival keeps its bottom fade into the forest-floor bridge on mobile */
+  .arrival-clearing .forest-scene--tone-paper .forest-scene-bg,
+  .arrival-clearing .forest-scene-bg {
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      #000 0%,
+      #000 calc(100% - 5.5rem),
+      transparent 100%
+    ) !important;
+    mask-image: linear-gradient(
+      180deg,
+      #000 0%,
+      #000 calc(100% - 5.5rem),
+      transparent 100%
+    ) !important;
+  }
+
+  .inside-glass-chapter .forest-scene-bg {
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 3.5rem, #000 100%) !important;
+    mask-image: linear-gradient(180deg, transparent 0%, #000 3.5rem, #000 100%) !important;
+  }
+
   .forest-scene--dense .forest-scene-rail,
   .forest-scene--medium .forest-scene-rail,
   .forest-scene--open .forest-scene-rail,
@@ -2146,5 +2529,10 @@ a.airbnb-button.bg-parchment {
   .ritual-steam {
     transform: none !important;
     animation: none !important;
+  }
+
+  /* Bridges remain static scenic washes; no motion dependency */
+  .scene-bridge-plate {
+    transform: none !important;
   }
 }
