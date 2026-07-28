@@ -141,12 +141,145 @@ h3 {
 }
 
 .booking-pill {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem 1.25rem;
+  align-items: center;
+  width: 100%;
+  max-width: 56rem;
+  margin-inline: auto;
+  padding: 1rem 1.1rem;
   background: rgba(234, 231, 216, 0.97);
   backdrop-filter: blur(14px);
   border: 1px solid var(--color-line);
   border-radius: 9999px;
   /* Soft shadow that settles into forest; avoid bright horizontal glow */
   box-shadow: 0 14px 32px rgba(26, 29, 22, 0.22);
+}
+
+.booking-pill-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem 1.25rem;
+  min-width: 0;
+}
+
+.booking-pill-dates {
+  min-width: 0;
+}
+
+.booking-pill-date-grid {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 1fr) minmax(7.5rem, 1fr);
+  gap: 0.75rem 1rem;
+}
+
+.booking-pill-date-field {
+  min-width: 0;
+  text-align: left;
+}
+
+.booking-pill-date-field--in {
+  border-bottom: 1px solid var(--color-line);
+  padding-bottom: 0.75rem;
+}
+
+.booking-pill-date-value {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+.booking-pill-guests {
+  min-width: 9rem;
+}
+
+.booking-pill-dog {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.booking-pill-cta {
+  display: flex;
+  justify-content: stretch;
+}
+
+.booking-pill-submit {
+  display: inline-flex;
+  width: 100%;
+  height: 3rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.75rem;
+  border-radius: 9999px;
+  background: var(--color-ink);
+  color: var(--color-parchment);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.booking-pill-submit:hover {
+  background: var(--color-forest);
+}
+
+.booking-pill-submit:focus-visible {
+  outline: 2px solid var(--color-copper);
+  outline-offset: 3px;
+}
+
+.booking-pill-hint {
+  grid-column: 1 / -1;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--color-muted);
+}
+
+@media (min-width: 640px) {
+  .booking-pill-fields {
+    grid-template-columns: minmax(0, 1.4fr) minmax(9rem, 0.8fr);
+    align-items: start;
+  }
+
+  .booking-pill-date-field--in {
+    border-bottom: 0;
+    border-right: 1px solid var(--color-line);
+    padding-bottom: 0;
+    padding-right: 1rem;
+  }
+
+  .booking-pill-guests {
+    border-left: 1px solid var(--color-line);
+    padding-left: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .booking-pill {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 1.15rem 1.75rem;
+  }
+
+  .booking-pill-cta {
+    justify-content: flex-end;
+  }
+
+  .booking-pill-submit {
+    width: auto;
+  }
+
+  .booking-pill-hint {
+    text-align: right;
+  }
 }
 
 .booking-calendar {
@@ -2433,17 +2566,6 @@ a.airbnb-button.bg-parchment {
   letter-spacing: 0.04em;
   color: var(--color-muted);
   white-space: nowrap;
-}
-
-.booking-pill-guests,
-.booking-pill-cta {
-  min-width: 0;
-}
-
-@media (min-width: 768px) {
-  .booking-pill-cta {
-    flex: 0 0 auto;
-  }
 }
 
 /* Arrival photo-local overlaps only. Never page-level rails above content */

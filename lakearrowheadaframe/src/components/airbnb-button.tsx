@@ -67,11 +67,8 @@ export function BookingPill() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="booking-pill mx-auto flex w-full max-w-4xl flex-col items-stretch gap-3 px-4 py-4 md:flex-row md:items-center md:gap-5 md:px-7 md:py-5"
-    >
-      <div className="flex min-w-0 flex-1 flex-col gap-3 text-sm sm:flex-row sm:items-start sm:gap-4 md:gap-5">
+    <form onSubmit={handleSubmit} className="booking-pill">
+      <div className="booking-pill-fields">
         <BookingCalendarFields
           checkIn={checkIn}
           checkOut={checkOut}
@@ -81,7 +78,7 @@ export function BookingPill() {
           }}
         />
 
-        <div className="booking-pill-guests min-w-[8.5rem] shrink-0 sm:border-l sm:border-line sm:pl-4 md:pl-5">
+        <div className="booking-pill-guests">
           <label className="block">
             <span className="booking-calendar-label uppercase text-muted">
               Guests
@@ -99,31 +96,29 @@ export function BookingPill() {
               ))}
             </select>
           </label>
-          <label className="mt-2 flex items-center gap-2 whitespace-nowrap text-sm text-muted">
+          <label className="booking-pill-dog">
             <input
               type="checkbox"
               checked={bringingDog}
               onChange={(e) => setBringingDog(e.target.checked)}
               className="size-4 shrink-0 accent-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper"
             />
-            Bringing a dog?
+            <span>Bringing a dog?</span>
           </label>
         </div>
       </div>
 
-      <div className="booking-pill-cta flex w-full shrink-0 flex-col items-stretch gap-2 sm:w-auto md:max-w-[13.5rem] md:items-end">
-        <button
-          type="submit"
-          className="inline-flex h-12 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-ink px-7 text-center text-sm font-medium leading-none tracking-wide text-parchment transition-colors hover:bg-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-copper sm:w-auto"
-        >
+      <div className="booking-pill-cta">
+        <button type="submit" className="booking-pill-submit">
           Check availability
         </button>
-        {!datesValid ? (
-          <p className="text-xs leading-snug text-muted md:max-w-[12.5rem] md:text-right">
-            Add dates for a direct stay link, or browse open weekends.
-          </p>
-        ) : null}
       </div>
+
+      {!datesValid ? (
+        <p className="booking-pill-hint">
+          Add dates for a direct stay link, or browse open weekends.
+        </p>
+      ) : null}
     </form>
   );
 }

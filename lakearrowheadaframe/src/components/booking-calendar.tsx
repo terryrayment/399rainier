@@ -90,13 +90,13 @@ export function BookingCalendarFields({ checkIn, checkOut, onChange }: BookingCa
       : checkOut;
 
   return (
-    <div ref={rootRef} className="relative min-w-0 flex-1">
-      <div className="grid grid-cols-2 gap-3 sm:gap-4">
+    <div ref={rootRef} className="booking-pill-dates relative">
+      <div className="booking-pill-date-grid">
         <button
           type="button"
           onClick={() => openFor("checkIn")}
-          className={`min-w-0 border-b border-line pb-3 text-left sm:border-b-0 sm:border-r sm:pb-0 sm:pr-4 ${
-            open && selecting === "checkIn" ? "text-ink" : ""
+          className={`booking-pill-date-field booking-pill-date-field--in ${
+            open && selecting === "checkIn" ? "is-active" : ""
           }`}
           aria-expanded={open}
           aria-controls={labelId}
@@ -104,7 +104,7 @@ export function BookingCalendarFields({ checkIn, checkOut, onChange }: BookingCa
           <span className="booking-calendar-label uppercase text-muted">
             Check-in
           </span>
-          <span className="mt-1 block whitespace-nowrap text-sm text-ink">
+          <span className="booking-pill-date-value">
             {checkIn ? formatFriendlyDate(checkIn) : "Add date"}
           </span>
         </button>
@@ -112,14 +112,16 @@ export function BookingCalendarFields({ checkIn, checkOut, onChange }: BookingCa
         <button
           type="button"
           onClick={() => openFor("checkOut")}
-          className="min-w-0 pb-3 text-left sm:pb-0 sm:pl-1"
+          className={`booking-pill-date-field booking-pill-date-field--out ${
+            open && selecting === "checkOut" ? "is-active" : ""
+          }`}
           aria-expanded={open}
           aria-controls={labelId}
         >
           <span className="booking-calendar-label uppercase text-muted">
             Check-out
           </span>
-          <span className="mt-1 block whitespace-nowrap text-sm text-ink">
+          <span className="booking-pill-date-value">
             {checkOut ? formatFriendlyDate(checkOut) : "Add date"}
           </span>
         </button>
