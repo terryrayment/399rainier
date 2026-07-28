@@ -85,11 +85,12 @@ export const homeScenes = {
     name: "lake",
     tone: "sage",
     density: "medium",
-    foreground: "water",
+    /* No lake-mist canopy/water plates. They read as a broken shoreline strip. */
+    foreground: "none",
     mist: "none",
     intensity: 0.9,
-    canopy: true,
-    sideRails: true,
+    canopy: false,
+    sideRails: false,
   },
   night: {
     name: "night",

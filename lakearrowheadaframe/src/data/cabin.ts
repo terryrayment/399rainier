@@ -12,6 +12,9 @@ export const cabin = {
   state: "CA",
   zip: "92352",
   community: "Arrowhead Woods",
+  /** WGS84 for maps + weather */
+  latitude: 34.2483,
+  longitude: -117.1845,
   beds: 3,
   baths: 3,
   guests: 8,

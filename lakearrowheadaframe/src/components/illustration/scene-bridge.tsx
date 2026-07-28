@@ -41,11 +41,12 @@ const motifAsset: Partial<Record<BridgeMotif, string | undefined>> = {
   "mist-lift": undefined,
   clearing: sceneAssets.mistCabinTransition,
   "hills-dusk": sceneAssets.forestHillsTransition,
-  "lake-mist": sceneAssets.lakeMist,
+  /* Wash + pines only; shoreline plate reads as a broken second landscape */
+  "lake-mist": undefined,
   nightfall: sceneAssets.nightFloor,
 };
 
-const pineMotifs = new Set<BridgeMotif>(["forest-floor", "mist-lift", "nightfall"]);
+const pineMotifs = new Set<BridgeMotif>(["forest-floor", "mist-lift", "lake-mist", "nightfall"]);
 
 /**
  * Single owner for a chapter boundary. Continues outgoing tone → bridge motif → incoming tone.

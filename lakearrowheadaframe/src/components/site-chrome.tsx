@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { cabin } from "@/data/cabin";
 import { AirbnbButton } from "@/components/airbnb-button";
+import { NavWeather } from "@/components/nav-weather";
 import { TriplePine } from "@/components/illustration/motifs";
 import { clusterNavLinks } from "@/lib/routes";
 
@@ -53,6 +54,7 @@ export function SiteNav() {
           <NavPine />
           Lake Arrowhead A-Frame
         </Link>
+        <NavWeather />
         <nav className="site-nav-links" aria-label="Primary">
           {primaryLinks.map((link) => (
             <Link key={link.href} href={link.href}>

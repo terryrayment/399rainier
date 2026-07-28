@@ -163,7 +163,7 @@ export function HomePageClassic() {
           <div className="relative min-h-[320px] overflow-hidden rounded-[1.25rem] bg-forest">
             <iframe
               title="Lake Arrowhead map"
-              src="https://maps.google.com/maps?q=Arrowhead+Woods,+Lake+Arrowhead,+CA&z=13&output=embed"
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(`${cabin.address}, ${cabin.city}, ${cabin.state} ${cabin.zip}`)}&z=15&output=embed`}
               className="absolute inset-0 h-full w-full border-0 grayscale contrast-125"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

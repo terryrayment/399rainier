@@ -1,9 +1,14 @@
 import { DriveTimeList } from "@/components/drive-time-list";
+import { cabin } from "@/data/cabin";
 
 type IllustratedMapProps = {
   title?: string;
   description?: string;
 };
+
+const mapQuery = encodeURIComponent(
+  `${cabin.address}, ${cabin.city}, ${cabin.state} ${cabin.zip}`,
+);
 
 /**
  * Preserves map/location interactions; supplies atmospheric landscape framing.
@@ -22,8 +27,8 @@ export function IllustratedMap({
         </div>
         <div className="illustrated-map-frame">
           <iframe
-            title="Lake Arrowhead map"
-            src="https://maps.google.com/maps?q=Arrowhead+Woods,+Lake+Arrowhead,+CA&z=13&output=embed"
+            title={`${cabin.name} map`}
+            src={`https://maps.google.com/maps?q=${mapQuery}&z=15&output=embed`}
             className="illustrated-map-iframe"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"

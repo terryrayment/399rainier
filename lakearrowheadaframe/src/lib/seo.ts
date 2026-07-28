@@ -104,8 +104,8 @@ export function getLodgingJsonLd() {
     },
     geo: {
       "@type": "GeoCoordinates",
-      latitude: 34.2483,
-      longitude: -117.1845,
+      latitude: cabin.latitude,
+      longitude: cabin.longitude,
     },
     numberOfRooms: cabin.beds,
     petsAllowed: true,

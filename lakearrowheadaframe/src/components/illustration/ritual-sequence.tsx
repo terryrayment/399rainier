@@ -51,7 +51,6 @@ export function RitualSequence() {
                 />
               </div>
               <div className="ritual-step-copy">
-                <p className="ritual-step-index">{step.step}</p>
                 <h3 className="font-display ritual-step-title">{step.title}</h3>
                 <p className="ritual-step-body">{step.body}</p>
               </div>

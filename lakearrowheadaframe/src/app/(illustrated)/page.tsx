@@ -39,9 +39,8 @@ export const metadata = {
  * 2. Trust → Interior: mist lift into sage/parchment
  * 3. Interior → Gallery: restrained clearing
  * 4. Gallery → Ritual: no banner; Ritual dusk wash owns the open-in
- * 5. Ritual → Place: lake mist
- * 6. Place → Night: nightfall
- * 7. Night → Footer: shared night base (no bridge; color continuity)
+ * 5. Ritual → Place → Night: continuous tone (no strip bridges)
+ * 6. Night → Footer: shared night base (color continuity)
  */
 export default function HomePage() {
   return (
@@ -83,25 +82,8 @@ export default function HomePage() {
       />
       <PhotographicClearing />
       <RitualAtDusk />
-      <SceneBridge
-        fromTone="dusk"
-        toTone="sage"
-        motif="lake-mist"
-        height="7rem"
-        mobileHeight="4.75rem"
-        edgeDensity="medium"
-        className="scene-bridge--ritual-place"
-      />
+      {/* Ritual → Place → Night: continuous tone; no strip bridges */}
       <PlaceAndPracticalTruth />
-      <SceneBridge
-        fromTone="sage"
-        toTone="night"
-        motif="nightfall"
-        height="7.5rem"
-        mobileHeight="5rem"
-        edgeDensity="dense"
-        className="scene-bridge--place-night"
-      />
       <NightBookingClose />
 
       <BookingDock variant="mobile-bar" content="mobile-sticky" />

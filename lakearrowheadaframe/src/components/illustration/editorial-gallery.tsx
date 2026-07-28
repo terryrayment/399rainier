@@ -13,6 +13,7 @@ type EditorialGalleryProps = {
 
 /**
  * Dominant / medium / detail roles. Not six equal ecommerce cards.
+ * Captions stay in alt text only so the grid can stay tight.
  */
 export function EditorialGallery({
   photos,
@@ -31,51 +32,42 @@ export function EditorialGallery({
           <PhotoClearing
             src={dominant.src}
             alt={dominant.alt}
-            aspectClassName="aspect-[3/4]"
+            aspectClassName="aspect-[3/4] editorial-gallery-frame"
             sizes="(max-width: 768px) 100vw, 55vw"
             overlap="tl"
           />
-          {dominant.caption ? (
-            <p className="editorial-gallery-caption">{dominant.caption}</p>
-          ) : null}
         </div>
 
         <div className="editorial-gallery-mediums">
           {mediumA ? (
-            <figure className="editorial-gallery-medium">
+            <div className="editorial-gallery-medium">
               <PhotoClearing
                 src={mediumA.src}
                 alt={mediumA.alt}
-                aspectClassName="aspect-[4/3]"
+                aspectClassName="aspect-[4/3] editorial-gallery-frame"
                 sizes="(max-width: 768px) 100vw, 32vw"
                 overlap="none"
               />
-              {mediumA.caption ? (
-                <figcaption className="editorial-gallery-caption">{mediumA.caption}</figcaption>
-              ) : null}
-            </figure>
+            </div>
           ) : null}
           {mediumB ? (
-            <figure className="editorial-gallery-medium">
+            <div className="editorial-gallery-medium">
               <PhotoClearing
                 src={mediumB.src}
                 alt={mediumB.alt}
-                aspectClassName="aspect-[4/3]"
+                aspectClassName="aspect-[4/3] editorial-gallery-frame"
                 sizes="(max-width: 768px) 100vw, 32vw"
                 overlap="none"
               />
-              {mediumB.caption ? (
-                <figcaption className="editorial-gallery-caption">{mediumB.caption}</figcaption>
-              ) : null}
-            </figure>
+            </div>
           ) : null}
         </div>
 
         {details.length > 0 ? (
           <div className="editorial-gallery-details">
             {details.slice(0, 3).map((photo) => (
-              <figure key={photo.src} className="editorial-gallery-detail">
-                <div className="relative aspect-square overflow-hidden">
+              <div key={photo.src} className="editorial-gallery-detail">
+                <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
                     src={photo.src}
                     alt={photo.alt}
@@ -84,7 +76,7 @@ export function EditorialGallery({
                     sizes="(max-width: 768px) 33vw, 18vw"
                   />
                 </div>
-              </figure>
+              </div>
             ))}
           </div>
         ) : null}

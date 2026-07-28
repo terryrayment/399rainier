@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+import { DM_Sans, Familjen_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { cabin } from "@/data/cabin";
 import { absoluteUrl, siteConfig } from "@/lib/site";
@@ -14,10 +14,10 @@ const dmSans = DM_Sans({
   weight: ["400", "500", "600"],
 });
 
-const cormorant = Cormorant_Garamond({
-  variable: "--font-cormorant",
+const familjenGrotesk = Familjen_Grotesk({
+  variable: "--font-familjen-grotesk",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
 });
 
@@ -76,7 +76,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${cormorant.variable}`}>
+    <html lang="en" className={`${dmSans.variable} ${familjenGrotesk.variable}`}>
       <body className={`${dmSans.className} antialiased`}>
         {children}
         <Analytics />
