@@ -33,15 +33,19 @@ const toneColor: Record<BridgeTone, string> = {
   night: "var(--color-night)",
 };
 
+/** Full-width atmospheric plates. Tree silhouettes are separate (pine edges). */
 const motifAsset: Partial<Record<BridgeMotif, string | undefined>> = {
+  /* Floor texture only; pines own the silhouette read */
   "forest-floor": sceneAssets.shrubsRocks,
-  /* Wash-only; illustration plates read as muddy horizontal strips */
+  /* Wash + pines; full plates read as muddy strips */
   "mist-lift": undefined,
   clearing: sceneAssets.mistCabinTransition,
   "hills-dusk": sceneAssets.forestHillsTransition,
   "lake-mist": sceneAssets.lakeMist,
   nightfall: sceneAssets.nightFloor,
 };
+
+const pineMotifs = new Set<BridgeMotif>(["forest-floor", "mist-lift", "nightfall"]);
 
 /**
  * Single owner for a chapter boundary. Continues outgoing tone → bridge motif → incoming tone.
@@ -60,6 +64,7 @@ export function SceneBridge({
   const asset = motif === "none" ? null : motifAsset[motif];
   const file = asset?.split("/").pop() ?? "";
   const mobileSrc = file ? `/illustrations/scenes/mobile/${file}` : "";
+  const showPines = motif !== "none" && pineMotifs.has(motif);
 
   return (
     <div
@@ -75,6 +80,36 @@ export function SceneBridge({
       aria-hidden="true"
     >
       <div className="scene-bridge-wash" />
+      {showPines ? (
+        <>
+          <picture className="scene-bridge-pines scene-bridge-pines--left">
+            <source
+              media="(max-width: 767px)"
+              srcSet={`/illustrations/scenes/mobile/${sceneAssets.pinesLeft.split("/").pop()}`}
+            />
+            <img
+              src={sceneAssets.pinesLeft}
+              alt=""
+              className="scene-bridge-pines-plate"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+          <picture className="scene-bridge-pines scene-bridge-pines--right">
+            <source
+              media="(max-width: 767px)"
+              srcSet={`/illustrations/scenes/mobile/${sceneAssets.pinesRight.split("/").pop()}`}
+            />
+            <img
+              src={sceneAssets.pinesRight}
+              alt=""
+              className="scene-bridge-pines-plate"
+              loading="lazy"
+              decoding="async"
+            />
+          </picture>
+        </>
+      ) : null}
       {asset ? (
         <picture className="scene-bridge-art">
           <source media="(max-width: 767px)" srcSet={mobileSrc} />

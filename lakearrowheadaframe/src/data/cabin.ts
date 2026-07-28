@@ -28,7 +28,7 @@ export const cabin = {
   featuredReview: {
     quote: "Best Airbnb we've ever stayed at.",
     author: "Airbnb guest",
-    detail: "Guest Favorite · 85 stays",
+    detail: "Guest Favorite",
   },
 
   featureBar: [

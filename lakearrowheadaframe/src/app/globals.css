@@ -1015,23 +1015,107 @@ a.airbnb-button.bg-parchment {
 }
 
 .arrival-clearing-photo .photo-clearing-frame {
-  /* Soft clearing dissolve into forest floor */
+  /* No bottom wash over the booking pill. Dock owns the seam below. */
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* Forest floor under the dock only. Keeps the hero photo clear.
+   Side-feathered so it never reads as a second vertical outline past the photo. */
+.arrival-clearing-stage::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3.5rem;
+  height: 7.5rem;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 42% 100% at 6% 70%, rgba(18, 22, 16, 0.9), transparent 72%),
+    radial-gradient(ellipse 40% 95% at 96% 75%, rgba(18, 22, 16, 0.82), transparent 70%),
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(26, 29, 22, 0.55) 40%,
+      var(--color-forest-deep) 100%
+    );
   -webkit-mask-image: linear-gradient(
-    180deg,
-    #000 0%,
-    #000 72%,
-    rgba(0, 0, 0, 0.85) 84%,
-    rgba(0, 0, 0, 0.35) 93%,
+    90deg,
+    transparent 0%,
+    #000 6%,
+    #000 94%,
     transparent 100%
   );
   mask-image: linear-gradient(
-    180deg,
-    #000 0%,
-    #000 72%,
-    rgba(0, 0, 0, 0.85) 84%,
-    rgba(0, 0, 0, 0.35) 93%,
+    90deg,
+    transparent 0%,
+    #000 6%,
+    #000 94%,
     transparent 100%
   );
+}
+
+.arrival-pine-skirt {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6rem;
+  height: 12rem;
+  z-index: 2;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.arrival-pine-skirt-plate {
+  position: absolute;
+  bottom: 0;
+  width: clamp(10rem, 30vw, 22rem);
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  filter: brightness(0.14) saturate(1.2) contrast(1.2);
+  opacity: 0.95;
+}
+
+.arrival-pine-skirt-plate--left {
+  left: -3%;
+  -webkit-mask-image:
+    linear-gradient(180deg, transparent 0%, #000 28%, #000 85%, transparent 100%),
+    linear-gradient(90deg, #000 0%, #000 65%, transparent 100%);
+  mask-image:
+    linear-gradient(180deg, transparent 0%, #000 28%, #000 85%, transparent 100%),
+    linear-gradient(90deg, #000 0%, #000 65%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+.arrival-pine-skirt-plate--right {
+  right: -3%;
+  -webkit-mask-image:
+    linear-gradient(180deg, transparent 0%, #000 28%, #000 85%, transparent 100%),
+    linear-gradient(270deg, #000 0%, #000 65%, transparent 100%);
+  mask-image:
+    linear-gradient(180deg, transparent 0%, #000 28%, #000 85%, transparent 100%),
+    linear-gradient(270deg, #000 0%, #000 65%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+@media (max-width: 767px) {
+  .arrival-pine-skirt {
+    bottom: -4rem;
+    height: 9rem;
+  }
+
+  .arrival-pine-skirt-plate {
+    width: clamp(6.5rem, 44vw, 11rem);
+  }
+
+  .arrival-clearing-stage::after {
+    height: 5.5rem;
+    bottom: -2rem;
+  }
 }
 
 .photo-clearing-overlap {
@@ -1173,14 +1257,69 @@ a.airbnb-button.bg-parchment {
   background: linear-gradient(270deg, color-mix(in srgb, var(--bridge-to) 55%, transparent), transparent);
 }
 
+/* Pine silhouettes break hard chapter seams (trees, not flat color bars) */
+.scene-bridge-pines {
+  position: absolute;
+  z-index: 3;
+  top: -35%;
+  bottom: -20%;
+  width: clamp(9rem, 28vw, 22rem);
+  pointer-events: none;
+  display: block;
+}
+
+.scene-bridge-pines--left {
+  left: -4%;
+}
+
+.scene-bridge-pines--right {
+  right: -4%;
+}
+
+.scene-bridge-pines-plate {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  opacity: 0.92;
+  filter: brightness(0.2) saturate(1.2) contrast(1.15);
+  -webkit-mask-image:
+    linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%),
+    linear-gradient(90deg, #000 0%, #000 55%, transparent 100%);
+  mask-image:
+    linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%),
+    linear-gradient(90deg, #000 0%, #000 55%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+.scene-bridge-pines--right .scene-bridge-pines-plate {
+  -webkit-mask-image:
+    linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%),
+    linear-gradient(270deg, #000 0%, #000 55%, transparent 100%);
+  mask-image:
+    linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%),
+    linear-gradient(270deg, #000 0%, #000 55%, transparent 100%);
+}
+
 .scene-bridge--edges-open .scene-bridge-edge {
   width: clamp(2rem, 8vw, 6rem);
   opacity: 0.45;
 }
 
+.scene-bridge--edges-open .scene-bridge-pines {
+  width: clamp(7rem, 22vw, 16rem);
+  opacity: 0.7;
+}
+
 .scene-bridge--edges-dense .scene-bridge-edge {
   width: clamp(5rem, 16vw, 13rem);
   opacity: 0.9;
+}
+
+.scene-bridge--edges-dense .scene-bridge-pines {
+  width: clamp(11rem, 32vw, 24rem);
 }
 
 /* Pull bridge under outgoing chapter; outgoing bg must fade so bridge shows */
@@ -1195,9 +1334,14 @@ a.airbnb-button.bg-parchment {
 }
 
 .scene-bridge--overlap-both {
-  margin-top: -3rem;
-  margin-bottom: -2rem;
+  margin-top: -5.5rem;
+  margin-bottom: -3.25rem;
   z-index: 0;
+}
+
+.scene-bridge--arrival-trust.scene-bridge--overlap-both {
+  margin-top: -7rem;
+  margin-bottom: -2.5rem;
 }
 
 @media (max-width: 767px) {
@@ -1209,6 +1353,11 @@ a.airbnb-button.bg-parchment {
     margin-bottom: -1.5rem;
   }
 
+  .scene-bridge--overlap-both {
+    margin-top: -3.25rem;
+    margin-bottom: -2.5rem;
+  }
+
   .scene-bridge-edge {
     width: clamp(2.5rem, 18vw, 5rem);
     opacity: 0.55;
@@ -1218,17 +1367,33 @@ a.airbnb-button.bg-parchment {
     opacity: 0.45;
   }
 
+  .scene-bridge-pines {
+    width: clamp(6.5rem, 42vw, 11rem);
+    top: -20%;
+    bottom: -12%;
+    opacity: 0.75;
+  }
+
+  .scene-bridge--forest-floor .scene-bridge-pines {
+    top: -35%;
+  }
+
+  .scene-bridge--mist-lift .scene-bridge-pines {
+    top: -10%;
+    bottom: -30%;
+  }
+
   .arrival-clearing .forest-scene-bg {
     -webkit-mask-image: linear-gradient(
       180deg,
       #000 0%,
-      #000 calc(100% - 5.5rem),
+      #000 calc(100% - 6.5rem),
       transparent 100%
     ) !important;
     mask-image: linear-gradient(
       180deg,
       #000 0%,
-      #000 calc(100% - 5.5rem),
+      #000 calc(100% - 6.5rem),
       transparent 100%
     ) !important;
     -webkit-mask-composite: source-in !important;
@@ -1236,60 +1401,101 @@ a.airbnb-button.bg-parchment {
   }
 }
 
-/* Arrival → Trust: forest floor grows from parchment into deep floor */
+/* Arrival → Trust: pine crowns break the parchment seam into deep floor */
 .scene-bridge--arrival-trust {
-  /* Extra height so pull-up still leaves a full bridge after dock */
-  min-height: var(--bridge-height, 9rem);
+  min-height: var(--bridge-height, 11rem);
+  overflow: visible;
+  /* Under chapter content; arrival bg fade reveals these pines */
+  z-index: 0;
 }
 
 .scene-bridge--forest-floor .scene-bridge-wash {
-  /* Irregular floor darkening: skip long muddy mid-gray bands */
+  /* Soft parchment → moss → floor. No hard band, no pale mid seam. */
   background:
-    radial-gradient(ellipse 55% 90% at 8% 85%, rgba(26, 29, 22, 0.9), transparent 62%),
-    radial-gradient(ellipse 48% 80% at 92% 90%, rgba(26, 29, 22, 0.78), transparent 58%),
-    radial-gradient(ellipse 100% 55% at 50% 100%, rgba(30, 34, 24, 0.82), transparent 55%),
-    radial-gradient(ellipse 50% 45% at 30% 40%, rgba(45, 52, 36, 0.55), transparent 70%),
-    radial-gradient(ellipse 40% 40% at 70% 50%, rgba(38, 44, 30, 0.45), transparent 65%),
+    radial-gradient(ellipse 42% 120% at 6% 70%, rgba(18, 22, 16, 0.92), transparent 68%),
+    radial-gradient(ellipse 38% 110% at 96% 75%, rgba(18, 22, 16, 0.82), transparent 64%),
+    radial-gradient(ellipse 90% 70% at 50% 110%, rgba(26, 29, 22, 0.95), transparent 60%),
     linear-gradient(
       180deg,
-      var(--bridge-from) 0%,
-      #a8ad96 10%,
-      #5c634c 28%,
-      #343a2e 52%,
-      #22261e 78%,
+      color-mix(in srgb, var(--bridge-from) 92%, transparent) 0%,
+      color-mix(in srgb, var(--bridge-from) 55%, #5a624c) 18%,
+      #3a4234 42%,
+      #262b22 68%,
       var(--bridge-to) 100%
     );
 }
 
+.scene-bridge--forest-floor .scene-bridge-art {
+  /* Ground litter only: keep low so cut tiles never form a hard header strip */
+  inset: auto 0 -8% 0;
+  top: 42%;
+  height: auto;
+  min-height: 70%;
+}
+
 .scene-bridge--forest-floor .scene-bridge-plate {
   mix-blend-mode: multiply;
-  opacity: 0.8;
-  filter: brightness(0.42) contrast(1.12) saturate(1.1);
-  object-position: center 70%;
+  opacity: 0.55;
+  filter: brightness(0.35) contrast(1.1) saturate(1.05);
+  object-position: center 85%;
+  -webkit-mask-image:
+    linear-gradient(180deg, transparent 0%, #000 35%, #000 88%, transparent 100%),
+    linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  mask-image:
+    linear-gradient(180deg, transparent 0%, #000 35%, #000 88%, transparent 100%),
+    linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+}
+
+.scene-bridge--forest-floor .scene-bridge-pines {
+  top: -55%;
+  bottom: -8%;
+}
+
+.scene-bridge--forest-floor .scene-bridge-pines-plate {
+  filter: brightness(0.16) saturate(1.25) contrast(1.18);
+  opacity: 0.95;
+  -webkit-mask-image:
+    linear-gradient(180deg, transparent 0%, #000 16%, #000 86%, transparent 100%),
+    linear-gradient(90deg, #000 0%, #000 62%, transparent 100%);
+  mask-image:
+    linear-gradient(180deg, transparent 0%, #000 16%, #000 86%, transparent 100%),
+    linear-gradient(90deg, #000 0%, #000 62%, transparent 100%);
+}
+
+.scene-bridge--forest-floor .scene-bridge-pines--right .scene-bridge-pines-plate {
+  -webkit-mask-image:
+    linear-gradient(180deg, transparent 0%, #000 16%, #000 86%, transparent 100%),
+    linear-gradient(270deg, #000 0%, #000 62%, transparent 100%);
+  mask-image:
+    linear-gradient(180deg, transparent 0%, #000 16%, #000 86%, transparent 100%),
+    linear-gradient(270deg, #000 0%, #000 62%, transparent 100%);
 }
 
 .scene-bridge--forest-floor .scene-bridge-edge--left {
-  background: linear-gradient(90deg, rgba(26, 29, 22, 0.75), transparent 85%);
+  background: linear-gradient(90deg, rgba(26, 29, 22, 0.55), transparent 90%);
 }
 
 .scene-bridge--forest-floor .scene-bridge-edge--right {
-  background: linear-gradient(270deg, rgba(26, 29, 22, 0.75), transparent 85%);
+  background: linear-gradient(270deg, rgba(26, 29, 22, 0.5), transparent 90%);
 }
 
-/* Trust → Interior: low mist lifts; sage clearing opens (no grainy plate) */
+/* Trust → Interior: dark pine crowns dissolve downward into sage (no pale fog bank) */
+.scene-bridge--trust-interior {
+  overflow: visible;
+  margin-top: 0;
+}
+
 .scene-bridge--mist-lift .scene-bridge-wash {
   background:
-    radial-gradient(ellipse 120% 85% at 50% 100%, rgba(227, 230, 216, 1), transparent 58%),
-    radial-gradient(ellipse 45% 95% at 4% 30%, rgba(26, 29, 22, 0.7), transparent 72%),
-    radial-gradient(ellipse 40% 85% at 97% 45%, rgba(26, 29, 22, 0.55), transparent 68%),
-    radial-gradient(ellipse 70% 40% at 50% 20%, rgba(26, 29, 22, 0.35), transparent 70%),
+    radial-gradient(ellipse 48% 140% at 2% 15%, rgba(14, 18, 14, 0.95), transparent 72%),
+    radial-gradient(ellipse 42% 130% at 99% 20%, rgba(14, 18, 14, 0.85), transparent 68%),
     linear-gradient(
       180deg,
       var(--bridge-from) 0%,
-      #1f231c 22%,
-      #3a4036 48%,
-      #8a9080 72%,
-      #c9cdc0 88%,
+      #171b15 28%,
+      #252a21 52%,
+      #4a5144 74%,
+      #9aa190 90%,
       var(--bridge-to) 100%
     );
 }
@@ -1298,14 +1504,40 @@ a.airbnb-button.bg-parchment {
   display: none;
 }
 
-.scene-bridge--mist-lift .scene-bridge-edge--left {
-  background: linear-gradient(90deg, rgba(26, 29, 22, 0.55), transparent 90%);
-  width: clamp(4rem, 14vw, 11rem);
+.scene-bridge--mist-lift.scene-bridge--overlap-down {
+  margin-bottom: -4.5rem;
 }
 
+.scene-bridge--mist-lift .scene-bridge-pines {
+  top: -8%;
+  bottom: -70%;
+  opacity: 1;
+  z-index: 4;
+}
+
+.scene-bridge--mist-lift .scene-bridge-pines-plate {
+  filter: brightness(0.1) saturate(1.1) contrast(1.25);
+  mix-blend-mode: multiply;
+  -webkit-mask-image:
+    linear-gradient(180deg, #000 0%, #000 34%, rgba(0, 0, 0, 0.55) 58%, transparent 88%),
+    linear-gradient(90deg, #000 0%, #000 68%, transparent 100%);
+  mask-image:
+    linear-gradient(180deg, #000 0%, #000 34%, rgba(0, 0, 0, 0.55) 58%, transparent 88%),
+    linear-gradient(90deg, #000 0%, #000 68%, transparent 100%);
+}
+
+.scene-bridge--mist-lift .scene-bridge-pines--right .scene-bridge-pines-plate {
+  -webkit-mask-image:
+    linear-gradient(180deg, #000 0%, #000 34%, rgba(0, 0, 0, 0.55) 58%, transparent 88%),
+    linear-gradient(270deg, #000 0%, #000 68%, transparent 100%);
+  mask-image:
+    linear-gradient(180deg, #000 0%, #000 34%, rgba(0, 0, 0, 0.55) 58%, transparent 88%),
+    linear-gradient(270deg, #000 0%, #000 68%, transparent 100%);
+}
+
+.scene-bridge--mist-lift .scene-bridge-edge--left,
 .scene-bridge--mist-lift .scene-bridge-edge--right {
-  background: linear-gradient(270deg, rgba(26, 29, 22, 0.4), transparent 90%);
-  width: clamp(3rem, 11vw, 9rem);
+  display: none;
 }
 
 /* Interior → Gallery: restrained light clearing */
@@ -1386,20 +1618,35 @@ a.airbnb-button.bg-parchment {
 /* --- Booking dock --- */
 .booking-dock--hero {
   position: relative;
-  z-index: 6;
+  /* Above photo-clearing (10) and photo overlaps (11) */
+  z-index: 20;
   margin-top: -1.75rem;
   padding: 0 0.5rem;
 }
 
 /* Hang booking dock into Arrival→Trust bridge (~32–40px) */
 .arrival-clearing .booking-dock--hero {
+  position: relative;
+  z-index: 20;
   margin-bottom: -2.25rem;
 }
 
+.arrival-clearing-dock {
+  position: relative;
+  z-index: 20;
+}
+
 .arrival-clearing .booking-pill {
+  position: relative;
+  z-index: 21;
   box-shadow:
     0 10px 28px rgba(26, 29, 22, 0.28),
     0 2px 8px rgba(26, 29, 22, 0.12);
+}
+
+.arrival-clearing-photo.photo-clearing {
+  /* Stay under the booking dock */
+  z-index: 5;
 }
 
 @media (max-width: 767px) {
@@ -1452,14 +1699,48 @@ a.airbnb-button.bg-parchment {
  * Intersect with side feather so forest walls still read.
  */
 .arrival-clearing .forest-scene-bg {
+  /* No second rectangular panel. Soft feather into side forests only. */
+  left: 0;
+  right: 0;
+  width: auto;
+  max-width: none;
+  margin-inline: 0;
   -webkit-mask-image:
-    linear-gradient(180deg, #000 0%, #000 calc(100% - 8.5rem), transparent 100%),
-    linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+    linear-gradient(180deg, #000 0%, #000 calc(100% - 14rem), transparent 100%),
+    linear-gradient(90deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
   mask-image:
-    linear-gradient(180deg, #000 0%, #000 calc(100% - 8.5rem), transparent 100%),
-    linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+    linear-gradient(180deg, #000 0%, #000 calc(100% - 14rem), transparent 100%),
+    linear-gradient(90deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
   -webkit-mask-composite: source-in;
   mask-composite: intersect;
+}
+
+@media (min-width: 768px) {
+  .arrival-clearing .forest-scene-content {
+    padding-inline: 0;
+  }
+
+  .arrival-clearing-photo .photo-clearing-frame {
+    /* One photo edge only. No card shadow/radius frame around it. */
+    box-shadow: none;
+    border-radius: 0;
+  }
+}
+
+/* Arrival side forests dissolve into the bridge instead of ending on a hard cut */
+.arrival-clearing .forest-scene-rail {
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    #000 0%,
+    #000 calc(100% - 12rem),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    180deg,
+    #000 0%,
+    #000 calc(100% - 12rem),
+    transparent 100%
+  );
 }
 
 .arrival-clearing .forest-scene-content {
@@ -1471,10 +1752,17 @@ a.airbnb-button.bg-parchment {
   max-width: min(72rem, calc(100vw - clamp(8rem, 28vw, 30rem)));
   padding-top: 6.5rem;
   padding-bottom: 0.5rem;
+  padding-inline: 0;
   min-height: min(100svh, 56rem);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+}
+
+@media (max-width: 767px) {
+  .arrival-clearing .scene-chapter-inner {
+    padding-inline: 1.1rem;
+  }
 }
 
 @media (max-width: 767px) {
@@ -1560,11 +1848,13 @@ a.airbnb-button.bg-parchment {
 .arrival-clearing-veil {
   position: absolute;
   inset: 0;
+  /* Keep legibility on the photo. Stop before the booking pill. */
   background: linear-gradient(
     180deg,
     rgba(14, 20, 18, 0.08) 0%,
-    transparent 35%,
-    rgba(14, 20, 18, 0.72) 100%
+    transparent 42%,
+    rgba(14, 20, 18, 0.55) 78%,
+    rgba(14, 20, 18, 0.35) 100%
   );
   pointer-events: none;
 }
@@ -1609,16 +1899,16 @@ a.airbnb-button.bg-parchment {
 .trust-forest-floor .forest-scene-bg {
   -webkit-mask-image: none;
   mask-image: none;
-  /* Solid forest. Arrival→Trust and Trust→Interior bridges own the fades. */
+  /* Solid forest floor. Bridges own the chapter seams. */
   background:
     radial-gradient(ellipse 55% 35% at 28% 8%, rgba(240, 197, 109, 0.07), transparent 55%),
     var(--color-forest-deep);
 }
 
 .trust-forest-floor .scene-chapter-inner {
-  /* Content stays on stable dark; ≥64px from bridge fades via section padding */
-  padding-top: 3.25rem;
-  padding-bottom: 4rem;
+  /* Keep quote/proof clear of pine dissolve zones */
+  padding-top: 2.75rem;
+  padding-bottom: 3.25rem;
 }
 
 @media (max-width: 767px) {
@@ -1628,10 +1918,36 @@ a.airbnb-button.bg-parchment {
   }
 }
 
-/* Soften trust side rails into mist at chapter ends (decoration only) */
+/* Trust rails: full-height pines that feather into the clearing, not hard slabs */
 .trust-forest-floor .forest-scene-rail {
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
-  mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+  top: -6%;
+  bottom: -14%;
+  height: auto;
+  opacity: 0.95;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.trust-forest-floor .forest-scene-rail .forest-scene-plate {
+  filter: brightness(0.12) saturate(1.2) contrast(1.2);
+  opacity: 1;
+  -webkit-mask-image:
+    linear-gradient(180deg, transparent 0%, #000 10%, #000 82%, transparent 100%),
+    linear-gradient(90deg, #000 0%, #000 72%, transparent 100%);
+  mask-image:
+    linear-gradient(180deg, transparent 0%, #000 10%, #000 82%, transparent 100%),
+    linear-gradient(90deg, #000 0%, #000 72%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+.trust-forest-floor .forest-scene-rail--right .forest-scene-plate {
+  -webkit-mask-image:
+    linear-gradient(180deg, transparent 0%, #000 10%, #000 82%, transparent 100%),
+    linear-gradient(270deg, #000 0%, #000 72%, transparent 100%);
+  mask-image:
+    linear-gradient(180deg, transparent 0%, #000 10%, #000 82%, transparent 100%),
+    linear-gradient(270deg, #000 0%, #000 72%, transparent 100%);
 }
 
 .trust-featured {
@@ -1719,8 +2035,9 @@ a.airbnb-button.bg-parchment {
   .trust-proof-trail {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.65rem 1.25rem;
-    max-width: 28rem;
+    column-gap: 1.5rem;
+    row-gap: 0.55rem;
+    max-width: 26rem;
     margin-inline: auto;
   }
 
@@ -1729,39 +2046,32 @@ a.airbnb-button.bg-parchment {
   }
 
   .trust-proof-row li::after {
-    display: none;
+    display: none !important;
+    content: none !important;
   }
 
   .trust-proof-chip {
     width: 100%;
     justify-content: center;
-    padding: 0.45rem 0.5rem;
-    border-radius: 4px;
-    background: rgba(14, 20, 18, 0.28);
-    border: 1px solid rgba(234, 231, 216, 0.14);
+    padding: 0.35rem 0.25rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
     text-align: center;
   }
 
-  /* 7 items: last chip spans full width so no orphan half-row */
-  .trust-proof-row--secondary li:last-child {
-    grid-column: 1 / -1;
-  }
 }
 
 @media (max-width: 389px) {
   .trust-proof-trail {
     grid-template-columns: 1fr;
   }
-
-  .trust-proof-row--secondary li:last-child {
-    grid-column: auto;
-  }
 }
 
 @media (min-width: 1100px) {
   .trust-proof-row--secondary {
-    /* Center the 3-item second row under the 4-item first row */
-    padding-inline: 2.5rem;
+    /* Match the 3-item primary row above */
+    padding-inline: 0;
   }
 }
 
@@ -1784,10 +2094,10 @@ a.airbnb-button.bg-parchment {
   overflow: clip;
 }
 
-/* Interior top opens after mist bridge; fade section bg in so no hard card edge */
+/* Interior top opens after mist bridge; longer fade so pines dissolve cleanly */
 .inside-glass-chapter .forest-scene-bg {
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 4.5rem, #000 100%);
-  mask-image: linear-gradient(180deg, transparent 0%, #000 4.5rem, #000 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 7rem, #000 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 7rem, #000 100%);
 }
 
 .inside-glass-photo {
@@ -2504,12 +2814,19 @@ a.airbnb-button.bg-parchment {
     width: clamp(13rem, 16vw, 19rem);
   }
 
-  .arrival-clearing .forest-scene-content {
-    padding-inline: clamp(4rem, 9vw, 8rem);
-  }
-
   .arrival-clearing .forest-scene-rail {
     z-index: var(--z-scene-env);
+  }
+
+  /* Feather rail plates into the photo so their hard rect edges never read as a second frame */
+  .arrival-clearing .forest-scene-rail--left .forest-scene-plate {
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 92%);
+    mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 92%);
+  }
+
+  .arrival-clearing .forest-scene-rail--right .forest-scene-plate {
+    -webkit-mask-image: linear-gradient(270deg, #000 0%, #000 55%, transparent 92%);
+    mask-image: linear-gradient(270deg, #000 0%, #000 55%, transparent 92%);
   }
 }
 
@@ -2592,6 +2909,15 @@ a.airbnb-button.bg-parchment {
   border-radius: 1.25rem;
 }
 
+/* Mobile-only hero CTA wrapper. Must not inherit the form grid on desktop. */
+.booking-pill--hero-mobile-cta {
+  display: none;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0.75rem;
+}
+
 @media (max-width: 767px) {
   .booking-pill {
     border-radius: 1rem;
@@ -2601,10 +2927,6 @@ a.airbnb-button.bg-parchment {
   .booking-pill--hero-mobile-cta {
     display: flex;
     justify-content: center;
-    padding: 0.75rem;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
   }
 }
 

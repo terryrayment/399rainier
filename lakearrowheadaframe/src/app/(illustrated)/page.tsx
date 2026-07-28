@@ -54,10 +54,10 @@ export default function HomePage() {
         fromTone="paper"
         toTone="forest"
         motif="forest-floor"
-        height="9rem"
-        mobileHeight="5.75rem"
+        height="11rem"
+        mobileHeight="7rem"
         edgeDensity="dense"
-        overlap="up"
+        overlap="both"
         className="scene-bridge--arrival-trust"
       />
       <TrustForestFloor />
@@ -65,10 +65,10 @@ export default function HomePage() {
         fromTone="forest"
         toTone="sage"
         motif="mist-lift"
-        height="8.5rem"
-        mobileHeight="5.25rem"
-        edgeDensity="medium"
-        overlap="none"
+        height="10rem"
+        mobileHeight="6.5rem"
+        edgeDensity="dense"
+        overlap="down"
         className="scene-bridge--trust-interior"
       />
       <InsideTheGlassChapter />

@@ -5,16 +5,14 @@ import { cabin } from "@/data/cabin";
 
 const proofItems = [
   { label: `${cabin.rating}★ Guest Favorite`, href: "/chapters" },
-  { label: `${cabin.reviewCount} reviews`, href: "/chapters" },
-  { label: cabin.community, href: "/shoreline-rights" },
   { label: `Sleeps ${cabin.guests}`, href: "/lake-arrowhead-a-frame-cabin" },
   { label: "Indoor sauna", href: "/lake-arrowhead-cabin-with-sauna" },
   { label: "Hot tub in the pines", href: "/lake-arrowhead-cabin-with-sauna" },
   { label: "Dog-friendly yard", href: "/dog-friendly-lake-arrowhead-cabin" },
 ];
 
-const proofPrimary = proofItems.slice(0, 4);
-const proofSecondary = proofItems.slice(4);
+const proofPrimary = proofItems.slice(0, 2);
+const proofSecondary = proofItems.slice(2);
 
 /** Proof band inside the forest floor. Not a dashboard of equal chips. */
 export function TrustForestFloor() {
