@@ -1018,6 +1018,9 @@ a.airbnb-button.bg-parchment {
   /* No bottom wash over the booking pill. Dock owns the seam below. */
   -webkit-mask-image: none;
   mask-image: none;
+  /* Same corner language as .booking-pill; top only (pill covers the seam) */
+  border-radius: 1.25rem 1.25rem 0 0;
+  box-shadow: none;
 }
 
 /* Forest floor under the dock only. Keeps the hero photo clear.
@@ -1647,11 +1650,23 @@ a.airbnb-button.bg-parchment {
 .arrival-clearing-photo.photo-clearing {
   /* Stay under the booking dock */
   z-index: 5;
+  /* Match booking pill x-axis: dock pads 0.5rem, pill max-width 56rem */
+  width: calc(100% - 1rem);
+  max-width: 56rem;
+  margin-inline: auto;
+}
+
+.arrival-clearing-photo .photo-clearing-parallax-wrap {
+  position: relative;
 }
 
 @media (max-width: 767px) {
   .arrival-clearing .booking-dock--hero {
     margin-bottom: -1.5rem;
+  }
+
+  .arrival-clearing-photo .photo-clearing-frame {
+    border-radius: 1rem 1rem 0 0;
   }
 }
 
@@ -1718,12 +1733,6 @@ a.airbnb-button.bg-parchment {
 @media (min-width: 768px) {
   .arrival-clearing .forest-scene-content {
     padding-inline: 0;
-  }
-
-  .arrival-clearing-photo .photo-clearing-frame {
-    /* One photo edge only. No card shadow/radius frame around it. */
-    box-shadow: none;
-    border-radius: 0;
   }
 }
 

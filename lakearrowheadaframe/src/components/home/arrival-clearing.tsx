@@ -16,6 +16,8 @@ export function ArrivalClearing() {
           src={cabin.heroPhoto.src}
           alt={cabin.heroPhoto.alt}
           priority
+          parallax
+          parallaxStrength={0.1}
           overlap="dual"
           aspectClassName="aspect-[4/5] md:aspect-[16/10]"
           className="arrival-clearing-photo"

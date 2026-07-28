@@ -11,6 +11,8 @@ type PhotoClearingProps = {
   className?: string;
   /** Subtle scroll drift inside the frame (reduced-motion safe). */
   parallax?: boolean;
+  /** Parallax drift strength when enabled (0–1). */
+  parallaxStrength?: number;
   /** Default none. Use sparingly so branches never stamp every photo */
   overlap?: "none" | "tl" | "tr" | "bl" | "br" | "dual";
   children?: React.ReactNode;
@@ -28,6 +30,7 @@ export function PhotoClearing({
   aspectClassName = "aspect-[4/5] md:aspect-[16/10]",
   className = "",
   parallax = false,
+  parallaxStrength = 0.14,
   overlap = "none",
   children,
 }: PhotoClearingProps) {
@@ -40,7 +43,7 @@ export function PhotoClearing({
             alt={alt}
             priority={priority}
             sizes={sizes}
-            strength={0.14}
+            strength={parallaxStrength}
             className={`photo-clearing-frame ${aspectClassName}`}
           />
           {children ? <div className="photo-clearing-copy">{children}</div> : null}
