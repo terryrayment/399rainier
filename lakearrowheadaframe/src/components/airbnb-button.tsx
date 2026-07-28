@@ -69,9 +69,9 @@ export function BookingPill() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="booking-pill mx-auto flex w-full max-w-4xl flex-col items-stretch gap-4 px-4 py-4 md:flex-row md:items-center md:gap-6 md:px-8 md:py-5"
+      className="booking-pill mx-auto flex w-full max-w-4xl flex-col items-stretch gap-3 px-4 py-4 md:flex-row md:items-center md:gap-5 md:px-7 md:py-5"
     >
-      <div className="grid flex-1 grid-cols-1 gap-3 text-sm md:grid-cols-3">
+      <div className="flex min-w-0 flex-1 flex-col gap-3 text-sm sm:flex-row sm:items-start sm:gap-4 md:gap-5">
         <BookingCalendarFields
           checkIn={checkIn}
           checkOut={checkOut}
@@ -81,8 +81,8 @@ export function BookingPill() {
           }}
         />
 
-        <div>
-          <label>
+        <div className="booking-pill-guests min-w-[8.5rem] shrink-0 sm:border-l sm:border-line sm:pl-4 md:pl-5">
+          <label className="block">
             <span className="booking-calendar-label uppercase text-muted">
               Guests
             </span>
@@ -99,27 +99,27 @@ export function BookingPill() {
               ))}
             </select>
           </label>
-          <label className="mt-2 flex items-center gap-2 text-sm text-muted">
+          <label className="mt-2 flex items-center gap-2 whitespace-nowrap text-sm text-muted">
             <input
               type="checkbox"
               checked={bringingDog}
               onChange={(e) => setBringingDog(e.target.checked)}
-              className="size-4 accent-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper"
+              className="size-4 shrink-0 accent-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-copper"
             />
             Bringing a dog?
           </label>
         </div>
       </div>
 
-      <div className="flex shrink-0 flex-col items-stretch gap-2 md:items-end">
+      <div className="booking-pill-cta flex w-full shrink-0 flex-col items-stretch gap-2 sm:w-auto md:max-w-[13.5rem] md:items-end">
         <button
           type="submit"
-          className="inline-flex h-12 shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-ink px-8 text-center text-sm font-medium leading-none tracking-wide text-parchment transition-colors hover:bg-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-copper"
+          className="inline-flex h-12 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-ink px-7 text-center text-sm font-medium leading-none tracking-wide text-parchment transition-colors hover:bg-forest focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-copper sm:w-auto"
         >
           Check availability
         </button>
         {!datesValid ? (
-          <p className="text-sm text-muted">
+          <p className="text-xs leading-snug text-muted md:max-w-[12.5rem] md:text-right">
             Add dates for a direct stay link, or browse open weekends.
           </p>
         ) : null}

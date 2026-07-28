@@ -2435,6 +2435,17 @@ a.airbnb-button.bg-parchment {
   white-space: nowrap;
 }
 
+.booking-pill-guests,
+.booking-pill-cta {
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .booking-pill-cta {
+    flex: 0 0 auto;
+  }
+}
+
 /* Arrival photo-local overlaps only. Never page-level rails above content */
 .arrival-clearing-overlap-left,
 .arrival-clearing-overlap-right {
