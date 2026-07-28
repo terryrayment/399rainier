@@ -5,7 +5,6 @@ import { cabin } from "@/data/cabin";
 
 const proofItems = [
   { label: `${cabin.rating}★ Guest Favorite`, href: "/chapters" },
-  { label: `Sleeps ${cabin.guests}`, href: "/lake-arrowhead-a-frame-cabin" },
   { label: "Indoor sauna", href: "/lake-arrowhead-cabin-with-sauna" },
   { label: "Hot tub in the pines", href: "/lake-arrowhead-cabin-with-sauna" },
   { label: "Dog-friendly yard", href: "/dog-friendly-lake-arrowhead-cabin" },
