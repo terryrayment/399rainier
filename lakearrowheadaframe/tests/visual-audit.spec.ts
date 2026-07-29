@@ -32,6 +32,15 @@ const viewports = [
 
 const coreRoutes = ["/", "/weekend-from-los-angeles"] as const;
 const breakpointWidths = [767, 768, 1023, 1024, 1199, 1200, 1279, 1280, 1439, 1440] as const;
+const qaBaseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3101";
+const qaOrigin = new URL(qaBaseURL).origin;
+
+test("QA target matches the requested deployment origin", async ({ page }) => {
+  const requestedBaseUrl = process.env.PLAYWRIGHT_BASE_URL;
+  test.skip(!requestedBaseUrl, "A deployment URL was not requested.");
+  await page.goto("/");
+  expect(new URL(page.url()).origin).toBe(new URL(requestedBaseUrl!).origin);
+});
 
 async function settle(page: Page) {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -112,6 +121,22 @@ async function layoutDiagnostics(page: Page) {
       .map((el) => `${el.tagName.toLowerCase()}.${Array.from(el.classList).join(".")}`);
     return { overflow, outside, clippedText, invalidControls };
   });
+}
+
+async function installWindowOpenCapture(page: Page) {
+  await page.addInitScript(() => {
+    const capture = window as Window & { __qaLastOpenedUrl?: string };
+    window.open = (url?: string | URL) => {
+      capture.__qaLastOpenedUrl = String(url ?? "");
+      return null;
+    };
+  });
+}
+
+async function capturedWindowOpenUrl(page: Page) {
+  return page.evaluate(
+    () => (window as Window & { __qaLastOpenedUrl?: string }).__qaLastOpenedUrl ?? "",
+  );
 }
 
 for (const route of routes) {
@@ -285,21 +310,21 @@ test("burnout quiz supports backtracking and restart without stale height", asyn
 });
 
 test("booking form preserves guest and dog state in the Airbnb link", async ({ page }) => {
+  await installWindowOpenCapture(page);
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto("/");
   await settle(page);
   const form = page.locator(".booking-pill").first();
   await form.getByLabel("Guests").selectOption("8");
   await form.getByLabel("Bringing a dog?").check();
-  const popupPromise = page.waitForEvent("popup");
   await form.getByRole("button", { name: "Check availability" }).click();
-  const popup = await popupPromise;
-  expect(popup.url()).toContain("adults=8");
-  expect(popup.url()).toContain("pets=1");
-  await popup.close();
+  const openedUrl = await capturedWindowOpenUrl(page);
+  expect(openedUrl).toContain("adults=8");
+  expect(openedUrl).toContain("pets=1");
 });
 
 test("booking calendar stays contained and emits a dated Airbnb URL", async ({ page }) => {
+  await installWindowOpenCapture(page);
   await page.setViewportSize({ width: 768, height: 1024 });
   await page.goto("/");
   await settle(page);
@@ -310,12 +335,10 @@ test("booking calendar stays contained and emits a dated Airbnb URL", async ({ p
   await days.nth(0).click();
   await days.nth(1).click();
   expect((await layoutDiagnostics(page)).overflow).toBeLessThanOrEqual(1);
-  const popupPromise = page.waitForEvent("popup");
   await form.getByRole("button", { name: "Check availability" }).click();
-  const popup = await popupPromise;
-  expect(popup.url()).toContain("check_in=");
-  expect(popup.url()).toContain("check_out=");
-  await popup.close();
+  const openedUrl = await capturedWindowOpenUrl(page);
+  expect(openedUrl).toContain("check_in=");
+  expect(openedUrl).toContain("check_out=");
 });
 
 for (const route of routes) {
@@ -337,7 +360,7 @@ for (const route of routes) {
     page.on("response", (response) => {
       const url = new URL(response.url());
       if (
-        url.origin === "http://127.0.0.1:3101" &&
+        url.origin === qaOrigin &&
         response.status() >= 400 &&
         !(route === "/route-that-does-not-exist" && response.request().isNavigationRequest())
       ) {
@@ -350,8 +373,8 @@ for (const route of routes) {
       anchors.map((anchor) => (anchor as HTMLAnchorElement).getAttribute("href") ?? ""),
     );
     for (const href of [...new Set(links)]) {
-      const target = new URL(href, "http://127.0.0.1:3101");
-      const response = await request.get(target.origin + target.pathname);
+      const target = new URL(href, qaBaseURL);
+      const response = await request.get(target.origin + target.pathname + target.search);
       expect(response.status(), `${route} links to ${href}`).toBeLessThan(400);
       if (target.hash && target.pathname === new URL(page.url()).pathname) {
         expect(
