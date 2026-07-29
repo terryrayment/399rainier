@@ -347,12 +347,13 @@ for (const route of routes) {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(`pageerror: ${error.message}`));
     page.on("console", (message) => {
+      const isExpectedNotFoundLog =
+        route === "/route-that-does-not-exist" &&
+        message.text().includes("Failed to load resource") &&
+        message.text().includes("404");
       if (
         message.type() === "error" &&
-        !(
-          route === "/route-that-does-not-exist" &&
-          message.text().includes("404 (Not Found)")
-        )
+        !isExpectedNotFoundLog
       ) {
         errors.push(`console: ${message.text()}`);
       }
