@@ -2,6 +2,7 @@ import path from "path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  distDir: process.env.PLAYWRIGHT ? ".next-playwright" : ".next",
   turbopack: {
     root: path.resolve(__dirname),
   },

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { BookingDock } from "@/components/illustration/booking-dock";
 import { PhotoClearing } from "@/components/illustration/photo-clearing";
 import { SceneChapter } from "@/components/illustration/scene-chapter";
@@ -31,19 +32,21 @@ export function ArrivalClearing() {
         <BookingDock variant="hero" className="arrival-clearing-dock" />
         {/* Pine skirts break the hard parchment→forest seam around the dock */}
         <div className="arrival-pine-skirt" aria-hidden="true">
-          <img
+          <Image
             src={sceneAssets.pinesLeft}
             alt=""
+            width={1024}
+            height={1536}
+            sizes="(max-width: 767px) 44vw, 30vw"
             className="arrival-pine-skirt-plate arrival-pine-skirt-plate--left"
-            loading="lazy"
-            decoding="async"
           />
-          <img
+          <Image
             src={sceneAssets.pinesRight}
             alt=""
+            width={1024}
+            height={1536}
+            sizes="(max-width: 767px) 44vw, 30vw"
             className="arrival-pine-skirt-plate arrival-pine-skirt-plate--right"
-            loading="lazy"
-            decoding="async"
           />
         </div>
       </div>

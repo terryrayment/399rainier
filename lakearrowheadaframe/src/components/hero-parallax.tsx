@@ -23,7 +23,7 @@ export function HeroParallax({ src, alt }: HeroParallaxProps) {
     const update = () => {
       frame = 0;
       const offset = Math.min(window.scrollY, window.innerHeight) * 0.28;
-      layer.style.transform = `translate3d(0, ${offset}px, 0) scale(1.12)`;
+      layer.style.transform = `translate3d(0, ${offset}px, 0)`;
     };
 
     const onScroll = () => {
@@ -41,11 +41,11 @@ export function HeroParallax({ src, alt }: HeroParallaxProps) {
   }, []);
 
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <div className="parallax-frame absolute inset-0">
       <div
         ref={layerRef}
         className="absolute inset-x-0 -top-[8%] h-[116%] will-change-transform"
-        style={{ transform: "translate3d(0, 0, 0) scale(1.12)" }}
+        style={{ transform: "translate3d(0, 0, 0)" }}
       >
         <Image
           src={src}

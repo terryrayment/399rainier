@@ -29,6 +29,9 @@ export function PageShell({
   const scene: SceneConfig = {
     ...family.scene,
     intensity: intensity ?? family.intensity,
+    // Supporting-page heroes need one continuous color field. The canopy plates
+    // are designed for tall homepage chapters and expose their lower edge here.
+    canopy: false,
   };
   const darkTone =
     scene.tone === "dusk" || scene.tone === "night" || scene.tone === "forest";
@@ -51,11 +54,15 @@ export function PageShell({
       </ForestScene>
       <ForestTransition
         variant={
-          scene.tone === "dusk" || scene.tone === "night"
-            ? "ember"
-            : scene.tone === "sage"
-              ? "lake"
-              : "mist"
+          scene.tone === "dusk"
+            ? "dusk-paper"
+            : scene.tone === "night"
+              ? "night-paper"
+              : scene.tone === "forest"
+                ? "forest-paper"
+                : scene.tone === "sage"
+                  ? "mist"
+                  : "paper"
         }
       />
       <div className="page-shell-body">{children}</div>

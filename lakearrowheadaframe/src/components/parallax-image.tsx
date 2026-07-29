@@ -41,7 +41,7 @@ export function ParallaxImage({
       // -0.5 when entering bottom, 0.5 when leaving top
       const progress = (viewH / 2 - (rect.top + rect.height / 2)) / viewH;
       const offset = progress * rect.height * strength;
-      layer.style.transform = `translate3d(0, ${offset}px, 0) scale(1.16)`;
+      layer.style.transform = `translate3d(0, ${offset}px, 0)`;
     };
 
     const onScroll = () => {
@@ -61,11 +61,11 @@ export function ParallaxImage({
   }, [strength]);
 
   return (
-    <div ref={frameRef} className={`relative overflow-hidden ${className}`}>
+    <div ref={frameRef} className={`parallax-frame relative ${className}`}>
       <div
         ref={layerRef}
         className="absolute inset-x-0 -top-[8%] h-[116%] will-change-transform"
-        style={{ transform: "translate3d(0, 0, 0) scale(1.16)" }}
+        style={{ transform: "translate3d(0, 0, 0)" }}
       >
         <Image
           src={src}

@@ -23,7 +23,7 @@ export default function ClassicLayout({
               Illustrated view
             </Link>
           </nav>
-          <AirbnbButton campaign="classic-nav" content="nav-cta" className="hidden md:inline-flex" />
+          <AirbnbButton campaign="classic-nav" content="nav-cta" className="classic-nav-cta" />
         </div>
       </header>
       {children}

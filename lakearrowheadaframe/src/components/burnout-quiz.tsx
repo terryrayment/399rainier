@@ -9,27 +9,36 @@ import {
 } from "@/data/burnout-quiz";
 
 export function BurnoutQuiz() {
-  const [step, setStep] = useState(0);
-  const [scores, setScores] = useState<Record<BurnoutProfile, number>>({
-    reset: 0,
-    reconnect: 0,
-    recharge: 0,
-  });
-
+  const [answers, setAnswers] = useState<BurnoutProfile[]>([]);
+  const step = answers.length;
   const question = burnoutQuestions[step];
   const finished = step >= burnoutQuestions.length;
 
   const result = useMemo(() => {
     if (!finished) return null;
+    const scores: Record<BurnoutProfile, number> = {
+      reset: 0,
+      reconnect: 0,
+      recharge: 0,
+    };
+    answers.forEach((profile) => {
+      scores[profile] += 1;
+    });
     const entries = Object.entries(scores) as [BurnoutProfile, number][];
     entries.sort((a, b) => b[1] - a[1]);
     return burnoutProtocols[entries[0][0]];
-  }, [finished, scores]);
+  }, [answers, finished]);
 
   function choose(profile: BurnoutProfile) {
-    const nextScores = { ...scores, [profile]: scores[profile] + 1 };
-    setScores(nextScores);
-    setStep((current) => current + 1);
+    setAnswers((current) => [...current, profile]);
+  }
+
+  function goBack() {
+    setAnswers((current) => current.slice(0, -1));
+  }
+
+  function restart() {
+    setAnswers([]);
   }
 
   if (finished && result) {
@@ -44,8 +53,15 @@ export function BurnoutQuiz() {
             </li>
           ))}
         </ul>
-        <div className="mt-10">
+        <div className="mt-10 flex flex-wrap items-center gap-4">
           <AirbnbButton campaign="burnout-reset" content="quiz-result" label={result.cta} />
+          <button
+            type="button"
+            onClick={restart}
+            className="inline-flex min-h-11 items-center rounded-full px-5 text-sm font-medium text-copper underline underline-offset-4 hover:text-ink"
+          >
+            Restart quiz
+          </button>
         </div>
       </div>
     );
@@ -69,6 +85,15 @@ export function BurnoutQuiz() {
           </button>
         ))}
       </div>
+      {step > 0 ? (
+        <button
+          type="button"
+          onClick={goBack}
+          className="mt-6 inline-flex min-h-11 items-center rounded-full px-4 text-sm font-medium text-copper underline underline-offset-4 hover:text-ink"
+        >
+          Back
+        </button>
+      ) : null}
     </div>
   );
 }

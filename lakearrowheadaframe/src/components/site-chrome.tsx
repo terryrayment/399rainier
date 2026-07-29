@@ -39,13 +39,41 @@ export function SiteNav() {
       if (event.key === "Escape") {
         setOpen(false);
         triggerRef.current?.focus();
+        return;
+      }
+      if (event.key === "Tab") {
+        const focusable = [
+          triggerRef.current,
+          ...Array.from(
+            panelRef.current?.querySelectorAll<HTMLElement>(
+              'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+            ) ?? [],
+          ),
+        ].filter((item): item is HTMLElement => Boolean(item));
+        const currentIndex = focusable.indexOf(document.activeElement as HTMLElement);
+        if (currentIndex === -1) return;
+        event.preventDefault();
+        const direction = event.shiftKey ? -1 : 1;
+        const nextIndex = (currentIndex + direction + focusable.length) % focusable.length;
+        focusable[nextIndex]?.focus();
       }
     };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     document.addEventListener("keydown", onKey);
     const first = panelRef.current?.querySelector<HTMLElement>("a, button");
     first?.focus();
-    return () => document.removeEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previousOverflow;
+    };
   }, [open]);
+
+  useEffect(() => {
+    const closeOnHistoryNavigation = () => setOpen(false);
+    window.addEventListener("popstate", closeOnHistoryNavigation);
+    return () => window.removeEventListener("popstate", closeOnHistoryNavigation);
+  }, []);
 
   return (
     <header className={`site-nav ${condensed ? "site-nav--condensed" : "site-nav--clear"}`}>

@@ -6,7 +6,13 @@ const eslintConfig = [
   ...nextVitals,
   ...nextTs,
   {
-    ignores: [".next/**", "node_modules/**", "out/**", "public/**"],
+    ignores: [
+      ".next/**",
+      ".next-playwright/**",
+      "node_modules/**",
+      "out/**",
+      "public/**",
+    ],
   },
 ];
 

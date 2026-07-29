@@ -1,7 +1,18 @@
 import { SceneBridge, type BridgeMotif, type BridgeTone } from "@/components/illustration/scene-bridge";
 
 type ForestTransitionProps = {
-  variant?: "mist" | "canopy" | "ember" | "lake" | "night" | "cabin-mist" | "hills";
+  variant?:
+    | "mist"
+    | "canopy"
+    | "ember"
+    | "lake"
+    | "night"
+    | "cabin-mist"
+    | "hills"
+    | "paper"
+    | "dusk-paper"
+    | "forest-paper"
+    | "night-paper";
   className?: string;
 };
 
@@ -9,6 +20,34 @@ const variantMap: Record<
   NonNullable<ForestTransitionProps["variant"]>,
   { fromTone: BridgeTone; toTone: BridgeTone; motif: BridgeMotif; height: string; mobileHeight: string }
 > = {
+  paper: {
+    fromTone: "paper",
+    toTone: "paper",
+    motif: "clearing",
+    height: "4.5rem",
+    mobileHeight: "3rem",
+  },
+  "dusk-paper": {
+    fromTone: "dusk",
+    toTone: "paper",
+    motif: "hills-dusk",
+    height: "7rem",
+    mobileHeight: "4.75rem",
+  },
+  "forest-paper": {
+    fromTone: "forest",
+    toTone: "paper",
+    motif: "mist-lift",
+    height: "7rem",
+    mobileHeight: "4.75rem",
+  },
+  "night-paper": {
+    fromTone: "night",
+    toTone: "paper",
+    motif: "nightfall",
+    height: "7.5rem",
+    mobileHeight: "5rem",
+  },
   mist: {
     fromTone: "sage",
     toTone: "paper",
