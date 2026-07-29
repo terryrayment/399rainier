@@ -1,0 +1,10 @@
+docs
+tests
+playwright-report
+test-results
+.next
+.next-playwright
+node_modules
+.git
+*.md
+!README.md
