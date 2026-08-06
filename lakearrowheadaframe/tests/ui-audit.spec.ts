@@ -42,6 +42,7 @@ const sectionCaptureStyle = `${fullPageCaptureStyle}
   .site-nav, .booking-dock--mobile { display: none !important; }`;
 const mapReadinessSelector = ".gm-style img";
 const mapRenderTimeout = 8_000;
+const mapSnapshotSelector = "[data-ui-audit-map-snapshot]";
 
 const boundaryWidths = [599, 600, 767, 768, 769, 899, 900, 901] as const;
 
@@ -157,13 +158,95 @@ async function waitForMapRender(page: Page) {
   return { inViewport: true, ready: true, selector: mapReadinessSelector } as const;
 }
 
+async function freezeRenderedMap(page: Page) {
+  const iframe = page.locator(".illustrated-map-iframe");
+  const png = await iframe.screenshot({ style: sectionCaptureStyle });
+  const snapshotSource = `data:image/png;base64,${png.toString("base64")}`;
+
+  await iframe.evaluate(async (element, source) => {
+    const snapshot = document.createElement("img");
+    snapshot.dataset.uiAuditMapSnapshot = "true";
+    snapshot.alt = "";
+    snapshot.src = source;
+    snapshot.style.cssText =
+      "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;pointer-events:none";
+    element.parentElement?.append(snapshot);
+    await snapshot.decode();
+  }, snapshotSource);
+}
+
+async function returnToTopAndSettle(page: Page) {
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForFunction(() => window.scrollY === 0);
+  await page.evaluate(
+    () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+  );
+  await expect
+    .poll(() =>
+      page.locator(".arrival-clearing").evaluate((element) => {
+        const box = element.getBoundingClientRect();
+        return box.bottom > 0 && box.top < window.innerHeight;
+      }),
+    )
+    .toBe(true);
+  await expect(page.locator(".booking-dock--mobile")).toBeHidden();
+}
+
+async function confirmMapRenderAfterTop(page: Page) {
+  const mapFrame = page.frames().find((frame) => frame.url().includes("/maps/embed"));
+  if (!mapFrame) throw new Error("Map iframe disappeared after returning to the top");
+  await mapFrame.waitForFunction(
+    (tileSelector) => {
+      const mapRoot = document.querySelector("#mapDiv");
+      const mapRegion = mapRoot?.querySelector<HTMLElement>(
+        '[role="region"][aria-roledescription="map"]',
+      );
+      const renderedTile = [...(mapRoot?.querySelectorAll<HTMLImageElement>(tileSelector) ?? [])].find(
+        (image) =>
+          image.complete &&
+          image.naturalWidth > 0 &&
+          image.naturalHeight > 0 &&
+          image.getBoundingClientRect().width > 0 &&
+          image.getBoundingClientRect().height > 0,
+      );
+      const regionBox = mapRegion?.getBoundingClientRect();
+      return Boolean(regionBox?.width && regionBox.height && renderedTile);
+    },
+    mapReadinessSelector,
+    { timeout: mapRenderTimeout },
+  );
+  await expect(page.locator(mapSnapshotSelector)).toHaveCount(1);
+  return true;
+}
+
+async function removeRenderedMapSnapshot(page: Page) {
+  await page.locator(mapSnapshotSelector).evaluateAll((snapshots) =>
+    snapshots.forEach((snapshot) => snapshot.remove()),
+  );
+}
+
 async function captureAuditEvidence(page: Page, viewportName: string) {
   if (process.env.UPDATE_UI_SCREENSHOTS !== "1") return;
 
+  let captureStep = 0;
   const mapReadiness = await waitForMapRender(page);
+  const captureSequence = {
+    fullPageCapture: 0,
+    mapReadyInViewport: ++captureStep,
+    returnedTopAndSettled: 0,
+  };
+  await freezeRenderedMap(page);
+  await returnToTopAndSettle(page);
+  const mapReadyAfterTop = await confirmMapRenderAfterTop(page);
+  captureSequence.returnedTopAndSettled = ++captureStep;
   const fullPagePath = capturePath(viewportName, "full-page.png");
   await mkdir(path.dirname(fullPagePath), { recursive: true });
-  await page.screenshot({ path: fullPagePath, fullPage: true, style: fullPageCaptureStyle });
+  captureSequence.fullPageCapture = ++captureStep;
+  try {
+    await page.screenshot({ path: fullPagePath, fullPage: true, style: fullPageCaptureStyle });
+  } finally {
+    await removeRenderedMapSnapshot(page);
+  }
 
   if (sectionCaptureViewportNames.has(viewportName)) {
     for (const sectionName of sectionCaptureNames) {
@@ -180,10 +263,10 @@ async function captureAuditEvidence(page: Page, viewportName: string) {
 
   return {
     auditRoot,
+    captureSequence,
     fullPageStyle: fullPageCaptureStyle,
-    mapInViewportBeforeFullPageCapture: mapReadiness.inViewport,
+    mapReadyAfterTopBeforeFullPageCapture: mapReadyAfterTop,
     mapReadinessSelector: mapReadiness.selector,
-    mapReadyBeforeFullPageCapture: mapReadiness.ready,
     sectionStyle: sectionCaptureStyle,
   };
 }
@@ -564,12 +647,23 @@ test.describe("visual integrity", () => {
       if (process.env.UPDATE_UI_SCREENSHOTS === "1") {
         expect(captureConfig).toEqual({
           auditRoot,
+          captureSequence: {
+            fullPageCapture: 3,
+            mapReadyInViewport: 1,
+            returnedTopAndSettled: 2,
+          },
           fullPageStyle: expect.stringContaining("nextjs-portal"),
-          mapInViewportBeforeFullPageCapture: true,
+          mapReadyAfterTopBeforeFullPageCapture: true,
           mapReadinessSelector: ".gm-style img",
-          mapReadyBeforeFullPageCapture: true,
           sectionStyle: expect.stringContaining(".site-nav"),
         });
+        if (!captureConfig) throw new Error("Opt-in capture did not return sequencing metadata");
+        expect(captureConfig.captureSequence.mapReadyInViewport).toBeLessThan(
+          captureConfig.captureSequence.returnedTopAndSettled,
+        );
+        expect(captureConfig.captureSequence.returnedTopAndSettled).toBeLessThan(
+          captureConfig.captureSequence.fullPageCapture,
+        );
         expect(captureConfig?.sectionStyle).toContain(".booking-dock--mobile");
         expect(path.relative(process.cwd(), auditRoot)).toBe(path.join("docs", "ui-audit", "after"));
         expect(capturePath(viewport.name, "full-page.png")).toBe(
@@ -896,7 +990,8 @@ test.describe("interaction and preservation", () => {
 
         override observe(target: Element) {
           this.record.targets.push(target);
-          super.observe(target);
+          // Manual batches are the sole state source in this harness; registering the
+          // target natively would race those deterministic callbacks.
         }
       };
     });
