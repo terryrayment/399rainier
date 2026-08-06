@@ -118,6 +118,22 @@ async function expectChildrenInside(page: Page, childSelector: string, parentSel
   }
 }
 
+async function expectInsideImmediateParents(
+  page: Page,
+  selector: string,
+  expectedCount: number,
+  label: string,
+) {
+  const items = page.locator(selector);
+  expect(await items.count(), `${label} count`).toBe(expectedCount);
+  for (let index = 0; index < expectedCount; index += 1) {
+    const item = items.nth(index);
+    const itemBox = await requiredBox(item, `${label} ${index + 1}`);
+    const parentBox = await requiredBox(item.locator("xpath=.."), `${label} ${index + 1} parent`);
+    expectInside(itemBox, parentBox, `${label} ${index + 1}`);
+  }
+}
+
 async function horizontalOverflow(page: Page) {
   return page.evaluate(
     () => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth,
@@ -259,25 +275,23 @@ async function expectResponsiveGeometry(page: Page, width: (typeof boundaryWidth
   }
 
   if (width < 900) {
-    await expect.soft(page.locator(".site-nav-menu-trigger"), "compact navigation trigger").toBeVisible();
-    await expect.soft(page.locator(".site-nav-links"), "desktop navigation links").toBeHidden();
+    expect
+      .soft(await page.locator(".site-nav-menu-trigger").isVisible(), "compact navigation trigger")
+      .toBe(true);
+    expect.soft(await page.locator(".site-nav-links").isVisible(), "desktop navigation links").toBe(false);
   } else {
-    await expect.soft(page.locator(".site-nav-menu-trigger"), "compact navigation trigger").toBeHidden();
-    await expect.soft(page.locator(".site-nav-links"), "desktop navigation links").toBeVisible();
+    expect
+      .soft(await page.locator(".site-nav-menu-trigger").isVisible(), "compact navigation trigger")
+      .toBe(false);
+    expect.soft(await page.locator(".site-nav-links").isVisible(), "desktop navigation links").toBe(true);
   }
 
   await expectImmediateGalleryBounds(page);
+  await expectInsideImmediateParents(page, ".editorial-gallery-frame", 3, "editorial gallery frame");
+  await expectInsideImmediateParents(page, ".editorial-gallery-detail", 3, "editorial gallery detail");
   await expectChildrenInside(page, ".ritual-step", ".ritual-sequence-steps");
-
-  const ritualCards = page.locator(".ritual-step");
-  for (let index = 0; index < (await ritualCards.count()); index += 1) {
-    const card = await requiredBox(ritualCards.nth(index), `ritual card ${index + 1}`);
-    const proof = await requiredBox(
-      ritualCards.nth(index).locator(".ritual-step-proof"),
-      `ritual proof ${index + 1}`,
-    );
-    expectInside(proof, card, `ritual proof ${index + 1}`);
-  }
+  await expectInsideImmediateParents(page, ".ritual-step", 3, "ritual step");
+  await expectInsideImmediateParents(page, ".ritual-step-proof", 3, "ritual step proof");
 }
 
 test.describe("responsive geometry", () => {
@@ -455,30 +469,50 @@ test.describe("interaction and preservation", () => {
     await expect(sticky).toBeVisible();
     await expect(sticky).toHaveAttribute("href", stickyAirbnbHref);
 
-    const motionSurfaces = page.locator(
-      ".forest-layer--mist, .world-mist-band, .ritual-steam, .scene-bridge-plate, .photo-clearing-parallax-wrap > div, .editorial-gallery img",
-    );
+    const motionFamilies = [
+      { label: "scene mist", selector: ".forest-scene-mist", count: 5 },
+      { label: "world mist", selector: ".world-mist-band", count: 2 },
+      { label: "ritual steam", selector: ".ritual-steam", count: 1 },
+      { label: "scene bridge plate", selector: ".scene-bridge-plate", count: 2 },
+      {
+        label: "parallax layer",
+        selector: ".photo-clearing-parallax-wrap .parallax-frame > div",
+        count: 2,
+      },
+      {
+        label: "gallery image",
+        selector:
+          ".editorial-gallery .photo-clearing-frame img, .editorial-gallery .editorial-gallery-detail img",
+        count: 6,
+      },
+    ] as const;
     const identityTransforms = new Set([
       "none",
       "matrix(1, 0, 0, 1, 0, 0)",
       "matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)",
     ]);
-    for (let index = 0; index < (await motionSurfaces.count()); index += 1) {
-      const style = await motionSurfaces.nth(index).evaluate((element) => {
-        const computed = getComputedStyle(element);
-        return {
-          animationName: computed.animationName,
-          transitionDuration: computed.transitionDuration,
-          transform: computed.transform,
-        };
-      });
-      expect.soft(style.animationName, `motion surface ${index + 1} animation`).toBe("none");
-      expect.soft(style.transitionDuration, `motion surface ${index + 1} transition`).toBe("0s");
-      expect.soft(identityTransforms.has(style.transform), `motion surface ${index + 1} transform`).toBe(true);
+    for (const family of motionFamilies) {
+      const surfaces = page.locator(family.selector);
+      expect(await surfaces.count(), `${family.label} count`).toBe(family.count);
+      for (let index = 0; index < family.count; index += 1) {
+        const style = await surfaces.nth(index).evaluate((element) => {
+          const computed = getComputedStyle(element);
+          return {
+            animationName: computed.animationName,
+            transitionDuration: computed.transitionDuration,
+            transform: computed.transform,
+          };
+        });
+        expect.soft(style.animationName, `${family.label} ${index + 1} animation`).toBe("none");
+        expect.soft(style.transitionDuration, `${family.label} ${index + 1} transition`).toBe("0s");
+        expect
+          .soft(identityTransforms.has(style.transform), `${family.label} ${index + 1} transform`)
+          .toBe(true);
+      }
     }
 
     await page.locator(".site-footer").scrollIntoViewIfNeeded();
-    await expect(page.locator(".booking-dock--mobile")).toHaveCount(0);
+    await expect(page.locator(".booking-dock--mobile")).toBeHidden();
   });
 });
 
@@ -490,14 +524,44 @@ test.describe("future responsive surface contracts", () => {
     test(`visual restraint: ${viewport.name} rails, atmosphere, and token spacing`, async ({ page }) => {
       await openHome(page, viewport);
 
-      const restrainedLayers = page.locator(
-        ".scene-chapter--trust .forest-scene-rail, .scene-chapter--interior .forest-scene-rail, .scene-chapter--interior .forest-scene-mist, .scene-chapter--interior .forest-scene-canopy, .scene-chapter--gallery .forest-scene-mist, .scene-chapter--gallery .forest-scene-canopy, .scene-chapter--gallery .forest-scene-foreground",
-      );
-      for (let index = 0; index < (await restrainedLayers.count()); index += 1) {
-        const opacity = await restrainedLayers.nth(index).evaluate((element) =>
-          Number.parseFloat(getComputedStyle(element).opacity),
-        );
-        expect.soft(opacity, `restrained atmosphere ${index + 1}`).toBeLessThanOrEqual(0.45);
+      const restrainedFamilies = [
+        {
+          label: "Trust rails",
+          selector: ".scene-chapter--trust .forest-scene-rail",
+          expectedCount: 2,
+        },
+        {
+          label: "Interior rails",
+          selector: ".scene-chapter--interior .forest-scene-rail",
+          expectedCount: 2,
+        },
+        {
+          label: "Interior atmosphere",
+          selector:
+            ".scene-chapter--interior .forest-scene-mist, .scene-chapter--interior .forest-scene-canopy",
+          minimumCount: 1,
+        },
+        {
+          label: "Gallery atmosphere",
+          selector:
+            ".scene-chapter--gallery .forest-scene-mist, .scene-chapter--gallery .forest-scene-canopy, .scene-chapter--gallery .forest-scene-foreground",
+          minimumCount: 1,
+        },
+      ] as const;
+      for (const family of restrainedFamilies) {
+        const layers = page.locator(family.selector);
+        const count = await layers.count();
+        if ("expectedCount" in family) {
+          expect(count, `${family.label} count`).toBe(family.expectedCount);
+        } else {
+          expect(count, `${family.label} count`).toBeGreaterThanOrEqual(family.minimumCount);
+        }
+        for (let index = 0; index < count; index += 1) {
+          const opacity = await layers.nth(index).evaluate((element) =>
+            Number.parseFloat(getComputedStyle(element).opacity),
+          );
+          expect.soft(opacity, `${family.label} ${index + 1} opacity`).toBeLessThanOrEqual(0.45);
+        }
       }
 
       for (const scene of ["trust", "interior", "gallery"] as const) {
