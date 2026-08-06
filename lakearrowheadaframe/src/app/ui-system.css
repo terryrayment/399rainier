@@ -131,8 +131,11 @@
 .inside-glass-inner,
 .photographic-clearing-inner {
   padding-top: var(--ui-section);
-  /* The recovered gallery rule has greater specificity than this approved selector. */
-  padding-bottom: var(--ui-section) !important;
+  padding-bottom: var(--ui-section);
+}
+
+.clearing-home .scene-chapter--gallery .scene-chapter-inner {
+  padding-bottom: var(--ui-section);
 }
 
 .inside-glass-photo {
