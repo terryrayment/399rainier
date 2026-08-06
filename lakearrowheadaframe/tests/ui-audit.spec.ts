@@ -186,7 +186,7 @@ async function expectEqualGalleryDetails(page: Page, galleryDetails: Locator) {
     .toBeLessThanOrEqual(geometryTolerance);
 }
 
-async function expectImmediateGalleryBounds(page: Page) {
+async function expectImmediateGalleryBounds(page: Page, width: (typeof boundaryWidths)[number]) {
   const galleryGrid = await requiredBox(page.locator(".editorial-gallery-grid"), "gallery grid");
 
   const dominant = page.locator(".editorial-gallery-dominant");
@@ -199,8 +199,13 @@ async function expectImmediateGalleryBounds(page: Page) {
   );
 
   const mediums = page.locator(".editorial-gallery-mediums");
-  const mediumsBox = await requiredBox(mediums, "gallery medium group");
-  expectInside(mediumsBox, galleryGrid, "gallery medium group");
+  let mediumsBox = galleryGrid;
+  if (width >= 600 && width < 900) {
+    expect.soft(await mediums.evaluate((element) => getComputedStyle(element).display)).toBe("contents");
+  } else {
+    mediumsBox = await requiredBox(mediums, "gallery medium group");
+    expectInside(mediumsBox, galleryGrid, "gallery medium group");
+  }
   const mediumItems = mediums.locator(".editorial-gallery-medium");
   for (let index = 0; index < (await mediumItems.count()); index += 1) {
     const medium = mediumItems.nth(index);
@@ -238,10 +243,6 @@ async function expectResponsiveGeometry(page: Page, width: (typeof boundaryWidth
     page.locator(".editorial-gallery-dominant"),
     "gallery dominant frame",
   );
-  const supportingBox = await requiredBox(
-    page.locator(".editorial-gallery-mediums"),
-    "gallery supporting column",
-  );
   const ritualBox = await requiredBox(ritualGrid, "ritual grid");
   const thirdRitualBox = await requiredBox(page.locator(".ritual-step").nth(2), "third ritual card");
 
@@ -261,6 +262,10 @@ async function expectResponsiveGeometry(page: Page, width: (typeof boundaryWidth
     );
     await expectEqualGalleryDetails(page, galleryDetails);
   } else {
+    const supportingBox = await requiredBox(
+      page.locator(".editorial-gallery-mediums"),
+      "gallery supporting column",
+    );
     expect.soft(await gridColumnCount(galleryGrid), "gallery columns").toBe(2);
     expect.soft(await gridColumnCount(galleryDetails), "gallery detail columns").toBe(3);
     expect.soft(await gridColumnCount(ritualGrid), "ritual columns").toBe(3);
@@ -286,7 +291,7 @@ async function expectResponsiveGeometry(page: Page, width: (typeof boundaryWidth
     expect.soft(await page.locator(".site-nav-links").isVisible(), "desktop navigation links").toBe(true);
   }
 
-  await expectImmediateGalleryBounds(page);
+  await expectImmediateGalleryBounds(page, width);
   await expectInsideImmediateParents(page, ".editorial-gallery-frame", 3, "editorial gallery frame");
   await expectInsideImmediateParents(page, ".editorial-gallery-detail", 3, "editorial gallery detail");
   await expectChildrenInside(page, ".ritual-step", ".ritual-sequence-steps");
