@@ -1,0 +1,632 @@
+:root {
+  --ui-parchment: #eae7d8;
+  --ui-elevated: #f1e9d2;
+  --ui-sage: #e3e6d8;
+  --ui-ink: #241f1a;
+  --ui-muted: #5f5a52;
+  --ui-pine: #2f523c;
+  --ui-forest: #1e231f;
+  --ui-dusk: #1c2a38;
+  --ui-night: #0e1412;
+  --ui-line-light: rgb(36 31 26 / 14%);
+  --ui-line-dark: rgb(234 231 216 / 18%);
+  --ui-space-1: 0.25rem;
+  --ui-space-2: 0.5rem;
+  --ui-space-3: 0.75rem;
+  --ui-space-4: 1rem;
+  --ui-space-6: 1.5rem;
+  --ui-space-8: 2rem;
+  --ui-space-12: 3rem;
+  --ui-space-16: 4rem;
+  --ui-space-24: 6rem;
+  --ui-gutter: clamp(1rem, 4vw, 3rem);
+  --ui-section: clamp(4.5rem, 9vw, 8rem);
+  --ui-content: 72rem;
+  --ui-wide: 86rem;
+  --ui-radius: 1rem;
+  --ui-shadow: 0 18px 45px rgb(36 31 26 / 12%);
+}
+
+.site-illustrated {
+  --color-muted: var(--ui-muted);
+  color: var(--ui-ink);
+  background: var(--ui-parchment);
+}
+
+.site-illustrated .clearing-home {
+  --color-forest-deep: var(--ui-forest);
+}
+
+.site-illustrated :is(h1, h2) {
+  text-wrap: balance;
+}
+
+.site-illustrated :is(p, dd, li) {
+  text-wrap: pretty;
+}
+
+.site-illustrated .arrival-clearing-subhead,
+.site-illustrated .inside-glass-body,
+.site-illustrated .inside-glass-seo,
+.site-illustrated .ritual-sequence-lead,
+.site-illustrated .ritual-step-body,
+.site-illustrated .place-truth-item-body,
+.site-illustrated .place-truth-faq-a,
+.site-illustrated .night-cta-body,
+.site-illustrated .site-footer-copy {
+  line-height: 1.7;
+}
+
+.site-illustrated .inside-glass-title,
+.site-illustrated .editorial-gallery-title,
+.site-illustrated .ritual-sequence-title,
+.site-illustrated .place-truth-heading,
+.site-illustrated .night-cta-title {
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+}
+
+.site-illustrated .inside-glass-truth-title,
+.site-illustrated .ritual-step-title,
+.site-illustrated .place-truth-item-title,
+.site-illustrated .place-truth-faq-q {
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  line-height: 1.2;
+}
+
+.site-illustrated
+  :is(a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid var(--ui-pine);
+  outline-offset: 3px;
+}
+
+.site-illustrated
+  :is(
+    .scene-chapter--tone-forest,
+    .scene-chapter--tone-dusk,
+    .scene-chapter--tone-night,
+    .site-footer--night
+  )
+  :is(a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline-color: var(--ui-parchment);
+}
+
+.site-illustrated
+  :is(button, .airbnb-button, .booking-pill-submit, .site-nav-brand, .site-nav-menu-trigger) {
+  min-block-size: 44px;
+}
+
+.site-illustrated
+  :is(
+    .trust-proof-chip,
+    .editorial-gallery-link,
+    .place-truth-link,
+    .ritual-sequence-link,
+    .night-link,
+    .night-cluster-link,
+    .site-footer-links a
+  ) {
+  display: inline-flex;
+  min-block-size: 44px;
+  align-items: center;
+}
+
+.site-illustrated .booking-pill :is(select, .booking-pill-dog) {
+  min-block-size: 44px;
+}
+
+.site-illustrated .scene-chapter-inner {
+  width: min(100%, var(--ui-content));
+  max-width: none;
+  margin-inline: auto;
+  padding-inline: var(--ui-gutter);
+}
+
+.site-illustrated :is(.photographic-clearing-inner, .ritual-at-dusk-inner) {
+  width: min(100%, var(--ui-wide));
+}
+
+.site-illustrated .arrival-clearing .scene-chapter-inner {
+  width: min(100%, var(--ui-content));
+  max-width: none;
+  min-height: auto;
+  padding: clamp(5.5rem, 8vw, 7rem) var(--ui-gutter) var(--ui-space-8);
+}
+
+.site-illustrated .arrival-clearing-headline {
+  max-width: min(14ch, 100%);
+  font-size: clamp(2.35rem, 6vw, 4.6rem);
+  line-height: 1.02;
+}
+
+.site-illustrated .booking-pill,
+.site-illustrated .illustrated-map-panel,
+.site-illustrated .night-cta {
+  border: 1px solid var(--ui-line-light);
+  border-radius: var(--ui-radius);
+  box-shadow: var(--ui-shadow);
+}
+
+.site-illustrated .booking-pill {
+  background: var(--ui-elevated);
+}
+
+.site-illustrated .trust-forest-floor .scene-chapter-inner,
+.site-illustrated .inside-glass-inner,
+.site-illustrated .photographic-clearing-inner {
+  padding-top: var(--ui-section);
+  padding-bottom: var(--ui-section);
+}
+
+.site-illustrated .clearing-home .scene-chapter--gallery .scene-chapter-inner {
+  padding-bottom: var(--ui-section);
+}
+
+.site-illustrated .inside-glass-photo {
+  margin-top: 0;
+}
+
+.site-illustrated .trust-forest-floor .forest-scene-rail,
+.site-illustrated .inside-glass-chapter .forest-scene-rail {
+  opacity: 0.28;
+}
+
+.site-illustrated .trust-forest-floor .forest-scene-rail .forest-scene-plate,
+.site-illustrated .inside-glass-chapter .forest-scene-rail .forest-scene-plate {
+  opacity: 0.45;
+}
+
+.site-illustrated .inside-glass-chapter :is(.forest-scene-mist, .forest-scene-canopy),
+.site-illustrated
+  .scene-chapter--gallery
+  :is(.forest-scene-mist, .forest-scene-canopy, .forest-scene-foreground) {
+  opacity: 0.18;
+}
+
+.site-illustrated .clearing-home .arrival-clearing-stage,
+.site-illustrated .clearing-home .arrival-clearing .booking-dock--hero,
+.site-illustrated .clearing-home .arrival-clearing-dock {
+  position: relative;
+}
+
+.site-illustrated .clearing-home .arrival-clearing-stage::after {
+  content: none;
+}
+
+.site-illustrated .clearing-home .arrival-clearing .booking-dock--hero,
+.site-illustrated .clearing-home .arrival-clearing-dock {
+  margin-block: 0;
+}
+
+.site-illustrated .clearing-home .arrival-clearing .booking-pill {
+  margin-top: var(--ui-space-4);
+}
+
+.site-illustrated .clearing-home .scene-bridge--overlap-up,
+.site-illustrated .clearing-home .scene-bridge--overlap-down,
+.site-illustrated .clearing-home .scene-bridge--overlap-both,
+.site-illustrated .clearing-home .scene-bridge--arrival-trust.scene-bridge--overlap-both,
+.site-illustrated .clearing-home .scene-bridge--mist-lift.scene-bridge--overlap-down {
+  margin-block: 0;
+}
+
+.site-illustrated .clearing-home .scene-bridge--arrival-trust {
+  height: 7rem;
+  min-height: 7rem;
+  overflow: hidden;
+}
+
+.site-illustrated .clearing-home .scene-bridge--trust-interior {
+  height: 6rem;
+}
+
+.site-illustrated .clearing-home .scene-bridge--interior-gallery {
+  height: 3rem;
+}
+
+.site-illustrated .clearing-home .scene-bridge-wash,
+.site-illustrated .clearing-home .scene-bridge--forest-floor .scene-bridge-wash,
+.site-illustrated .clearing-home .scene-bridge--mist-lift .scene-bridge-wash,
+.site-illustrated .clearing-home .scene-bridge--clearing .scene-bridge-wash {
+  background: linear-gradient(180deg, var(--bridge-from) 0%, var(--bridge-to) 100%);
+}
+
+.site-illustrated .clearing-home .scene-bridge--forest-floor .scene-bridge-art {
+  inset: 35% 0 -10%;
+  opacity: 0.35;
+}
+
+.site-illustrated .clearing-home .scene-bridge--forest-floor .scene-bridge-pines {
+  opacity: 0.42;
+}
+
+.site-illustrated .clearing-home .scene-bridge-edge {
+  display: none;
+}
+
+@media (max-width: 599px) {
+  .site-illustrated .clearing-home .scene-bridge--arrival-trust {
+    height: 4.5rem;
+    min-height: 4.5rem;
+  }
+
+  .site-illustrated .clearing-home .scene-bridge--trust-interior {
+    height: 4rem;
+  }
+
+  .site-illustrated .clearing-home .scene-bridge--interior-gallery {
+    height: 2rem;
+  }
+}
+
+.site-illustrated .editorial-gallery-grid,
+.site-illustrated .editorial-gallery-mediums,
+.site-illustrated .editorial-gallery-details,
+.site-illustrated .ritual-sequence-steps {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ui-space-4);
+}
+
+.site-illustrated .editorial-gallery-grid {
+  margin-top: var(--ui-space-12);
+}
+
+.site-illustrated .editorial-gallery-mediums:empty {
+  display: none;
+}
+
+.site-illustrated .editorial-gallery-details {
+  grid-column: 1 / -1;
+}
+
+.site-illustrated
+  .editorial-gallery
+  :is(.photo-clearing-frame, .editorial-gallery-detail, .editorial-gallery-detail > div),
+.site-illustrated .ritual-step-proof .photo-clearing-frame {
+  overflow: clip;
+  border-radius: var(--ui-radius);
+}
+
+.site-illustrated .editorial-gallery-dominant .editorial-gallery-frame {
+  aspect-ratio: 3 / 4;
+}
+
+.site-illustrated .editorial-gallery-medium .editorial-gallery-frame,
+.site-illustrated .editorial-gallery-detail > div {
+  aspect-ratio: 4 / 3;
+}
+
+.site-illustrated .editorial-gallery img,
+.site-illustrated .ritual-step-proof img {
+  object-fit: cover;
+}
+
+.site-illustrated .ritual-sequence-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-illustrated .ritual-step {
+  min-width: 0;
+}
+
+.site-illustrated .ritual-step-proof,
+.site-illustrated .ritual-step-proof .photo-clearing,
+.site-illustrated .ritual-step-proof .photo-clearing-frame {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+}
+
+.site-illustrated .ritual-step-copy {
+  padding-top: var(--ui-space-4);
+}
+
+.site-illustrated .site-nav-cta,
+.site-illustrated .site-nav-links {
+  display: none;
+}
+
+.site-illustrated .site-nav-menu-trigger {
+  display: inline-flex;
+}
+
+.site-illustrated .site-nav-mobile-panel.is-open {
+  display: block;
+}
+
+.site-illustrated .site-nav-mobile-panel a {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+@media (min-width: 600px) and (max-width: 899px) {
+  .site-illustrated .editorial-gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .site-illustrated .editorial-gallery-dominant,
+  .site-illustrated .editorial-gallery-details {
+    grid-column: 1 / -1;
+  }
+
+  .site-illustrated .editorial-gallery-mediums {
+    display: contents;
+  }
+
+  .site-illustrated
+    .editorial-gallery-mediums:has(> :only-child)
+    > .editorial-gallery-medium {
+    grid-column: 1 / -1;
+  }
+
+  .site-illustrated .editorial-gallery-details {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .site-illustrated .editorial-gallery-details:has(> :only-child) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-illustrated .editorial-gallery-details:has(> :nth-child(2):last-child) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .site-illustrated .ritual-sequence-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--ui-space-8) var(--ui-space-6);
+  }
+
+  .site-illustrated .ritual-sequence-steps > :nth-child(3) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 900px) {
+  .site-illustrated .editorial-gallery-grid {
+    grid-template-columns: minmax(0, 1.55fr) minmax(18rem, 0.85fr);
+    align-items: stretch;
+    gap: var(--ui-space-4) var(--ui-space-6);
+  }
+
+  .site-illustrated .editorial-gallery-grid:has(> .editorial-gallery-mediums:empty) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-illustrated .editorial-gallery-dominant {
+    grid-area: 1 / 1;
+  }
+
+  .site-illustrated
+    .editorial-gallery-grid:has(> .editorial-gallery-mediums:empty)
+    > .editorial-gallery-dominant {
+    grid-area: auto;
+    grid-column: 1 / -1;
+  }
+
+  .site-illustrated .editorial-gallery-mediums {
+    grid-area: 1 / 2;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+
+  .site-illustrated .editorial-gallery-mediums:has(> :only-child) {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .site-illustrated .editorial-gallery-medium,
+  .site-illustrated .editorial-gallery-medium .photo-clearing,
+  .site-illustrated .editorial-gallery-medium .editorial-gallery-frame {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .site-illustrated .editorial-gallery-medium .editorial-gallery-frame {
+    aspect-ratio: auto;
+  }
+
+  .site-illustrated .editorial-gallery-details {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .site-illustrated .editorial-gallery-details:has(> :only-child) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-illustrated .editorial-gallery-details:has(> :nth-child(2):last-child) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .site-illustrated .ritual-sequence-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ui-space-6);
+  }
+
+  .site-illustrated .ritual-sequence-steps > :nth-child(3) {
+    grid-column: auto;
+  }
+
+  .site-illustrated .site-nav-links,
+  .site-illustrated .site-nav-cta {
+    display: flex;
+  }
+
+  .site-illustrated .site-nav-links a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .site-illustrated .site-nav-menu-trigger,
+  .site-illustrated .site-nav-mobile-panel,
+  .site-illustrated .site-nav-mobile-panel.is-open {
+    display: none;
+  }
+}
+
+.site-illustrated .clearing-home .scene-chapter--ritual {
+  background: var(--ui-dusk);
+}
+
+.site-illustrated .clearing-home .scene-chapter--ritual .forest-scene-bg {
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    var(--ui-parchment) 0,
+    var(--ui-dusk) clamp(5rem, 10vw, 8rem),
+    var(--ui-dusk) 100%
+  );
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.site-illustrated .clearing-home .scene-chapter--ritual .scene-chapter-inner {
+  padding-top: clamp(7rem, 12vw, 10rem);
+  padding-bottom: var(--ui-section);
+}
+
+.site-illustrated .clearing-home .scene-chapter--lake {
+  color: var(--ui-ink);
+  background: var(--ui-parchment);
+}
+
+.site-illustrated .clearing-home .scene-chapter--lake .forest-scene-bg {
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    var(--ui-dusk) 0,
+    var(--ui-parchment) clamp(5rem, 10vw, 8rem),
+    var(--ui-parchment) 100%
+  );
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.site-illustrated .clearing-home .scene-chapter--lake .scene-chapter-inner {
+  padding-top: clamp(7rem, 12vw, 10rem);
+  padding-bottom: var(--ui-section);
+}
+
+.site-illustrated .clearing-home .night-booking-close {
+  background: var(--ui-night);
+}
+
+.site-illustrated .clearing-home .night-booking-close .forest-scene-bg {
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    var(--ui-parchment) 0,
+    var(--ui-night) clamp(5rem, 10vw, 8rem),
+    var(--ui-night) 100%
+  );
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.site-illustrated .clearing-home .night-booking-inner {
+  padding-top: clamp(7rem, 12vw, 10rem);
+  padding-bottom: var(--ui-section);
+}
+
+.site-illustrated .site-footer--night {
+  margin-top: 0;
+  background: var(--ui-night);
+}
+
+.site-illustrated .site-footer-floor {
+  opacity: 0.18;
+}
+
+.site-illustrated
+  .clearing-home
+  :is(.scene-chapter--ritual, .scene-chapter--lake, .night-booking-close)
+  :is(.forest-scene-canopy, .forest-scene-foreground, .forest-scene-rail) {
+  z-index: var(--z-scene-env);
+  pointer-events: none;
+  opacity: 0.18;
+}
+
+.site-illustrated .clearing-home .illustrated-map-panel {
+  border-color: var(--ui-line-dark);
+  border-radius: var(--ui-radius);
+  background: var(--ui-forest);
+  box-shadow: var(--ui-shadow);
+}
+
+.site-illustrated .clearing-home .place-truth-grid {
+  gap: clamp(var(--ui-space-12), 6vw, var(--ui-space-24));
+  margin-top: var(--ui-space-16);
+}
+
+.site-illustrated .clearing-home :is(.place-truth-list, .place-truth-faq) {
+  gap: var(--ui-space-6);
+}
+
+.site-illustrated
+  .clearing-home
+  :is(.place-truth-item, .place-truth-faq-item, .ritual-step) {
+  border: 0;
+  border-bottom: 1px solid var(--ui-line-light);
+  border-radius: 0;
+  padding-bottom: var(--ui-space-6);
+  box-shadow: none;
+}
+
+.site-illustrated .clearing-home .ritual-step {
+  border-bottom-color: var(--ui-line-dark);
+}
+
+.site-illustrated
+  .clearing-home
+  :is(.place-truth-item-body, .place-truth-faq-a, .night-cta-body) {
+  max-width: 68ch;
+}
+
+.site-illustrated .clearing-home .night-booking-layout {
+  gap: clamp(var(--ui-space-8), 5vw, var(--ui-space-16));
+}
+
+.site-illustrated .clearing-home .night-cta {
+  padding: clamp(var(--ui-space-6), 4vw, var(--ui-space-12));
+  color: var(--ui-parchment);
+  background: rgb(234 231 216 / 6%);
+  border-color: var(--ui-line-dark);
+}
+
+.site-illustrated .clearing-home .photo-clearing-frame {
+  border-radius: var(--ui-radius);
+}
+
+@media (max-width: 767px) {
+  .site-illustrated > .site-main:has(> .clearing-home),
+  .site-illustrated .clearing-home.illustrated-page {
+    padding-bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-illustrated,
+  .site-illustrated * {
+    scroll-behavior: auto;
+  }
+
+  .site-illustrated
+    :is(
+      .forest-layer,
+      .forest-scene-mist,
+      .ritual-steam,
+      .photo-clearing-parallax-wrap,
+      .photo-clearing-parallax-wrap .parallax-frame > div,
+      .editorial-gallery img
+    ) {
+    animation: none;
+    transition-duration: 0s;
+    transform: none;
+  }
+
+  .site-illustrated .photo-clearing-parallax-wrap .parallax-frame > div {
+    will-change: auto;
+  }
+}
