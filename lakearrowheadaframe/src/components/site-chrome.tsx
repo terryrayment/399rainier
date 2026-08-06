@@ -23,8 +23,19 @@ export function SiteNav() {
   const [condensed, setCondensed] = useState(false);
   const [open, setOpen] = useState(false);
   const menuId = useId();
+  const brandRef = useRef<HTMLAnchorElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const openRef = useRef(false);
+  const restoreDesktopFocusRef = useRef(false);
+
+  useEffect(() => {
+    openRef.current = open;
+    if (!open && restoreDesktopFocusRef.current) {
+      restoreDesktopFocusRef.current = false;
+      brandRef.current?.focus();
+    }
+  }, [open]);
 
   useEffect(() => {
     const onScroll = () => setCondensed(window.scrollY > 48);
@@ -78,7 +89,9 @@ export function SiteNav() {
   useEffect(() => {
     const desktopQuery = window.matchMedia("(min-width: 900px)");
     const closeOnDesktop = (event: MediaQueryListEvent) => {
-      if (event.matches) setOpen(false);
+      if (!event.matches || !openRef.current) return;
+      restoreDesktopFocusRef.current = true;
+      setOpen(false);
     };
     desktopQuery.addEventListener("change", closeOnDesktop);
     return () => desktopQuery.removeEventListener("change", closeOnDesktop);
@@ -87,7 +100,7 @@ export function SiteNav() {
   return (
     <header className={`site-nav ${condensed ? "site-nav--condensed" : "site-nav--clear"}`}>
       <div className="site-nav-inner">
-        <Link href="/" className="site-nav-brand font-display">
+        <Link ref={brandRef} href="/" className="site-nav-brand font-display">
           <NavPine />
           Lake Arrowhead A-Frame
         </Link>

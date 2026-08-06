@@ -80,8 +80,6 @@ const boundaryWidths = [599, 600, 767, 768, 769, 899, 900, 901] as const;
 type Viewport = { width: number; height: number };
 type Box = NonNullable<Awaited<ReturnType<Locator["boundingBox"]>>>;
 
-declare function validateAuditWriteParent(root: string, outputPath: string): Promise<void>;
-
 const geometryTolerance = 2;
 const paper = "rgb(234, 231, 216)";
 const forest = "rgb(30, 35, 31)";
@@ -294,6 +292,51 @@ function assertPathContainedBy(root: string, candidate: string) {
   }
 }
 
+async function validateAuditWriteParent(root: string, outputPath: string) {
+  assertPathContainedBy(root, outputPath);
+  const outputParent = path.dirname(outputPath);
+  assertPathContainedBy(root, outputParent);
+  const relativeParent = path.relative(root, outputParent);
+  const parentComponents = relativeParent ? relativeParent.split(path.sep) : [];
+  const existingParents = [
+    root,
+    ...parentComponents.map((_, index) =>
+      path.join(root, ...parentComponents.slice(0, index + 1)),
+    ),
+  ];
+
+  for (const parentPath of existingParents) {
+    try {
+      const parentStats = await lstat(parentPath);
+      if (parentStats.isSymbolicLink()) {
+        throw new Error(`Audit capture parent must not be a symbolic link: ${parentPath}`);
+      }
+    } catch (cause) {
+      if ((cause as NodeJS.ErrnoException).code !== "ENOENT") throw cause;
+    }
+  }
+}
+
+async function expectSymlinkedCaptureParentRejected() {
+  const sandbox = await mkdtemp(path.join(tmpdir(), "ui-audit-symlink-"));
+  const isolatedAuditRoot = path.join(sandbox, "audit");
+  const outsideDirectory = path.join(sandbox, "outside");
+  const symlinkedViewport = path.join(isolatedAuditRoot, "tablet-768x1024");
+  try {
+    await mkdir(isolatedAuditRoot);
+    await mkdir(outsideDirectory);
+    await symlink(outsideDirectory, symlinkedViewport, "dir");
+    await expect(
+      validateAuditWriteParent(
+        isolatedAuditRoot,
+        path.join(symlinkedViewport, "full-page.png"),
+      ),
+    ).rejects.toThrow(/symbolic link/i);
+  } finally {
+    await rm(sandbox, { recursive: true, force: true });
+  }
+}
+
 async function validateAuditRoot() {
   if (path.relative(projectRoot, auditRoot) !== auditRelativePath) {
     throw new Error(`Audit root is not anchored to the project: ${auditRoot}`);
@@ -347,7 +390,7 @@ async function captureAuditEvidence(page: Page, viewportName: string) {
     captureSequence.returnedTopAndSettled = ++captureStep;
     const fullPagePath = capturePath(viewportName, "full-page.png");
     await validateAuditRoot();
-    assertPathContainedBy(auditRoot, fullPagePath);
+    await validateAuditWriteParent(auditRoot, fullPagePath);
     await mkdir(path.dirname(fullPagePath), { recursive: true });
     captureSequence.fullPageCapture = ++captureStep;
     await page.screenshot({ path: fullPagePath, fullPage: true, style: fullPageCaptureStyle });
@@ -358,7 +401,7 @@ async function captureAuditEvidence(page: Page, viewportName: string) {
   if (sectionCaptureViewportNames.has(viewportName)) {
     for (const sectionName of sectionCaptureNames) {
       const sectionPath = capturePath(viewportName, `${sectionName}.png`);
-      assertPathContainedBy(auditRoot, sectionPath);
+      await validateAuditWriteParent(auditRoot, sectionPath);
       await page
         .locator(sectionCaptureSelectors[sectionName])
         .screenshot({
@@ -466,6 +509,61 @@ async function horizontalOverflow(page: Page) {
   return page.evaluate(
     () => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth,
   );
+}
+
+async function expectNamedActionTargetsAndSurfaces(page: Page, viewport: Viewport) {
+  const namedTargets = [
+    ["trust proof chips", ".trust-proof-chip"],
+    ["editorial gallery action", ".editorial-gallery-link"],
+    ["place truth CTAs", ".place-truth-link"],
+    ["ritual action", ".ritual-sequence-link"],
+    ["night review link", ".night-link"],
+    ["night cluster links", ".night-cluster-link"],
+    ["site footer links", ".site-footer-links a"],
+  ] as const;
+  for (const [label, selector] of namedTargets) {
+    const targets = page.locator(selector);
+    expect(await targets.count(), `${label} render`).toBeGreaterThan(0);
+    for (let index = 0; index < (await targets.count()); index += 1) {
+      const box = await requiredBox(targets.nth(index), `${label} ${index + 1}`);
+      expect.soft(box.height, `${label} ${index + 1} block size`).toBeGreaterThanOrEqual(44);
+    }
+  }
+
+  const visibleBookingPill = page.locator(".arrival-clearing .booking-pill:visible");
+  await expect(visibleBookingPill).toHaveCount(1);
+  const surface = await visibleBookingPill.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      background: style.backgroundColor,
+      borderRadius: Number.parseFloat(style.borderRadius),
+      boxShadow: style.boxShadow,
+    };
+  });
+  expect.soft(surface.background, "booking surface token").toBe("rgb(241, 233, 210)");
+  expect.soft(surface.borderRadius, "booking surface radius").toBeGreaterThan(0);
+  expect.soft(surface.boxShadow, "booking surface shadow").not.toBe("none");
+
+  const supportingCopyColor = await page
+    .locator(".place-truth-item-body")
+    .first()
+    .evaluate((element) => getComputedStyle(element).color);
+  expect.soft(supportingCopyColor, "illustrated muted role").toBe("rgb(95, 90, 82)");
+
+  const bookingSelect = page.locator(".booking-pill select");
+  const dogTarget = page.locator(".booking-pill-dog");
+  if (viewport.width < 768) {
+    await expect(bookingSelect).toBeHidden();
+    await expect(dogTarget).toBeHidden();
+  } else {
+    for (const [label, target] of [
+      ["booking select", bookingSelect],
+      ["dog checkbox label", dogTarget],
+    ] as const) {
+      const box = await requiredBox(target, label);
+      expect.soft(box.height, `${label} block size`).toBeGreaterThanOrEqual(44);
+    }
+  }
 }
 
 async function computedRgbColors(locator: Locator) {
@@ -688,7 +786,7 @@ test.describe("adaptive gallery sizing", () => {
     );
   });
 
-  test("current photo roles declare measured responsive source slots", async ({ page }) => {
+  test("current photo roles declare measured responsive source slots", async ({ page, browser }) => {
     await openHome(page, { width: 1440, height: 1000 });
 
     await expect(
@@ -714,9 +812,7 @@ test.describe("adaptive gallery sizing", () => {
       "(max-width: 599px) 100vw, (max-width: 899px) 33vw, (min-width: 1440px) 26rem, 29vw",
       "(max-width: 599px) 100vw, (max-width: 899px) 33vw, (min-width: 1440px) 26rem, 29vw",
     ]);
-  });
 
-  test("ritual cards request DPR-aware candidates for their measured slots", async ({ browser }) => {
     for (const deviceScaleFactor of [1, 2]) {
       for (const width of [600, 768, 899]) {
         const context = await browser.newContext({
@@ -804,29 +900,10 @@ test.describe("adaptive gallery sizing", () => {
 });
 
 test.describe("visual integrity", () => {
-  test("capture output rejects a symlinked child directory before writing", async () => {
-    const sandbox = await mkdtemp(path.join(tmpdir(), "ui-audit-symlink-"));
-    const isolatedAuditRoot = path.join(sandbox, "audit");
-    const outsideDirectory = path.join(sandbox, "outside");
-    const symlinkedViewport = path.join(isolatedAuditRoot, "tablet-768x1024");
-    try {
-      await mkdir(isolatedAuditRoot);
-      await mkdir(outsideDirectory);
-      await symlink(outsideDirectory, symlinkedViewport, "dir");
-      await expect(
-        validateAuditWriteParent(
-          isolatedAuditRoot,
-          path.join(symlinkedViewport, "full-page.png"),
-        ),
-      ).rejects.toThrow(/symbolic link/i);
-    } finally {
-      await rm(sandbox, { recursive: true, force: true });
-    }
-  });
-
   for (const viewport of requiredViewports) {
     test(`${viewport.name} preserves content, controls, and chapter flow`, async ({ page }) => {
       if (process.env.UPDATE_UI_SCREENSHOTS === "1") test.slow();
+      if (viewport === requiredViewports[0]) await expectSymlinkedCaptureParentRejected();
       await openHome(page, viewport);
       await lazyScrollAndWaitForImages(page);
       const captureConfig = await captureAuditEvidence(page, viewport.name);
@@ -935,6 +1012,10 @@ test.describe("visual integrity", () => {
         await expect(menuTrigger).toHaveAttribute("aria-expanded", "false");
       }
 
+      if ([390, 768, 1440].includes(viewport.width)) {
+        await expectNamedActionTargetsAndSurfaces(page, viewport);
+      }
+
       const surfaces = page.locator(".clearing-home > .scene-chapter, .clearing-home > .scene-bridge");
       let previous: Box | undefined;
       for (let index = 0; index < (await surfaces.count()); index += 1) {
@@ -983,68 +1064,6 @@ test.describe("visual integrity", () => {
     expect.soft(footerBackground.color, "footer continues night").toBe(night);
   });
 
-  for (const viewport of [
-    { width: 390, height: 844 },
-    { width: 768, height: 1024 },
-    { width: 1440, height: 1000 },
-  ]) {
-    test(`named action targets and approved surfaces hold at ${viewport.width}px`, async ({ page }) => {
-      await openHome(page, viewport);
-
-      const namedTargets = [
-        ["trust proof chips", ".trust-proof-chip"],
-        ["editorial gallery action", ".editorial-gallery-link"],
-        ["place truth CTAs", ".place-truth-link"],
-        ["ritual action", ".ritual-sequence-link"],
-        ["night review link", ".night-link"],
-        ["night cluster links", ".night-cluster-link"],
-        ["site footer links", ".site-footer-links a"],
-      ] as const;
-      for (const [label, selector] of namedTargets) {
-        const targets = page.locator(selector);
-        expect(await targets.count(), `${label} render`).toBeGreaterThan(0);
-        for (let index = 0; index < (await targets.count()); index += 1) {
-          const box = await requiredBox(targets.nth(index), `${label} ${index + 1}`);
-          expect.soft(box.height, `${label} ${index + 1} block size`).toBeGreaterThanOrEqual(44);
-        }
-      }
-
-      const visibleBookingPill = page.locator(".arrival-clearing .booking-pill:visible");
-      await expect(visibleBookingPill).toHaveCount(1);
-      const surface = await visibleBookingPill.evaluate((element) => {
-        const style = getComputedStyle(element);
-        return {
-          background: style.backgroundColor,
-          borderRadius: Number.parseFloat(style.borderRadius),
-          boxShadow: style.boxShadow,
-        };
-      });
-      expect.soft(surface.background, "booking surface token").toBe("rgb(241, 233, 210)");
-      expect.soft(surface.borderRadius, "booking surface radius").toBeGreaterThan(0);
-      expect.soft(surface.boxShadow, "booking surface shadow").not.toBe("none");
-
-      const supportingCopyColor = await page
-        .locator(".place-truth-item-body")
-        .first()
-        .evaluate((element) => getComputedStyle(element).color);
-      expect.soft(supportingCopyColor, "illustrated muted role").toBe("rgb(95, 90, 82)");
-
-      const bookingSelect = page.locator(".booking-pill select");
-      const dogTarget = page.locator(".booking-pill-dog");
-      if (viewport.width < 768) {
-        await expect(bookingSelect).toBeHidden();
-        await expect(dogTarget).toBeHidden();
-      } else {
-        for (const [label, target] of [
-          ["booking select", bookingSelect],
-          ["dog checkbox label", dogTarget],
-        ] as const) {
-          const box = await requiredBox(target, label);
-          expect.soft(box.height, `${label} block size`).toBeGreaterThanOrEqual(44);
-        }
-      }
-    });
-  }
 });
 
 test.describe("interaction and preservation", () => {
@@ -1068,6 +1087,14 @@ test.describe("interaction and preservation", () => {
     await expect.soft(panel).toBeHidden();
     await expect.soft(page.locator(".site-nav-links")).toBeVisible();
     await expect.soft(page.locator(".site-nav-brand")).toBeFocused();
+
+    await page.setViewportSize({ width: 899, height: 900 });
+    const galleryAction = page.locator(".editorial-gallery-link");
+    await galleryAction.focus();
+    await expect(galleryAction).toBeFocused();
+    await page.setViewportSize({ width: 900, height: 900 });
+    await page.waitForFunction(() => window.matchMedia("(min-width: 900px)").matches);
+    await expect.soft(galleryAction, "closed menu transition does not steal focus").toBeFocused();
   });
 
   test("mobile navigation, links, sticky booking, and reduced motion preserve contracts", async ({
