@@ -234,3 +234,169 @@
     height: 2rem;
   }
 }
+
+.site-illustrated .editorial-gallery-grid,
+.site-illustrated .editorial-gallery-mediums,
+.site-illustrated .editorial-gallery-details,
+.site-illustrated .ritual-sequence-steps {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ui-space-4);
+}
+
+.site-illustrated .editorial-gallery-grid {
+  margin-top: var(--ui-space-12);
+}
+
+.site-illustrated .editorial-gallery-details {
+  grid-column: 1 / -1;
+}
+
+.site-illustrated
+  .editorial-gallery
+  :is(.photo-clearing-frame, .editorial-gallery-detail, .editorial-gallery-detail > div),
+.site-illustrated .ritual-step-proof .photo-clearing-frame {
+  overflow: clip;
+  border-radius: var(--ui-radius);
+}
+
+.site-illustrated .editorial-gallery-dominant .editorial-gallery-frame {
+  aspect-ratio: 3 / 4;
+}
+
+.site-illustrated .editorial-gallery-medium .editorial-gallery-frame,
+.site-illustrated .editorial-gallery-detail > div {
+  aspect-ratio: 4 / 3;
+}
+
+.site-illustrated .editorial-gallery img,
+.site-illustrated .ritual-step-proof img {
+  object-fit: cover;
+}
+
+.site-illustrated .ritual-sequence-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-illustrated .ritual-step {
+  min-width: 0;
+}
+
+.site-illustrated .ritual-step-proof,
+.site-illustrated .ritual-step-proof .photo-clearing,
+.site-illustrated .ritual-step-proof .photo-clearing-frame {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+}
+
+.site-illustrated .ritual-step-copy {
+  padding-top: var(--ui-space-4);
+}
+
+.site-illustrated .site-nav-cta,
+.site-illustrated .site-nav-links {
+  display: none;
+}
+
+.site-illustrated .site-nav-menu-trigger {
+  display: inline-flex;
+}
+
+.site-illustrated .site-nav-mobile-panel.is-open {
+  display: block;
+}
+
+.site-illustrated .site-nav-mobile-panel a {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+@media (min-width: 600px) and (max-width: 899px) {
+  .site-illustrated .editorial-gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .site-illustrated .editorial-gallery-dominant,
+  .site-illustrated .editorial-gallery-details {
+    grid-column: 1 / -1;
+  }
+
+  .site-illustrated .editorial-gallery-mediums {
+    display: contents;
+  }
+
+  .site-illustrated .editorial-gallery-details {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .site-illustrated .ritual-sequence-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--ui-space-4);
+  }
+
+  .site-illustrated .ritual-step:nth-child(3) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 900px) {
+  .site-illustrated .editorial-gallery-grid {
+    grid-template-columns: minmax(0, 1.55fr) minmax(18rem, 0.85fr);
+    align-items: stretch;
+    gap: var(--ui-space-4);
+  }
+
+  .site-illustrated .editorial-gallery-dominant {
+    grid-area: 1 / 1;
+  }
+
+  .site-illustrated .editorial-gallery-mediums {
+    grid-area: 1 / 2;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+
+  .site-illustrated .editorial-gallery-medium,
+  .site-illustrated .editorial-gallery-medium .photo-clearing,
+  .site-illustrated .editorial-gallery-medium .photo-clearing-frame {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .site-illustrated .editorial-gallery-medium .editorial-gallery-frame {
+    aspect-ratio: auto;
+  }
+
+  .site-illustrated .editorial-gallery-details {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .site-illustrated .ritual-sequence-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--ui-space-6);
+  }
+
+  .site-illustrated .ritual-step:nth-child(3) {
+    grid-column: auto;
+  }
+
+  .site-illustrated .site-nav-links,
+  .site-illustrated .site-nav-cta {
+    display: flex;
+  }
+
+  .site-illustrated .site-nav-links a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .site-illustrated .site-nav-menu-trigger,
+  .site-illustrated .site-nav-mobile-panel,
+  .site-illustrated .site-nav-mobile-panel.is-open {
+    display: none;
+  }
+}

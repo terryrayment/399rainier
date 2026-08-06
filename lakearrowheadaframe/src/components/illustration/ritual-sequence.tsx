@@ -46,7 +46,7 @@ export function RitualSequence() {
                   src={photo.image}
                   alt={photo.imageAlt}
                   aspectClassName="aspect-[4/5]"
-                  sizes="(max-width: 768px) 100vw, 28vw"
+                  sizes="(max-width: 599px) 100vw, (max-width: 899px) 50vw, 28vw"
                   overlap={index === 0 ? "tl" : "none"}
                 />
               </div>

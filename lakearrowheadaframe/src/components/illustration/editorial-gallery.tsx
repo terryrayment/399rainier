@@ -33,7 +33,7 @@ export function EditorialGallery({
             src={dominant.src}
             alt={dominant.alt}
             aspectClassName="aspect-[3/4] editorial-gallery-frame"
-            sizes="(max-width: 768px) 100vw, 55vw"
+            sizes="(max-width: 599px) 100vw, (max-width: 899px) 100vw, 55vw"
             overlap="tl"
           />
         </div>
@@ -45,7 +45,7 @@ export function EditorialGallery({
                 src={mediumA.src}
                 alt={mediumA.alt}
                 aspectClassName="aspect-[4/3] editorial-gallery-frame"
-                sizes="(max-width: 768px) 100vw, 32vw"
+                sizes="(max-width: 599px) 100vw, (max-width: 899px) 50vw, 32vw"
                 overlap="none"
               />
             </div>
@@ -56,7 +56,7 @@ export function EditorialGallery({
                 src={mediumB.src}
                 alt={mediumB.alt}
                 aspectClassName="aspect-[4/3] editorial-gallery-frame"
-                sizes="(max-width: 768px) 100vw, 32vw"
+                sizes="(max-width: 599px) 100vw, (max-width: 899px) 50vw, 32vw"
                 overlap="none"
               />
             </div>
@@ -73,7 +73,7 @@ export function EditorialGallery({
                     alt={photo.alt}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 768px) 33vw, 18vw"
+                    sizes="(max-width: 599px) 100vw, (max-width: 899px) 33vw, 18vw"
                   />
                 </div>
               </div>
