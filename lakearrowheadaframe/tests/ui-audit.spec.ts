@@ -652,6 +652,22 @@ test.describe("interaction and preservation", () => {
     await page.locator(".site-footer").scrollIntoViewIfNeeded();
     await expect(page.locator(".booking-dock--mobile")).toBeHidden();
   });
+
+  test("mobile sticky booking hides when the final booking enters before the footer", async ({
+    page,
+  }) => {
+    await openHome(page, { width: 390, height: 844 });
+
+    await page.locator("#gallery").scrollIntoViewIfNeeded();
+    await expect(page.locator(".booking-dock--mobile")).toBeVisible();
+
+    await page.locator("#reviews").scrollIntoViewIfNeeded();
+    expect(
+      await page.locator(".site-footer").evaluate((footer) => footer.getBoundingClientRect().top),
+      "footer remains below the viewport when final booking takes over",
+    ).toBeGreaterThanOrEqual(844);
+    await expect(page.locator(".booking-dock--mobile")).toBeHidden();
+  });
 });
 
 test.describe("future responsive surface contracts", () => {
