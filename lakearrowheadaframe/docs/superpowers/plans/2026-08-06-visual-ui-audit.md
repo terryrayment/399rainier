@@ -1131,8 +1131,9 @@ git commit -m "style: stabilize gallery and ritual layouts"
 
 - Modify: `lakearrowheadaframe/src/app/ui-system.css`
 - Modify: `lakearrowheadaframe/tests/ui-audit.spec.ts`
+- Modify: `lakearrowheadaframe/src/components/illustration/booking-dock.tsx`
 
-The existing semantic classes and menu behavior are sufficient. Do not edit Place, Final, or site-chrome markup unless a newly failing browser assertion proves CSS cannot address the issue; if that happens, stop and update the plan/spec before expanding scope.
+The existing semantic classes and menu behavior are sufficient. Task 2 browser evidence proved the mobile sticky booking bar remains visible over the footer, so this task is explicitly authorized to correct the existing observer behavior in `booking-dock.tsx`. Do not edit Place, Final, or site-chrome markup unless a newly failing browser assertion proves CSS cannot address another issue; if that happens, stop and update the plan/spec before expanding scope.
 
 **Step 1: Write focused surface and accessibility assertions**
 
@@ -1287,7 +1288,19 @@ Append:
 }
 ```
 
-**Step 4: Complete reduced-motion behavior**
+**Step 4: Fix the sticky booking visibility contract**
+
+The existing component comment says the mobile bar hides when the final booking/footer enters view, but the implementation observes only the footer and leaves the bar visible over footer actions. Update `MobileStickyBooking` to observe both `#reviews` (the final booking section) and the site footer. Track whether either target intersects; render the sticky bar only when the hero is out and neither closing target is visible. Use `threshold: 0` so the state changes as the target enters the viewport, disconnect every observer during cleanup, and preserve the existing campaign/content URL behavior.
+
+Run:
+
+```bash
+npm run test:ui -- --grep "mobile menu, links, sticky CTA"
+```
+
+Expected: the sticky CTA appears after Gallery enters view, retains the literal `homepage/mobile-sticky` URL, and becomes hidden when the Final booking section or footer enters view.
+
+**Step 5: Complete reduced-motion behavior**
 
 Navigation already follows the 900px contract from Task 5. Append only the reduced-motion rule:
 
@@ -1314,7 +1327,7 @@ Navigation already follows the 900px contract from Task 5. Append only the reduc
 
 Preserve the existing menu implementation. If the focused browser test exposes a behavior bug, diagnose it under the systematic-debugging workflow before changing `site-chrome.tsx`.
 
-**Step 5: Run interaction, link, and accessibility tests**
+**Step 6: Run interaction, link, and accessibility tests**
 
 ```bash
 cd /Users/terryrayment/Documents/GitHub/399rainier/lakearrowheadaframe
@@ -1323,11 +1336,11 @@ npm run test:ui -- --grep "menu|link|motion|surface|touch|focus"
 
 Expected: all pass. Any failure must be fixed in the narrowest relevant rule/component; do not loosen the preserved-link fixture.
 
-**Step 6: Commit**
+**Step 7: Commit**
 
 ```bash
 cd /Users/terryrayment/Documents/GitHub/399rainier
-git add lakearrowheadaframe/src/app/ui-system.css lakearrowheadaframe/tests/ui-audit.spec.ts
+git add lakearrowheadaframe/src/app/ui-system.css lakearrowheadaframe/tests/ui-audit.spec.ts lakearrowheadaframe/src/components/illustration/booking-dock.tsx
 git diff --cached --stat
 git commit -m "style: unify late chapters and interactions"
 ```
