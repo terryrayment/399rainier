@@ -36,46 +36,62 @@
   --color-forest-deep: var(--ui-forest);
 }
 
-.site-illustrated :where(h1, h2) {
-  letter-spacing: -0.025em;
-  line-height: 1.08;
+.site-illustrated :is(h1, h2) {
   text-wrap: balance;
 }
 
-.site-illustrated :where(p, dd, li) {
-  line-height: 1.7;
+.site-illustrated :is(p, dd, li) {
   text-wrap: pretty;
 }
 
-.site-illustrated
-  :where(
-    .inside-glass-truth-title,
-    .ritual-step-title,
-    .place-truth-item-title,
-    .place-truth-faq-q
-  ) {
-  font-size: clamp(1.25rem, 2vw, 1.6rem);
+.arrival-clearing-subhead,
+.inside-glass-body,
+.inside-glass-seo,
+.ritual-sequence-lead,
+.ritual-step-body,
+.place-truth-item-body,
+.place-truth-faq-a,
+.night-cta-body,
+.site-footer-copy {
+  line-height: 1.7;
+}
+
+.inside-glass-title,
+.editorial-gallery-title,
+.ritual-sequence-title,
+.place-truth-heading,
+.night-cta-title {
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+}
+
+.inside-glass-truth-title,
+.ritual-step-title,
+.place-truth-item-title,
+.place-truth-faq-q {
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
   line-height: 1.2;
 }
 
-.site-illustrated :focus-visible {
+.site-illustrated
+  :is(a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])):focus-visible {
   outline: 2px solid var(--ui-pine);
   outline-offset: 3px;
 }
 
 .site-illustrated
   :is(
-    .scene-chapter--tone-dusk,
     .scene-chapter--tone-forest,
+    .scene-chapter--tone-dusk,
     .scene-chapter--tone-night,
     .site-footer--night
   )
-  :focus-visible {
+  :is(a, button, input, select, textarea):focus-visible {
   outline-color: var(--ui-parchment);
 }
 
 .site-illustrated
-  :where(button, .airbnb-button, .booking-pill-submit, .site-nav-brand, .site-nav-menu-trigger) {
+  :is(button, .airbnb-button, .booking-pill-submit, .site-nav-brand, .site-nav-menu-trigger) {
   min-block-size: 44px;
 }
 
@@ -90,63 +106,50 @@
   width: min(100%, var(--ui-wide));
 }
 
-.clearing-home .arrival-clearing .scene-chapter-inner {
+.arrival-clearing .scene-chapter-inner {
   width: min(100%, var(--ui-content));
   max-width: none;
   min-height: auto;
-  padding-top: clamp(5.5rem, 10vw, 7.5rem);
-  padding-inline: var(--ui-gutter);
+  padding: clamp(5.5rem, 8vw, 7rem) var(--ui-gutter) var(--ui-space-8);
 }
 
-.clearing-home .arrival-clearing-headline {
+.arrival-clearing-headline {
   max-width: min(14ch, 100%);
   font-size: clamp(2.35rem, 6vw, 4.6rem);
   line-height: 1.02;
 }
 
-.clearing-home :is(.booking-pill, .illustrated-map-panel, .night-cta) {
+.booking-pill,
+.illustrated-map-panel,
+.night-cta {
   border: 1px solid var(--ui-line-light);
   border-radius: var(--ui-radius);
   box-shadow: var(--ui-shadow);
 }
 
-.clearing-home :is(.illustrated-map-panel, .night-cta) {
-  border-color: var(--ui-line-dark);
-}
-
-.clearing-home
-  :is(
-    .scene-chapter--trust,
-    .scene-chapter--interior,
-    .scene-chapter--gallery
-  )
-  .scene-chapter-inner {
+.trust-forest-floor .scene-chapter-inner,
+.inside-glass-inner,
+.photographic-clearing-inner {
   padding-top: var(--ui-section);
-  padding-bottom: var(--ui-section);
+  /* The recovered gallery rule has greater specificity than this approved selector. */
+  padding-bottom: var(--ui-section) !important;
 }
 
-.clearing-home .inside-glass-photo {
+.inside-glass-photo {
   margin-top: 0;
 }
 
-.clearing-home
-  :is(.scene-chapter--trust, .scene-chapter--interior)
-  .forest-scene-rail {
+.trust-forest-floor .forest-scene-rail,
+.inside-glass-chapter .forest-scene-rail {
   opacity: 0.28;
 }
 
-.clearing-home
-  :is(.scene-chapter--trust, .scene-chapter--interior)
-  .forest-scene-rail
-  .forest-scene-plate {
+.trust-forest-floor .forest-scene-rail .forest-scene-plate,
+.inside-glass-chapter .forest-scene-rail .forest-scene-plate {
   opacity: 0.45;
 }
 
-.clearing-home
-  .scene-chapter--interior
-  :is(.forest-scene-mist, .forest-scene-canopy),
-.clearing-home
-  .scene-chapter--gallery
-  :is(.forest-scene-mist, .forest-scene-canopy, .forest-scene-foreground) {
+.inside-glass-chapter :is(.forest-scene-mist, .forest-scene-canopy),
+.scene-chapter--gallery :is(.forest-scene-mist, .forest-scene-canopy, .forest-scene-foreground) {
   opacity: 0.18;
 }
