@@ -1,6 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { existsSync } from "node:fs";
-import { lstat, mkdir, readdir } from "node:fs/promises";
+import { lstat, mkdir, mkdtemp, readdir, rm, symlink } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import * as editorialGalleryModule from "../src/components/illustration/editorial-gallery";
 import {
@@ -78,6 +79,8 @@ const boundaryWidths = [599, 600, 767, 768, 769, 899, 900, 901] as const;
 
 type Viewport = { width: number; height: number };
 type Box = NonNullable<Awaited<ReturnType<Locator["boundingBox"]>>>;
+
+declare function validateAuditWriteParent(root: string, outputPath: string): Promise<void>;
 
 const geometryTolerance = 2;
 const paper = "rgb(234, 231, 216)";
@@ -645,6 +648,7 @@ test.describe("responsive geometry", () => {
     test(`approved gallery, ritual, and navigation geometry at ${width}px`, async ({ page }) => {
       await openHome(page, { width, height: 900 });
       await expectResponsiveGeometry(page, width);
+      expect.soft(await horizontalOverflow(page), `${width}px horizontal overflow`).toBeLessThanOrEqual(1);
     });
   }
 });
@@ -712,6 +716,61 @@ test.describe("adaptive gallery sizing", () => {
     ]);
   });
 
+  test("ritual cards request DPR-aware candidates for their measured slots", async ({ browser }) => {
+    for (const deviceScaleFactor of [1, 2]) {
+      for (const width of [600, 768, 899]) {
+        const context = await browser.newContext({
+          deviceScaleFactor,
+          viewport: { width, height: 900 },
+        });
+        const page = await context.newPage();
+        await openHome(page, { width, height: 900 });
+        const ritualImages = page.locator(".ritual-step-proof .photo-clearing-frame > img");
+        await ritualImages.first().scrollIntoViewIfNeeded();
+        await page.waitForFunction(() =>
+          [...document.querySelectorAll<HTMLImageElement>(".ritual-step-proof .photo-clearing-frame > img")].every(
+            (image) => image.complete && image.naturalWidth > 0,
+          ),
+        );
+
+        expect(await ritualImages.evaluateAll((images) => images.map((image) => image.getAttribute("sizes")))).toEqual([
+          "(max-width: 599px) 100vw, (max-width: 899px) 50vw, (min-width: 1440px) 26rem, 29vw",
+          "(max-width: 599px) 100vw, (max-width: 899px) 50vw, (min-width: 1440px) 26rem, 29vw",
+          "(max-width: 599px) 100vw, (max-width: 899px) 100vw, (min-width: 1440px) 26rem, 29vw",
+        ]);
+
+        const candidates = await ritualImages.evaluateAll((images) =>
+          images.map((image) => {
+            const ritualImage = image as HTMLImageElement;
+            const renderedWidth = ritualImage.getBoundingClientRect().width;
+            const sourceWidths = (ritualImage.getAttribute("srcset") ?? "")
+              .split(",")
+              .map((candidate) => Number.parseInt(candidate.trim().match(/\s(\d+)w$/)?.[1] ?? "0", 10))
+              .filter((candidate) => candidate > 0);
+            const intrinsicMax = Math.max(...sourceWidths, ritualImage.naturalWidth);
+            const currentUrl = new URL(ritualImage.currentSrc, window.location.href);
+            const selectedWidth =
+              Number.parseInt(currentUrl.searchParams.get("w") ?? "0", 10) ||
+              ritualImage.naturalWidth;
+            return {
+              intrinsicMax,
+              renderedWidth,
+              requiredWidth: Math.min(renderedWidth * window.devicePixelRatio, intrinsicMax),
+              selectedWidth,
+            };
+          }),
+        );
+        for (const [index, candidate] of candidates.entries()) {
+          expect.soft(
+            candidate.selectedWidth,
+            `${width}px DPR${deviceScaleFactor} ritual card ${index + 1} candidate`,
+          ).toBeGreaterThanOrEqual(Math.ceil(candidate.requiredWidth));
+        }
+        await context.close();
+      }
+    }
+  });
+
   test("desktop gallery collapses an empty supporting wrapper", async ({ page }) => {
     await openHome(page, { width: 1440, height: 1000 });
 
@@ -745,6 +804,26 @@ test.describe("adaptive gallery sizing", () => {
 });
 
 test.describe("visual integrity", () => {
+  test("capture output rejects a symlinked child directory before writing", async () => {
+    const sandbox = await mkdtemp(path.join(tmpdir(), "ui-audit-symlink-"));
+    const isolatedAuditRoot = path.join(sandbox, "audit");
+    const outsideDirectory = path.join(sandbox, "outside");
+    const symlinkedViewport = path.join(isolatedAuditRoot, "tablet-768x1024");
+    try {
+      await mkdir(isolatedAuditRoot);
+      await mkdir(outsideDirectory);
+      await symlink(outsideDirectory, symlinkedViewport, "dir");
+      await expect(
+        validateAuditWriteParent(
+          isolatedAuditRoot,
+          path.join(symlinkedViewport, "full-page.png"),
+        ),
+      ).rejects.toThrow(/symbolic link/i);
+    } finally {
+      await rm(sandbox, { recursive: true, force: true });
+    }
+  });
+
   for (const viewport of requiredViewports) {
     test(`${viewport.name} preserves content, controls, and chapter flow`, async ({ page }) => {
       if (process.env.UPDATE_UI_SCREENSHOTS === "1") test.slow();
@@ -903,6 +982,69 @@ test.describe("visual integrity", () => {
     expect.soft(footerBackground.image, "footer has no separate gradient").toBe("none");
     expect.soft(footerBackground.color, "footer continues night").toBe(night);
   });
+
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 768, height: 1024 },
+    { width: 1440, height: 1000 },
+  ]) {
+    test(`named action targets and approved surfaces hold at ${viewport.width}px`, async ({ page }) => {
+      await openHome(page, viewport);
+
+      const namedTargets = [
+        ["trust proof chips", ".trust-proof-chip"],
+        ["editorial gallery action", ".editorial-gallery-link"],
+        ["place truth CTAs", ".place-truth-link"],
+        ["ritual action", ".ritual-sequence-link"],
+        ["night review link", ".night-link"],
+        ["night cluster links", ".night-cluster-link"],
+        ["site footer links", ".site-footer-links a"],
+      ] as const;
+      for (const [label, selector] of namedTargets) {
+        const targets = page.locator(selector);
+        expect(await targets.count(), `${label} render`).toBeGreaterThan(0);
+        for (let index = 0; index < (await targets.count()); index += 1) {
+          const box = await requiredBox(targets.nth(index), `${label} ${index + 1}`);
+          expect.soft(box.height, `${label} ${index + 1} block size`).toBeGreaterThanOrEqual(44);
+        }
+      }
+
+      const visibleBookingPill = page.locator(".arrival-clearing .booking-pill:visible");
+      await expect(visibleBookingPill).toHaveCount(1);
+      const surface = await visibleBookingPill.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return {
+          background: style.backgroundColor,
+          borderRadius: Number.parseFloat(style.borderRadius),
+          boxShadow: style.boxShadow,
+        };
+      });
+      expect.soft(surface.background, "booking surface token").toBe("rgb(241, 233, 210)");
+      expect.soft(surface.borderRadius, "booking surface radius").toBeGreaterThan(0);
+      expect.soft(surface.boxShadow, "booking surface shadow").not.toBe("none");
+
+      const supportingCopyColor = await page
+        .locator(".place-truth-item-body")
+        .first()
+        .evaluate((element) => getComputedStyle(element).color);
+      expect.soft(supportingCopyColor, "illustrated muted role").toBe("rgb(95, 90, 82)");
+
+      const bookingSelect = page.locator(".booking-pill select");
+      const dogTarget = page.locator(".booking-pill-dog");
+      if (viewport.width < 768) {
+        await expect(bookingSelect).toBeHidden();
+        await expect(dogTarget).toBeHidden();
+      } else {
+        for (const [label, target] of [
+          ["booking select", bookingSelect],
+          ["dog checkbox label", dogTarget],
+        ] as const) {
+          const box = await requiredBox(target, label);
+          expect.soft(box.height, `${label} block size`).toBeGreaterThanOrEqual(44);
+        }
+      }
+    });
+  }
 });
 
 test.describe("interaction and preservation", () => {
@@ -925,6 +1067,7 @@ test.describe("interaction and preservation", () => {
     await expect.soft(trigger).toBeHidden();
     await expect.soft(panel).toBeHidden();
     await expect.soft(page.locator(".site-nav-links")).toBeVisible();
+    await expect.soft(page.locator(".site-nav-brand")).toBeFocused();
   });
 
   test("mobile navigation, links, sticky booking, and reduced motion preserve contracts", async ({
