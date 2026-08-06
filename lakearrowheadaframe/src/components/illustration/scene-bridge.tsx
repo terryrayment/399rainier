@@ -46,8 +46,6 @@ const motifAsset: Partial<Record<BridgeMotif, string | undefined>> = {
   nightfall: sceneAssets.nightFloor,
 };
 
-const pineMotifs = new Set<BridgeMotif>(["forest-floor", "mist-lift", "lake-mist", "nightfall"]);
-
 /**
  * Single owner for a chapter boundary. Continues outgoing tone → bridge motif → incoming tone.
  * Decorative only; sits under content; never owns semantic text.
@@ -65,7 +63,7 @@ export function SceneBridge({
   const asset = motif === "none" ? null : motifAsset[motif];
   const file = asset?.split("/").pop() ?? "";
   const mobileSrc = file ? `/illustrations/scenes/mobile/${file}` : "";
-  const showPines = motif !== "none" && pineMotifs.has(motif);
+  const showPines = motif === "forest-floor";
 
   return (
     <div

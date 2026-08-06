@@ -158,3 +158,75 @@
   :is(.forest-scene-mist, .forest-scene-canopy, .forest-scene-foreground) {
   opacity: 0.18;
 }
+
+.site-illustrated .arrival-clearing-stage,
+.site-illustrated .arrival-clearing .booking-dock--hero,
+.site-illustrated .arrival-clearing-dock {
+  position: relative;
+}
+
+.site-illustrated .arrival-clearing .booking-dock--hero,
+.site-illustrated .arrival-clearing-dock {
+  margin-block: 0;
+}
+
+.site-illustrated .arrival-clearing .booking-pill {
+  margin-top: var(--ui-space-4);
+}
+
+.site-illustrated .scene-bridge--overlap-up,
+.site-illustrated .scene-bridge--overlap-down,
+.site-illustrated .scene-bridge--overlap-both,
+.site-illustrated .scene-bridge--arrival-trust.scene-bridge--overlap-both,
+.site-illustrated .scene-bridge--mist-lift.scene-bridge--overlap-down {
+  margin-block: 0;
+}
+
+.site-illustrated .scene-bridge--arrival-trust {
+  height: 7rem;
+  min-height: 7rem;
+  overflow: hidden;
+}
+
+.site-illustrated .scene-bridge--trust-interior {
+  height: 6rem;
+}
+
+.site-illustrated .scene-bridge--interior-gallery {
+  height: 3rem;
+}
+
+.site-illustrated .scene-bridge-wash,
+.site-illustrated .scene-bridge--forest-floor .scene-bridge-wash,
+.site-illustrated .scene-bridge--mist-lift .scene-bridge-wash,
+.site-illustrated .scene-bridge--clearing .scene-bridge-wash {
+  background: linear-gradient(180deg, var(--bridge-from) 0%, var(--bridge-to) 100%);
+}
+
+.site-illustrated .scene-bridge--forest-floor .scene-bridge-art {
+  inset: 35% 0 -10%;
+  opacity: 0.35;
+}
+
+.site-illustrated .scene-bridge--forest-floor .scene-bridge-pines {
+  opacity: 0.42;
+}
+
+.site-illustrated .scene-bridge-edge {
+  display: none;
+}
+
+@media (max-width: 599px) {
+  .site-illustrated .scene-bridge--arrival-trust {
+    height: 4.5rem;
+    min-height: 4.5rem;
+  }
+
+  .site-illustrated .scene-bridge--trust-interior {
+    height: 4rem;
+  }
+
+  .site-illustrated .scene-bridge--interior-gallery {
+    height: 2rem;
+  }
+}
