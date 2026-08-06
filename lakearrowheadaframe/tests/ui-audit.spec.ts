@@ -132,15 +132,22 @@ async function computedRgbColors(locator: Locator) {
   });
 }
 
-async function computedColorStopPercent(locator: Locator, color: string) {
+async function computedColorStopOffset(locator: Locator, color: string) {
   return locator.evaluate((element, expectedColor) => {
     const image = getComputedStyle(element).backgroundImage;
     const colorIndex = image.indexOf(expectedColor);
     if (colorIndex < 0) return null;
     const afterColor = image.slice(colorIndex + expectedColor.length);
-    const stop = afterColor.match(/^\s+(-?[\d.]+)%/);
-    return stop ? Number.parseFloat(stop[1]) : null;
+    const stop = afterColor.match(/^\s+(-?[\d.]+)(%|px)/);
+    return stop ? { value: Number.parseFloat(stop[1]), unit: stop[2] as "%" | "px" } : null;
   }, color);
+}
+
+async function computedSurfaceBackground(locator: Locator) {
+  return locator.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { image: style.backgroundImage, color: style.backgroundColor };
+  });
 }
 
 async function expectEqualGalleryDetails(page: Page, galleryDetails: Locator) {
@@ -385,7 +392,9 @@ test.describe("visual integrity", () => {
       paper,
       night,
     ]);
-    expect.soft(await computedRgbColors(page.locator(".site-footer--night"))).toEqual([night]);
+    const footerBackground = await computedSurfaceBackground(page.locator(".site-footer--night"));
+    expect.soft(footerBackground.image, "footer has no separate gradient").toBe("none");
+    expect.soft(footerBackground.color, "footer continues night").toBe(night);
   });
 });
 
@@ -583,11 +592,14 @@ test.describe("future responsive surface contracts", () => {
     ]);
     const placeBackgroundBox = await requiredBox(placeBackground, "Place background");
     const placeGridBox = await requiredBox(page.locator(".place-truth-grid"), "Place truth grid");
-    const parchmentStopPercent = await computedColorStopPercent(placeBackground, paper);
-    expect.soft(parchmentStopPercent, "Place defines a percentage parchment stop").not.toBeNull();
-    if (parchmentStopPercent != null) {
-      const parchmentStopY =
-        placeBackgroundBox.y + (placeBackgroundBox.height * parchmentStopPercent) / 100;
+    const parchmentStop = await computedColorStopOffset(placeBackground, paper);
+    expect.soft(parchmentStop, "Place defines a resolved parchment stop").not.toBeNull();
+    if (parchmentStop != null) {
+      const parchmentOffset =
+        parchmentStop.unit === "%"
+          ? (placeBackgroundBox.height * parchmentStop.value) / 100
+          : parchmentStop.value;
+      const parchmentStopY = placeBackgroundBox.y + parchmentOffset;
       expect
         .soft(parchmentStopY, "Place reaches parchment before practical truth content")
         .toBeLessThanOrEqual(placeGridBox.y + geometryTolerance);
@@ -599,8 +611,8 @@ test.describe("future responsive surface contracts", () => {
         "Final owns exactly paper to night",
       )
       .toEqual([paper, night]);
-    expect
-      .soft(await computedRgbColors(page.locator(".site-footer--night")), "footer continues a flat night surface")
-      .toEqual([night]);
+    const footerBackground = await computedSurfaceBackground(page.locator(".site-footer--night"));
+    expect.soft(footerBackground.image, "footer has no separate gradient").toBe("none");
+    expect.soft(footerBackground.color, "footer continues a flat night surface").toBe(night);
   });
 });
