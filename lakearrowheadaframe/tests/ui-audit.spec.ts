@@ -40,6 +40,8 @@ const sectionCaptureSelectors: Record<(typeof sectionCaptureNames)[number], stri
 const fullPageCaptureStyle = "nextjs-portal { display: none !important; }";
 const sectionCaptureStyle = `${fullPageCaptureStyle}
   .site-nav, .booking-dock--mobile { display: none !important; }`;
+const mapReadinessSelector = ".gm-style img";
+const mapRenderTimeout = 8_000;
 
 const boundaryWidths = [599, 600, 767, 768, 769, 899, 900, 901] as const;
 
@@ -79,9 +81,86 @@ async function lazyScrollAndWaitForImages(page: Page) {
   await page.waitForFunction(() => window.scrollY === 0);
 }
 
+async function waitForMapRender(page: Page) {
+  const iframe = page.locator(".illustrated-map-iframe");
+  await iframe.waitFor({ state: "attached", timeout: mapRenderTimeout });
+  await iframe.waitFor({ state: "visible", timeout: mapRenderTimeout });
+  await iframe.scrollIntoViewIfNeeded({ timeout: mapRenderTimeout });
+
+  await expect
+    .poll(() => page.frames().find((frame) => frame.url().includes("/maps/embed"))?.url() ?? "", {
+      message: "map iframe navigates to the Google embed",
+      timeout: mapRenderTimeout,
+    })
+    .toContain("/maps/embed");
+
+  const mapFrame = page.frames().find((frame) => frame.url().includes("/maps/embed"));
+  if (!mapFrame) throw new Error("Map iframe did not expose a content frame");
+  const mapFrameLocator = page.frameLocator(".illustrated-map-iframe");
+
+  try {
+    await mapFrame.waitForLoadState("domcontentloaded", { timeout: mapRenderTimeout });
+    await mapFrame.waitForLoadState("load", { timeout: mapRenderTimeout });
+    await mapFrameLocator.locator("body").waitFor({ state: "attached", timeout: mapRenderTimeout });
+    await mapFrameLocator.locator("#mapDiv").waitFor({ state: "visible", timeout: mapRenderTimeout });
+    await mapFrame.waitForFunction(
+      (tileSelector) => {
+        const mapRoot = document.querySelector("#mapDiv");
+        const mapRegion = mapRoot?.querySelector<HTMLElement>(
+          '[role="region"][aria-roledescription="map"]',
+        );
+        const renderedTile = [...(mapRoot?.querySelectorAll<HTMLImageElement>(tileSelector) ?? [])].find(
+          (image) =>
+            image.complete &&
+            image.naturalWidth > 0 &&
+            image.naturalHeight > 0 &&
+            image.getBoundingClientRect().width > 0 &&
+            image.getBoundingClientRect().height > 0,
+        );
+        const regionBox = mapRegion?.getBoundingClientRect();
+        return Boolean(regionBox?.width && regionBox.height && renderedTile);
+      },
+      mapReadinessSelector,
+      { timeout: mapRenderTimeout },
+    );
+    await expect
+      .poll(
+        () =>
+          iframe.evaluate((element) => {
+            const box = element.getBoundingClientRect();
+            return box.bottom > 0 && box.right > 0 && box.top < window.innerHeight && box.left < window.innerWidth;
+          }),
+        { message: "rendered map remains in the viewport for full-page capture", timeout: mapRenderTimeout },
+      )
+      .toBe(true);
+  } catch (cause) {
+    const diagnostics = await mapFrameLocator
+      .locator("body")
+      .evaluate((body, tileSelector) => ({
+        childCount: body.childElementCount,
+        mapRegionCount: body.querySelectorAll('[role="region"][aria-roledescription="map"]').length,
+        mapRootCount: body.querySelectorAll("#mapDiv").length,
+        tiles: [...body.querySelectorAll<HTMLImageElement>(tileSelector)].map((image) => ({
+          complete: image.complete,
+          height: image.naturalHeight,
+          src: image.currentSrc || image.src,
+          width: image.naturalWidth,
+        })),
+      }), mapReadinessSelector)
+      .catch(() => ({ diagnostic: "map body unavailable" }));
+    throw new Error(
+      `Map render timed out after ${mapRenderTimeout}ms for ${mapFrame.url()}: ${JSON.stringify(diagnostics)}`,
+      { cause },
+    );
+  }
+
+  return { inViewport: true, ready: true, selector: mapReadinessSelector } as const;
+}
+
 async function captureAuditEvidence(page: Page, viewportName: string) {
   if (process.env.UPDATE_UI_SCREENSHOTS !== "1") return;
 
+  const mapReadiness = await waitForMapRender(page);
   const fullPagePath = capturePath(viewportName, "full-page.png");
   await mkdir(path.dirname(fullPagePath), { recursive: true });
   await page.screenshot({ path: fullPagePath, fullPage: true, style: fullPageCaptureStyle });
@@ -99,7 +178,14 @@ async function captureAuditEvidence(page: Page, viewportName: string) {
     await page.waitForFunction(() => window.scrollY === 0);
   }
 
-  return { auditRoot, fullPageStyle: fullPageCaptureStyle, sectionStyle: sectionCaptureStyle };
+  return {
+    auditRoot,
+    fullPageStyle: fullPageCaptureStyle,
+    mapInViewportBeforeFullPageCapture: mapReadiness.inViewport,
+    mapReadinessSelector: mapReadiness.selector,
+    mapReadyBeforeFullPageCapture: mapReadiness.ready,
+    sectionStyle: sectionCaptureStyle,
+  };
 }
 
 async function computedGridTracks(
@@ -470,6 +556,7 @@ test.describe("adaptive gallery sizing", () => {
 test.describe("visual integrity", () => {
   for (const viewport of requiredViewports) {
     test(`${viewport.name} preserves content, controls, and chapter flow`, async ({ page }) => {
+      if (process.env.UPDATE_UI_SCREENSHOTS === "1") test.slow();
       await openHome(page, viewport);
       await lazyScrollAndWaitForImages(page);
       const captureConfig = await captureAuditEvidence(page, viewport.name);
@@ -478,6 +565,9 @@ test.describe("visual integrity", () => {
         expect(captureConfig).toEqual({
           auditRoot,
           fullPageStyle: expect.stringContaining("nextjs-portal"),
+          mapInViewportBeforeFullPageCapture: true,
+          mapReadinessSelector: ".gm-style img",
+          mapReadyBeforeFullPageCapture: true,
           sectionStyle: expect.stringContaining(".site-nav"),
         });
         expect(captureConfig?.sectionStyle).toContain(".booking-dock--mobile");
