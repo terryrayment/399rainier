@@ -575,6 +575,13 @@
   border-radius: var(--ui-radius);
 }
 
+@media (max-width: 767px) {
+  .site-illustrated > .site-main:has(> .clearing-home),
+  .site-illustrated .clearing-home.illustrated-page {
+    padding-bottom: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .site-illustrated,
   .site-illustrated * {
@@ -587,10 +594,15 @@
       .forest-scene-mist,
       .ritual-steam,
       .photo-clearing-parallax-wrap,
+      .photo-clearing-parallax-wrap .parallax-frame > div,
       .editorial-gallery img
     ) {
     animation: none;
     transition-duration: 0s;
     transform: none;
+  }
+
+  .site-illustrated .photo-clearing-parallax-wrap .parallax-frame > div {
+    will-change: auto;
   }
 }

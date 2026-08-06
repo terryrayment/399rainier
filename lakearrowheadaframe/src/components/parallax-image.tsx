@@ -30,12 +30,13 @@ export function ParallaxImage({
     if (!frame || !layer) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (reduceMotion.matches) return;
-
     let raf = 0;
+    let listening = false;
+    let reduced = reduceMotion.matches;
 
     const update = () => {
       raf = 0;
+      if (reduced) return;
       const rect = frame.getBoundingClientRect();
       const viewH = window.innerHeight || 1;
       // -0.5 when entering bottom, 0.5 when leaving top
@@ -45,18 +46,55 @@ export function ParallaxImage({
     };
 
     const onScroll = () => {
-      if (raf) return;
+      if (reduced || raf) return;
       raf = window.requestAnimationFrame(update);
     };
 
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    const disableMotion = () => {
+      reduced = true;
+      if (listening) {
+        listening = false;
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onScroll);
+      }
+      if (raf) {
+        window.cancelAnimationFrame(raf);
+        raf = 0;
+      }
+      layer.style.removeProperty("transform");
+    };
+
+    const enableMotion = () => {
+      reduced = false;
+      if (!listening) {
+        listening = true;
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+      }
+      update();
+    };
+
+    const onMotionPreferenceChange = (event: MediaQueryListEvent) => {
+      if (event.matches) {
+        disableMotion();
+      } else {
+        enableMotion();
+      }
+    };
+
+    reduceMotion.addEventListener("change", onMotionPreferenceChange);
+    if (reduced) {
+      disableMotion();
+    } else {
+      enableMotion();
+    }
 
     return () => {
+      reduceMotion.removeEventListener("change", onMotionPreferenceChange);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
       if (raf) window.cancelAnimationFrame(raf);
+      layer.style.removeProperty("transform");
     };
   }, [strength]);
 
@@ -65,7 +103,6 @@ export function ParallaxImage({
       <div
         ref={layerRef}
         className="absolute inset-x-0 -top-[8%] h-[116%] will-change-transform"
-        style={{ transform: "translate3d(0, 0, 0)" }}
       >
         <Image
           src={src}
