@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { existsSync } from "node:fs";
-import { mkdir } from "node:fs/promises";
+import { lstat, mkdir, readdir } from "node:fs/promises";
 import path from "node:path";
 import * as editorialGalleryModule from "../src/components/illustration/editorial-gallery";
 import {
@@ -21,7 +21,9 @@ const requiredViewports = [
   { name: "mobile-375x667", width: 375, height: 667 },
 ] as const;
 
-const auditRoot = path.resolve(process.cwd(), "docs/ui-audit/after");
+const projectRoot = path.resolve(__dirname, "..");
+const auditRelativePath = path.join("docs", "ui-audit", "after");
+const auditRoot = path.join(projectRoot, auditRelativePath);
 const capturePath = (viewportName: string, fileName: string) =>
   path.join(auditRoot, viewportName, fileName);
 const sectionCaptureViewportNames = new Set([
@@ -30,6 +32,31 @@ const sectionCaptureViewportNames = new Set([
   "mobile-390x844",
 ]);
 const sectionCaptureNames = ["hero", "gallery", "ritual", "place", "final"] as const;
+const expectedAuditManifest = [
+  "desktop-1280x800/full-page.png",
+  "desktop-1440x1000/final.png",
+  "desktop-1440x1000/full-page.png",
+  "desktop-1440x1000/gallery.png",
+  "desktop-1440x1000/hero.png",
+  "desktop-1440x1000/place.png",
+  "desktop-1440x1000/ritual.png",
+  "mobile-375x667/full-page.png",
+  "mobile-390x844/final.png",
+  "mobile-390x844/full-page.png",
+  "mobile-390x844/gallery.png",
+  "mobile-390x844/hero.png",
+  "mobile-390x844/place.png",
+  "mobile-390x844/ritual.png",
+  "tablet-1024x768/full-page.png",
+  "tablet-767x900/full-page.png",
+  "tablet-768x1024/final.png",
+  "tablet-768x1024/full-page.png",
+  "tablet-768x1024/gallery.png",
+  "tablet-768x1024/hero.png",
+  "tablet-768x1024/place.png",
+  "tablet-768x1024/ritual.png",
+  "tablet-769x900/full-page.png",
+] as const;
 const sectionCaptureSelectors: Record<(typeof sectionCaptureNames)[number], string> = {
   hero: ".arrival-clearing",
   gallery: "#gallery",
@@ -43,6 +70,9 @@ const sectionCaptureStyle = `${fullPageCaptureStyle}
 const mapReadinessSelector = ".gm-style img";
 const mapRenderTimeout = 8_000;
 const mapSnapshotSelector = "[data-ui-audit-map-snapshot]";
+const mapDiagnosticFrameLimit = 6;
+const mapDiagnosticTileLimit = 5;
+const mapDiagnosticUrlLimit = 240;
 
 const boundaryWidths = [599, 600, 767, 768, 769, 899, 900, 901] as const;
 
@@ -82,48 +112,109 @@ async function lazyScrollAndWaitForImages(page: Page) {
   await page.waitForFunction(() => window.scrollY === 0);
 }
 
-async function waitForMapRender(page: Page) {
+function renderedMapReady(tileSelector: string) {
+  const mapRoot = document.querySelector("#mapDiv");
+  const mapRegion = mapRoot?.querySelector<HTMLElement>(
+    '[role="region"][aria-roledescription="map"]',
+  );
+  const renderedTile = [...(mapRoot?.querySelectorAll<HTMLImageElement>(tileSelector) ?? [])].find(
+    (image) => {
+      const box = image.getBoundingClientRect();
+      return (
+        image.complete &&
+        image.naturalWidth > 0 &&
+        image.naturalHeight > 0 &&
+        box.width > 0 &&
+        box.height > 0
+      );
+    },
+  );
+  const regionBox = mapRegion?.getBoundingClientRect();
+  return Boolean(regionBox?.width && regionBox.height && renderedTile);
+}
+
+async function collectMapDiagnostics(page: Page) {
   const iframe = page.locator(".illustrated-map-iframe");
-  await iframe.waitFor({ state: "attached", timeout: mapRenderTimeout });
-  await iframe.waitFor({ state: "visible", timeout: mapRenderTimeout });
-  await iframe.scrollIntoViewIfNeeded({ timeout: mapRenderTimeout });
-
-  await expect
-    .poll(() => page.frames().find((frame) => frame.url().includes("/maps/embed"))?.url() ?? "", {
-      message: "map iframe navigates to the Google embed",
-      timeout: mapRenderTimeout,
-    })
-    .toContain("/maps/embed");
-
   const mapFrame = page.frames().find((frame) => frame.url().includes("/maps/embed"));
-  if (!mapFrame) throw new Error("Map iframe did not expose a content frame");
-  const mapFrameLocator = page.frameLocator(".illustrated-map-iframe");
+  const frameState = await mapFrame
+    ?.evaluate(
+      ({ tileLimit, tileSelector, urlLimit }) => {
+        const body = document.body;
+        const tiles = [...document.querySelectorAll<HTMLImageElement>(tileSelector)];
+        return {
+          bodyCount: body ? 1 : 0,
+          bodyChildCount: body?.childElementCount ?? 0,
+          mapRegionCount:
+            body?.querySelectorAll('[role="region"][aria-roledescription="map"]').length ?? 0,
+          mapRootCount: body?.querySelectorAll("#mapDiv").length ?? 0,
+          tileCount: tiles.length,
+          tileSample: tiles.slice(0, tileLimit).map((image) => ({
+            complete: image.complete,
+            height: image.naturalHeight,
+            src: (image.currentSrc || image.src).slice(0, urlLimit),
+            width: image.naturalWidth,
+          })),
+        };
+      },
+      {
+        tileLimit: mapDiagnosticTileLimit,
+        tileSelector: mapReadinessSelector,
+        urlLimit: mapDiagnosticUrlLimit,
+      },
+    )
+    .catch(() => ({ diagnostic: "map frame unavailable" }));
 
+  return {
+    frameCount: page.frames().length,
+    frameUrls: page
+      .frames()
+      .slice(0, mapDiagnosticFrameLimit)
+      .map((frame) => frame.url().slice(0, mapDiagnosticUrlLimit)),
+    iframeBounds: await iframe.boundingBox().catch(() => null),
+    iframeCount: await iframe.count().catch(() => 0),
+    frameState: frameState ?? { diagnostic: "map frame missing" },
+  };
+}
+
+async function withMapDiagnostics<T>(page: Page, phase: string, action: () => Promise<T>) {
   try {
+    return await action();
+  } catch (cause) {
+    const diagnostics = await collectMapDiagnostics(page).catch(() => ({
+      diagnostic: "map diagnostics unavailable",
+    }));
+    throw new Error(
+      `Map ${phase} failed (each readiness wait is bounded to ${mapRenderTimeout}ms): ${JSON.stringify(diagnostics)}`,
+      { cause },
+    );
+  }
+}
+
+async function waitForMapRender(page: Page) {
+  return withMapDiagnostics(page, "initial readiness", async () => {
+    const iframe = page.locator(".illustrated-map-iframe");
+    await iframe.waitFor({ state: "attached", timeout: mapRenderTimeout });
+    await iframe.waitFor({ state: "visible", timeout: mapRenderTimeout });
+    await iframe.scrollIntoViewIfNeeded({ timeout: mapRenderTimeout });
+
+    await expect
+      .poll(() => page.frames().find((frame) => frame.url().includes("/maps/embed"))?.url() ?? "", {
+        message: "map iframe navigates to the Google embed",
+        timeout: mapRenderTimeout,
+      })
+      .toContain("/maps/embed");
+
+    const mapFrame = page.frames().find((frame) => frame.url().includes("/maps/embed"));
+    if (!mapFrame) throw new Error("Map iframe did not expose a content frame");
+    const mapFrameLocator = page.frameLocator(".illustrated-map-iframe");
+
     await mapFrame.waitForLoadState("domcontentloaded", { timeout: mapRenderTimeout });
     await mapFrame.waitForLoadState("load", { timeout: mapRenderTimeout });
     await mapFrameLocator.locator("body").waitFor({ state: "attached", timeout: mapRenderTimeout });
     await mapFrameLocator.locator("#mapDiv").waitFor({ state: "visible", timeout: mapRenderTimeout });
-    await mapFrame.waitForFunction(
-      (tileSelector) => {
-        const mapRoot = document.querySelector("#mapDiv");
-        const mapRegion = mapRoot?.querySelector<HTMLElement>(
-          '[role="region"][aria-roledescription="map"]',
-        );
-        const renderedTile = [...(mapRoot?.querySelectorAll<HTMLImageElement>(tileSelector) ?? [])].find(
-          (image) =>
-            image.complete &&
-            image.naturalWidth > 0 &&
-            image.naturalHeight > 0 &&
-            image.getBoundingClientRect().width > 0 &&
-            image.getBoundingClientRect().height > 0,
-        );
-        const regionBox = mapRegion?.getBoundingClientRect();
-        return Boolean(regionBox?.width && regionBox.height && renderedTile);
-      },
-      mapReadinessSelector,
-      { timeout: mapRenderTimeout },
-    );
+    await mapFrame.waitForFunction(renderedMapReady, mapReadinessSelector, {
+      timeout: mapRenderTimeout,
+    });
     await expect
       .poll(
         () =>
@@ -134,28 +225,8 @@ async function waitForMapRender(page: Page) {
         { message: "rendered map remains in the viewport for full-page capture", timeout: mapRenderTimeout },
       )
       .toBe(true);
-  } catch (cause) {
-    const diagnostics = await mapFrameLocator
-      .locator("body")
-      .evaluate((body, tileSelector) => ({
-        childCount: body.childElementCount,
-        mapRegionCount: body.querySelectorAll('[role="region"][aria-roledescription="map"]').length,
-        mapRootCount: body.querySelectorAll("#mapDiv").length,
-        tiles: [...body.querySelectorAll<HTMLImageElement>(tileSelector)].map((image) => ({
-          complete: image.complete,
-          height: image.naturalHeight,
-          src: image.currentSrc || image.src,
-          width: image.naturalWidth,
-        })),
-      }), mapReadinessSelector)
-      .catch(() => ({ diagnostic: "map body unavailable" }));
-    throw new Error(
-      `Map render timed out after ${mapRenderTimeout}ms for ${mapFrame.url()}: ${JSON.stringify(diagnostics)}`,
-      { cause },
-    );
-  }
-
-  return { inViewport: true, ready: true, selector: mapReadinessSelector } as const;
+    return { inViewport: true, ready: true, selector: mapReadinessSelector } as const;
+  });
 }
 
 async function freezeRenderedMap(page: Page) {
@@ -195,34 +266,58 @@ async function returnToTopAndSettle(page: Page) {
 async function confirmMapRenderAfterTop(page: Page) {
   const mapFrame = page.frames().find((frame) => frame.url().includes("/maps/embed"));
   if (!mapFrame) throw new Error("Map iframe disappeared after returning to the top");
-  await mapFrame.waitForFunction(
-    (tileSelector) => {
-      const mapRoot = document.querySelector("#mapDiv");
-      const mapRegion = mapRoot?.querySelector<HTMLElement>(
-        '[role="region"][aria-roledescription="map"]',
-      );
-      const renderedTile = [...(mapRoot?.querySelectorAll<HTMLImageElement>(tileSelector) ?? [])].find(
-        (image) =>
-          image.complete &&
-          image.naturalWidth > 0 &&
-          image.naturalHeight > 0 &&
-          image.getBoundingClientRect().width > 0 &&
-          image.getBoundingClientRect().height > 0,
-      );
-      const regionBox = mapRegion?.getBoundingClientRect();
-      return Boolean(regionBox?.width && regionBox.height && renderedTile);
-    },
-    mapReadinessSelector,
-    { timeout: mapRenderTimeout },
-  );
+  await mapFrame.waitForFunction(renderedMapReady, mapReadinessSelector, {
+    timeout: mapRenderTimeout,
+  });
   await expect(page.locator(mapSnapshotSelector)).toHaveCount(1);
   return true;
 }
 
 async function removeRenderedMapSnapshot(page: Page) {
+  if (page.isClosed()) return;
   await page.locator(mapSnapshotSelector).evaluateAll((snapshots) =>
     snapshots.forEach((snapshot) => snapshot.remove()),
   );
+}
+
+function assertPathContainedBy(root: string, candidate: string) {
+  const relativePath = path.relative(root, candidate);
+  if (
+    relativePath === ".." ||
+    relativePath.startsWith(`..${path.sep}`) ||
+    path.isAbsolute(relativePath)
+  ) {
+    throw new Error(`Audit capture path escapes its root: ${candidate}`);
+  }
+}
+
+async function validateAuditRoot() {
+  if (path.relative(projectRoot, auditRoot) !== auditRelativePath) {
+    throw new Error(`Audit root is not anchored to the project: ${auditRoot}`);
+  }
+  assertPathContainedBy(projectRoot, auditRoot);
+
+  try {
+    const auditRootStats = await lstat(auditRoot);
+    if (auditRootStats.isSymbolicLink()) {
+      throw new Error(`Audit root must not be a symbolic link: ${auditRoot}`);
+    }
+  } catch (cause) {
+    if ((cause as NodeJS.ErrnoException).code !== "ENOENT") throw cause;
+  }
+}
+
+async function listAuditFiles(directory = auditRoot): Promise<string[]> {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const files = await Promise.all(
+    entries.map(async (entry) => {
+      const entryPath = path.join(directory, entry.name);
+      return entry.isDirectory()
+        ? listAuditFiles(entryPath)
+        : [path.relative(auditRoot, entryPath)];
+    }),
+  );
+  return files.flat().sort();
 }
 
 async function captureAuditEvidence(page: Page, viewportName: string) {
@@ -235,14 +330,23 @@ async function captureAuditEvidence(page: Page, viewportName: string) {
     mapReadyInViewport: ++captureStep,
     returnedTopAndSettled: 0,
   };
+  let mapReadyAfterTop = false;
   await freezeRenderedMap(page);
-  await returnToTopAndSettle(page);
-  const mapReadyAfterTop = await confirmMapRenderAfterTop(page);
-  captureSequence.returnedTopAndSettled = ++captureStep;
-  const fullPagePath = capturePath(viewportName, "full-page.png");
-  await mkdir(path.dirname(fullPagePath), { recursive: true });
-  captureSequence.fullPageCapture = ++captureStep;
   try {
+    mapReadyAfterTop = await withMapDiagnostics(
+      page,
+      "return-to-top and post-return readiness",
+      async () => {
+        await returnToTopAndSettle(page);
+        return confirmMapRenderAfterTop(page);
+      },
+    );
+    captureSequence.returnedTopAndSettled = ++captureStep;
+    const fullPagePath = capturePath(viewportName, "full-page.png");
+    await validateAuditRoot();
+    assertPathContainedBy(auditRoot, fullPagePath);
+    await mkdir(path.dirname(fullPagePath), { recursive: true });
+    captureSequence.fullPageCapture = ++captureStep;
     await page.screenshot({ path: fullPagePath, fullPage: true, style: fullPageCaptureStyle });
   } finally {
     await removeRenderedMapSnapshot(page);
@@ -250,10 +354,12 @@ async function captureAuditEvidence(page: Page, viewportName: string) {
 
   if (sectionCaptureViewportNames.has(viewportName)) {
     for (const sectionName of sectionCaptureNames) {
+      const sectionPath = capturePath(viewportName, `${sectionName}.png`);
+      assertPathContainedBy(auditRoot, sectionPath);
       await page
         .locator(sectionCaptureSelectors[sectionName])
         .screenshot({
-          path: capturePath(viewportName, `${sectionName}.png`),
+          path: sectionPath,
           style: sectionCaptureStyle,
         });
     }
@@ -262,11 +368,13 @@ async function captureAuditEvidence(page: Page, viewportName: string) {
   }
 
   return {
+    auditRelativePath,
     auditRoot,
     captureSequence,
     fullPageStyle: fullPageCaptureStyle,
     mapReadyAfterTopBeforeFullPageCapture: mapReadyAfterTop,
     mapReadinessSelector: mapReadiness.selector,
+    projectRoot,
     sectionStyle: sectionCaptureStyle,
   };
 }
@@ -645,8 +753,10 @@ test.describe("visual integrity", () => {
       const captureConfig = await captureAuditEvidence(page, viewport.name);
 
       if (process.env.UPDATE_UI_SCREENSHOTS === "1") {
+        const expectedProjectRoot = path.dirname(require.resolve("../package.json"));
         expect(captureConfig).toEqual({
-          auditRoot,
+          auditRelativePath: path.join("docs", "ui-audit", "after"),
+          auditRoot: path.join(expectedProjectRoot, "docs", "ui-audit", "after"),
           captureSequence: {
             fullPageCapture: 3,
             mapReadyInViewport: 1,
@@ -655,6 +765,7 @@ test.describe("visual integrity", () => {
           fullPageStyle: expect.stringContaining("nextjs-portal"),
           mapReadyAfterTopBeforeFullPageCapture: true,
           mapReadinessSelector: ".gm-style img",
+          projectRoot: expectedProjectRoot,
           sectionStyle: expect.stringContaining(".site-nav"),
         });
         if (!captureConfig) throw new Error("Opt-in capture did not return sequencing metadata");
@@ -665,13 +776,14 @@ test.describe("visual integrity", () => {
           captureConfig.captureSequence.fullPageCapture,
         );
         expect(captureConfig?.sectionStyle).toContain(".booking-dock--mobile");
-        expect(path.relative(process.cwd(), auditRoot)).toBe(path.join("docs", "ui-audit", "after"));
+        expect(projectRoot).toBe(expectedProjectRoot);
+        expect(path.relative(projectRoot, auditRoot)).toBe(auditRelativePath);
         expect(capturePath(viewport.name, "full-page.png")).toBe(
           path.join(auditRoot, viewport.name, "full-page.png"),
         );
         const expectedFullPage = path.resolve(
-          process.cwd(),
-          "docs/ui-audit/after",
+          projectRoot,
+          auditRelativePath,
           viewport.name,
           "full-page.png",
         );
@@ -683,6 +795,10 @@ test.describe("visual integrity", () => {
               `${viewport.name} ${sectionName} capture`,
             ).toBe(true);
           }
+        }
+        if (viewport.name === requiredViewports[requiredViewports.length - 1].name) {
+          expect(expectedAuditManifest).toHaveLength(23);
+          expect(await listAuditFiles()).toEqual([...expectedAuditManifest]);
         }
       }
 
