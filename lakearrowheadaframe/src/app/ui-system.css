@@ -32,7 +32,7 @@
   background: var(--ui-parchment);
 }
 
-.clearing-home {
+.site-illustrated .clearing-home {
   --color-forest-deep: var(--ui-forest);
 }
 
@@ -44,31 +44,31 @@
   text-wrap: pretty;
 }
 
-.arrival-clearing-subhead,
-.inside-glass-body,
-.inside-glass-seo,
-.ritual-sequence-lead,
-.ritual-step-body,
-.place-truth-item-body,
-.place-truth-faq-a,
-.night-cta-body,
-.site-footer-copy {
+.site-illustrated .arrival-clearing-subhead,
+.site-illustrated .inside-glass-body,
+.site-illustrated .inside-glass-seo,
+.site-illustrated .ritual-sequence-lead,
+.site-illustrated .ritual-step-body,
+.site-illustrated .place-truth-item-body,
+.site-illustrated .place-truth-faq-a,
+.site-illustrated .night-cta-body,
+.site-illustrated .site-footer-copy {
   line-height: 1.7;
 }
 
-.inside-glass-title,
-.editorial-gallery-title,
-.ritual-sequence-title,
-.place-truth-heading,
-.night-cta-title {
+.site-illustrated .inside-glass-title,
+.site-illustrated .editorial-gallery-title,
+.site-illustrated .ritual-sequence-title,
+.site-illustrated .place-truth-heading,
+.site-illustrated .night-cta-title {
   letter-spacing: -0.025em;
   line-height: 1.08;
 }
 
-.inside-glass-truth-title,
-.ritual-step-title,
-.place-truth-item-title,
-.place-truth-faq-q {
+.site-illustrated .inside-glass-truth-title,
+.site-illustrated .ritual-step-title,
+.site-illustrated .place-truth-item-title,
+.site-illustrated .place-truth-faq-q {
   font-size: clamp(1.2rem, 2vw, 1.5rem);
   line-height: 1.2;
 }
@@ -86,7 +86,7 @@
     .scene-chapter--tone-night,
     .site-footer--night
   )
-  :is(a, button, input, select, textarea):focus-visible {
+  :is(a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])):focus-visible {
   outline-color: var(--ui-parchment);
 }
 
@@ -106,53 +106,55 @@
   width: min(100%, var(--ui-wide));
 }
 
-.arrival-clearing .scene-chapter-inner {
+.site-illustrated .arrival-clearing .scene-chapter-inner {
   width: min(100%, var(--ui-content));
   max-width: none;
   min-height: auto;
   padding: clamp(5.5rem, 8vw, 7rem) var(--ui-gutter) var(--ui-space-8);
 }
 
-.arrival-clearing-headline {
+.site-illustrated .arrival-clearing-headline {
   max-width: min(14ch, 100%);
   font-size: clamp(2.35rem, 6vw, 4.6rem);
   line-height: 1.02;
 }
 
-.booking-pill,
-.illustrated-map-panel,
-.night-cta {
+.site-illustrated .booking-pill,
+.site-illustrated .illustrated-map-panel,
+.site-illustrated .night-cta {
   border: 1px solid var(--ui-line-light);
   border-radius: var(--ui-radius);
   box-shadow: var(--ui-shadow);
 }
 
-.trust-forest-floor .scene-chapter-inner,
-.inside-glass-inner,
-.photographic-clearing-inner {
+.site-illustrated .trust-forest-floor .scene-chapter-inner,
+.site-illustrated .inside-glass-inner,
+.site-illustrated .photographic-clearing-inner {
   padding-top: var(--ui-section);
   padding-bottom: var(--ui-section);
 }
 
-.clearing-home .scene-chapter--gallery .scene-chapter-inner {
+.site-illustrated .clearing-home .scene-chapter--gallery .scene-chapter-inner {
   padding-bottom: var(--ui-section);
 }
 
-.inside-glass-photo {
+.site-illustrated .inside-glass-photo {
   margin-top: 0;
 }
 
-.trust-forest-floor .forest-scene-rail,
-.inside-glass-chapter .forest-scene-rail {
+.site-illustrated .trust-forest-floor .forest-scene-rail,
+.site-illustrated .inside-glass-chapter .forest-scene-rail {
   opacity: 0.28;
 }
 
-.trust-forest-floor .forest-scene-rail .forest-scene-plate,
-.inside-glass-chapter .forest-scene-rail .forest-scene-plate {
+.site-illustrated .trust-forest-floor .forest-scene-rail .forest-scene-plate,
+.site-illustrated .inside-glass-chapter .forest-scene-rail .forest-scene-plate {
   opacity: 0.45;
 }
 
-.inside-glass-chapter :is(.forest-scene-mist, .forest-scene-canopy),
-.scene-chapter--gallery :is(.forest-scene-mist, .forest-scene-canopy, .forest-scene-foreground) {
+.site-illustrated .inside-glass-chapter :is(.forest-scene-mist, .forest-scene-canopy),
+.site-illustrated
+  .scene-chapter--gallery
+  :is(.forest-scene-mist, .forest-scene-canopy, .forest-scene-foreground) {
   opacity: 0.18;
 }
