@@ -54,26 +54,38 @@ async function lazyScrollAndWaitForImages(page: Page) {
   await page.evaluate(() => window.scrollTo(0, 0));
 }
 
-async function gridColumnCount(locator: Locator) {
-  return locator.evaluate((element) => {
-    const template = getComputedStyle(element).gridTemplateColumns;
+async function computedGridTracks(
+  locator: Locator,
+  property: "gridTemplateColumns" | "gridTemplateRows",
+) {
+  return locator.evaluate((element, gridProperty) => {
+    const template = getComputedStyle(element)[gridProperty];
     let depth = 0;
-    let columns = 0;
-    let inToken = false;
+    let token = "";
+    const tracks: string[] = [];
 
     for (const character of template) {
       if (character === "(") depth += 1;
       if (character === ")") depth -= 1;
       if (/\s/.test(character) && depth === 0) {
-        inToken = false;
-      } else if (!inToken) {
-        columns += 1;
-        inToken = true;
+        if (token) tracks.push(token);
+        token = "";
+      } else {
+        token += character;
       }
     }
+    if (token) tracks.push(token);
 
-    return columns;
-  });
+    return tracks;
+  }, property);
+}
+
+async function gridColumnCount(locator: Locator) {
+  return (await computedGridTracks(locator, "gridTemplateColumns")).length;
+}
+
+async function gridRowCount(locator: Locator) {
+  return (await computedGridTracks(locator, "gridTemplateRows")).length;
 }
 
 async function requiredBox(locator: Locator, label: string): Promise<Box> {
@@ -120,6 +132,80 @@ async function computedRgbColors(locator: Locator) {
   });
 }
 
+async function computedColorStopPercent(locator: Locator, color: string) {
+  return locator.evaluate((element, expectedColor) => {
+    const image = getComputedStyle(element).backgroundImage;
+    const colorIndex = image.indexOf(expectedColor);
+    if (colorIndex < 0) return null;
+    const afterColor = image.slice(colorIndex + expectedColor.length);
+    const stop = afterColor.match(/^\s+(-?[\d.]+)%/);
+    return stop ? Number.parseFloat(stop[1]) : null;
+  }, color);
+}
+
+async function expectEqualGalleryDetails(page: Page, galleryDetails: Locator) {
+  const tracks = await computedGridTracks(galleryDetails, "gridTemplateColumns");
+  expect.soft(tracks, "gallery details compute three tracks").toHaveLength(3);
+  const trackWidths = tracks.map((track) => Number.parseFloat(track));
+  expect.soft(trackWidths.every(Number.isFinite), "gallery detail tracks resolve to pixels").toBe(true);
+  expect
+    .soft(Math.max(...trackWidths) - Math.min(...trackWidths), "gallery detail track widths")
+    .toBeLessThanOrEqual(geometryTolerance);
+
+  const detailItems = page.locator(".editorial-gallery-detail");
+  const detailWidths: number[] = [];
+  for (let index = 0; index < (await detailItems.count()); index += 1) {
+    detailWidths.push((await requiredBox(detailItems.nth(index), `gallery detail ${index + 1}`)).width);
+  }
+  expect.soft(detailWidths, "gallery renders three detail children").toHaveLength(3);
+  expect
+    .soft(Math.max(...detailWidths) - Math.min(...detailWidths), "gallery detail child widths")
+    .toBeLessThanOrEqual(geometryTolerance);
+}
+
+async function expectImmediateGalleryBounds(page: Page) {
+  const galleryGrid = await requiredBox(page.locator(".editorial-gallery-grid"), "gallery grid");
+
+  const dominant = page.locator(".editorial-gallery-dominant");
+  const dominantBox = await requiredBox(dominant, "gallery dominant container");
+  expectInside(dominantBox, galleryGrid, "gallery dominant container");
+  expectInside(
+    await requiredBox(dominant.locator(".photo-clearing-frame"), "gallery dominant frame"),
+    dominantBox,
+    "gallery dominant frame",
+  );
+
+  const mediums = page.locator(".editorial-gallery-mediums");
+  const mediumsBox = await requiredBox(mediums, "gallery medium group");
+  expectInside(mediumsBox, galleryGrid, "gallery medium group");
+  const mediumItems = mediums.locator(".editorial-gallery-medium");
+  for (let index = 0; index < (await mediumItems.count()); index += 1) {
+    const medium = mediumItems.nth(index);
+    const mediumBox = await requiredBox(medium, `gallery medium ${index + 1}`);
+    expectInside(mediumBox, mediumsBox, `gallery medium ${index + 1}`);
+    expectInside(
+      await requiredBox(medium.locator(".photo-clearing-frame"), `gallery medium frame ${index + 1}`),
+      mediumBox,
+      `gallery medium frame ${index + 1}`,
+    );
+  }
+
+  const details = page.locator(".editorial-gallery-details");
+  const detailsBox = await requiredBox(details, "gallery detail group");
+  expectInside(detailsBox, galleryGrid, "gallery detail group");
+  const detailItems = details.locator(".editorial-gallery-detail");
+  for (let index = 0; index < (await detailItems.count()); index += 1) {
+    const detail = detailItems.nth(index);
+    const detailBox = await requiredBox(detail, `gallery detail ${index + 1}`);
+    expectInside(detailBox, detailsBox, `gallery detail ${index + 1}`);
+    expectInside(
+      await requiredBox(detail.locator(":scope > div"), `gallery detail frame ${index + 1}`),
+      detailBox,
+      `gallery detail frame ${index + 1}`,
+    );
+  }
+}
+
 async function expectResponsiveGeometry(page: Page, width: (typeof boundaryWidths)[number]) {
   const galleryGrid = page.locator(".editorial-gallery-grid");
   const galleryDetails = page.locator(".editorial-gallery-details");
@@ -150,6 +236,7 @@ async function expectResponsiveGeometry(page: Page, width: (typeof boundaryWidth
     expect.soft(thirdRitualBox.width, "third ritual card spans both columns").toBeGreaterThanOrEqual(
       ritualBox.width - geometryTolerance,
     );
+    await expectEqualGalleryDetails(page, galleryDetails);
   } else {
     expect.soft(await gridColumnCount(galleryGrid), "gallery columns").toBe(2);
     expect.soft(await gridColumnCount(galleryDetails), "gallery detail columns").toBe(3);
@@ -160,6 +247,8 @@ async function expectResponsiveGeometry(page: Page, width: (typeof boundaryWidth
     expect.soft(thirdRitualBox.width, "third ritual card is less than half the grid").toBeLessThan(
       ritualBox.width / 2,
     );
+    await expectEqualGalleryDetails(page, galleryDetails);
+    expect.soft(await gridRowCount(page.locator(".editorial-gallery-mediums")), "supporting gallery rows").toBe(2);
   }
 
   if (width < 900) {
@@ -170,11 +259,7 @@ async function expectResponsiveGeometry(page: Page, width: (typeof boundaryWidth
     await expect.soft(page.locator(".site-nav-links"), "desktop navigation links").toBeVisible();
   }
 
-  await expectChildrenInside(
-    page,
-    ".editorial-gallery-dominant, .editorial-gallery-medium, .editorial-gallery .photo-clearing-frame, .editorial-gallery-detail",
-    ".editorial-gallery-grid",
-  );
+  await expectImmediateGalleryBounds(page);
   await expectChildrenInside(page, ".ritual-step", ".ritual-sequence-steps");
 
   const ritualCards = page.locator(".ritual-step");
@@ -288,13 +373,19 @@ test.describe("visual integrity", () => {
       paper,
     ]);
 
-    const placeColors = await computedRgbColors(page.locator(".scene-chapter--lake .forest-scene-bg"));
-    expect.soft(placeColors[0], "Place owns dusk at its opening edge").toBe(dusk);
-    expect.soft(placeColors.at(-1), "Place resolves to paper").toBe(paper);
-
-    const finalColors = await computedRgbColors(page.locator(".scene-chapter--night .forest-scene-bg"));
-    expect.soft(finalColors[0], "Final opens on paper").toBe(paper);
-    expect.soft(finalColors.at(-1), "Final resolves to night").toBe(night);
+    expect.soft(await computedRgbColors(page.locator(".scene-chapter--ritual .forest-scene-bg"))).toEqual([
+      paper,
+      dusk,
+    ]);
+    expect.soft(await computedRgbColors(page.locator(".scene-chapter--lake .forest-scene-bg"))).toEqual([
+      dusk,
+      paper,
+    ]);
+    expect.soft(await computedRgbColors(page.locator(".scene-chapter--night .forest-scene-bg"))).toEqual([
+      paper,
+      night,
+    ]);
+    expect.soft(await computedRgbColors(page.locator(".site-footer--night"))).toEqual([night]);
   });
 });
 
@@ -391,7 +482,7 @@ test.describe("future responsive surface contracts", () => {
       await openHome(page, viewport);
 
       const restrainedLayers = page.locator(
-        ".scene-chapter--trust .forest-scene-rail, .scene-chapter--interior .forest-scene-rail, .scene-chapter--interior .forest-scene-mist, .scene-chapter--gallery .forest-scene-mist, .scene-chapter--gallery .forest-scene-canopy, .scene-chapter--gallery .forest-scene-foreground",
+        ".scene-chapter--trust .forest-scene-rail, .scene-chapter--interior .forest-scene-rail, .scene-chapter--interior .forest-scene-mist, .scene-chapter--interior .forest-scene-canopy, .scene-chapter--gallery .forest-scene-mist, .scene-chapter--gallery .forest-scene-canopy, .scene-chapter--gallery .forest-scene-foreground",
       );
       for (let index = 0; index < (await restrainedLayers.count()); index += 1) {
         const opacity = await restrainedLayers.nth(index).evaluate((element) =>
@@ -465,24 +556,51 @@ test.describe("future responsive surface contracts", () => {
   test("surface and preservation: bridge count, card radii, and late ownership", async ({ page }) => {
     await openHome(page, { width: 1440, height: 1000 });
 
-    await expect(page.locator(".scene-bridge--interior-gallery")).toHaveCount(0);
+    await expect(
+      page.locator(".clearing-home > .scene-bridge--interior-gallery ~ .scene-bridge"),
+    ).toHaveCount(0);
 
     const cardRadii = await page
       .locator(
-        ".trust-proof-chip, .photo-clearing-frame, .editorial-gallery-detail, .ritual-step-proof .photo-clearing-frame, .illustrated-map-panel, .place-truth-item, .place-truth-faq-item",
+        ".trust-proof-chip, .photo-clearing-frame, .editorial-gallery-detail, .ritual-step, .ritual-step-proof .photo-clearing-frame, .booking-pill, .illustrated-map-panel, .place-truth-item, .place-truth-faq-item, .night-cta",
       )
       .evaluateAll((elements) => [
         ...new Set(elements.map((element) => getComputedStyle(element).borderTopLeftRadius)),
       ]);
     const nonZeroRadii = cardRadii.filter((radius) => radius !== "0px");
-    expect(cardRadii).toContain("0px");
-    expect(new Set(nonZeroRadii).size, "all elevated cards share one radius").toBeLessThanOrEqual(1);
+    expect.soft(cardRadii).toContain("0px");
+    expect.soft(new Set(nonZeroRadii).size, "all elevated cards share one radius").toBeLessThanOrEqual(1);
 
-    const placeColors = await computedRgbColors(page.locator(".scene-chapter--lake .forest-scene-bg"));
-    expect(placeColors[0]).toBe(dusk);
-    expect(placeColors.at(-1)).toBe(paper);
-    const finalColors = await computedRgbColors(page.locator(".scene-chapter--night .forest-scene-bg"));
-    expect(finalColors[0]).toBe(paper);
-    expect(finalColors.at(-1)).toBe(night);
+    expect.soft(await computedRgbColors(page.locator(".scene-chapter--ritual .forest-scene-bg"))).toEqual([
+      paper,
+      dusk,
+    ]);
+
+    const placeBackground = page.locator(".scene-chapter--lake .forest-scene-bg");
+    expect.soft(await computedRgbColors(placeBackground), "Place owns exactly dusk to paper").toEqual([
+      dusk,
+      paper,
+    ]);
+    const placeBackgroundBox = await requiredBox(placeBackground, "Place background");
+    const placeGridBox = await requiredBox(page.locator(".place-truth-grid"), "Place truth grid");
+    const parchmentStopPercent = await computedColorStopPercent(placeBackground, paper);
+    expect.soft(parchmentStopPercent, "Place defines a percentage parchment stop").not.toBeNull();
+    if (parchmentStopPercent != null) {
+      const parchmentStopY =
+        placeBackgroundBox.y + (placeBackgroundBox.height * parchmentStopPercent) / 100;
+      expect
+        .soft(parchmentStopY, "Place reaches parchment before practical truth content")
+        .toBeLessThanOrEqual(placeGridBox.y + geometryTolerance);
+    }
+
+    expect
+      .soft(
+        await computedRgbColors(page.locator(".scene-chapter--night .forest-scene-bg")),
+        "Final owns exactly paper to night",
+      )
+      .toEqual([paper, night]);
+    expect
+      .soft(await computedRgbColors(page.locator(".site-footer--night")), "footer continues a flat night surface")
+      .toEqual([night]);
   });
 });
