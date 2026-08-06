@@ -58,13 +58,20 @@ function MobileStickyBooking({
 
   useEffect(() => {
     const hero = document.getElementById("hero-booking");
-    const footer = document.querySelector("footer");
+    const finalBooking = document.getElementById("reviews");
+    const footer = document.querySelector(".site-footer");
     if (!hero) return;
 
     let heroOut = false;
-    let footerIn = false;
+    const closingTargets = [finalBooking, footer].filter(
+      (target): target is Element => target != null,
+    );
+    const closingIntersections = new Map<Element, boolean>(
+      closingTargets.map((target) => [target, false]),
+    );
 
-    const update = () => setVisible(heroOut && !footerIn);
+    const update = () =>
+      setVisible(heroOut && ![...closingIntersections.values()].some(Boolean));
 
     const heroObserver = new IntersectionObserver(
       ([entry]) => {
@@ -75,21 +82,20 @@ function MobileStickyBooking({
     );
     heroObserver.observe(hero);
 
-    let footerObserver: IntersectionObserver | undefined;
-    if (footer) {
-      footerObserver = new IntersectionObserver(
-        ([entry]) => {
-          footerIn = entry.isIntersecting;
-          update();
-        },
-        { threshold: 0.05 },
-      );
-      footerObserver.observe(footer);
-    }
+    const closingObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          closingIntersections.set(entry.target, entry.isIntersecting);
+        }
+        update();
+      },
+      { threshold: 0 },
+    );
+    for (const target of closingTargets) closingObserver.observe(target);
 
     return () => {
       heroObserver.disconnect();
-      footerObserver?.disconnect();
+      closingObserver.disconnect();
     };
   }, []);
 

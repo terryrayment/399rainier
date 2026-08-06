@@ -441,3 +441,156 @@
     display: none;
   }
 }
+
+.site-illustrated .clearing-home .scene-chapter--ritual {
+  background: var(--ui-dusk);
+}
+
+.site-illustrated .clearing-home .scene-chapter--ritual .forest-scene-bg {
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    var(--ui-parchment) 0,
+    var(--ui-dusk) clamp(5rem, 10vw, 8rem),
+    var(--ui-dusk) 100%
+  );
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.site-illustrated .clearing-home .scene-chapter--ritual .scene-chapter-inner {
+  padding-top: clamp(7rem, 12vw, 10rem);
+  padding-bottom: var(--ui-section);
+}
+
+.site-illustrated .clearing-home .scene-chapter--lake {
+  color: var(--ui-ink);
+  background: var(--ui-parchment);
+}
+
+.site-illustrated .clearing-home .scene-chapter--lake .forest-scene-bg {
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    var(--ui-dusk) 0,
+    var(--ui-parchment) clamp(5rem, 10vw, 8rem),
+    var(--ui-parchment) 100%
+  );
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.site-illustrated .clearing-home .scene-chapter--lake .scene-chapter-inner {
+  padding-top: clamp(7rem, 12vw, 10rem);
+  padding-bottom: var(--ui-section);
+}
+
+.site-illustrated .clearing-home .night-booking-close {
+  background: var(--ui-night);
+}
+
+.site-illustrated .clearing-home .night-booking-close .forest-scene-bg {
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    var(--ui-parchment) 0,
+    var(--ui-night) clamp(5rem, 10vw, 8rem),
+    var(--ui-night) 100%
+  );
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.site-illustrated .clearing-home .night-booking-inner {
+  padding-top: clamp(7rem, 12vw, 10rem);
+  padding-bottom: var(--ui-section);
+}
+
+.site-illustrated .site-footer--night {
+  margin-top: 0;
+  background: var(--ui-night);
+}
+
+.site-illustrated .site-footer-floor {
+  opacity: 0.18;
+}
+
+.site-illustrated
+  .clearing-home
+  :is(.scene-chapter--ritual, .scene-chapter--lake, .night-booking-close)
+  :is(.forest-scene-canopy, .forest-scene-foreground, .forest-scene-rail) {
+  z-index: var(--z-scene-env);
+  pointer-events: none;
+  opacity: 0.18;
+}
+
+.site-illustrated .clearing-home .illustrated-map-panel {
+  border-color: var(--ui-line-dark);
+  border-radius: var(--ui-radius);
+  background: var(--ui-forest);
+  box-shadow: var(--ui-shadow);
+}
+
+.site-illustrated .clearing-home .place-truth-grid {
+  gap: clamp(var(--ui-space-12), 6vw, var(--ui-space-24));
+  margin-top: var(--ui-space-16);
+}
+
+.site-illustrated .clearing-home :is(.place-truth-list, .place-truth-faq) {
+  gap: var(--ui-space-6);
+}
+
+.site-illustrated
+  .clearing-home
+  :is(.place-truth-item, .place-truth-faq-item, .ritual-step) {
+  border: 0;
+  border-bottom: 1px solid var(--ui-line-light);
+  border-radius: 0;
+  padding-bottom: var(--ui-space-6);
+  box-shadow: none;
+}
+
+.site-illustrated .clearing-home .ritual-step {
+  border-bottom-color: var(--ui-line-dark);
+}
+
+.site-illustrated
+  .clearing-home
+  :is(.place-truth-item-body, .place-truth-faq-a, .night-cta-body) {
+  max-width: 68ch;
+}
+
+.site-illustrated .clearing-home .night-booking-layout {
+  gap: clamp(var(--ui-space-8), 5vw, var(--ui-space-16));
+}
+
+.site-illustrated .clearing-home .night-cta {
+  padding: clamp(var(--ui-space-6), 4vw, var(--ui-space-12));
+  color: var(--ui-parchment);
+  background: rgb(234 231 216 / 6%);
+  border-color: var(--ui-line-dark);
+}
+
+.site-illustrated .clearing-home .photo-clearing-frame {
+  border-radius: var(--ui-radius);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-illustrated,
+  .site-illustrated * {
+    scroll-behavior: auto;
+  }
+
+  .site-illustrated
+    :is(
+      .forest-layer,
+      .forest-scene-mist,
+      .ritual-steam,
+      .photo-clearing-parallax-wrap,
+      .editorial-gallery img
+    ) {
+    animation: none;
+    transition-duration: 0s;
+    transform: none;
+  }
+}
