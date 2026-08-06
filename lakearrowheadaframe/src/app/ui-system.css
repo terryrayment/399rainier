@@ -335,10 +335,10 @@
 
   .site-illustrated .ritual-sequence-steps {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--ui-space-4);
+    gap: var(--ui-space-8) var(--ui-space-6);
   }
 
-  .site-illustrated .ritual-step:nth-child(3) {
+  .site-illustrated .ritual-sequence-steps > :nth-child(3) {
     grid-column: 1 / -1;
   }
 }
@@ -347,7 +347,7 @@
   .site-illustrated .editorial-gallery-grid {
     grid-template-columns: minmax(0, 1.55fr) minmax(18rem, 0.85fr);
     align-items: stretch;
-    gap: var(--ui-space-4);
+    gap: var(--ui-space-4) var(--ui-space-6);
   }
 
   .site-illustrated .editorial-gallery-dominant {
@@ -361,7 +361,7 @@
 
   .site-illustrated .editorial-gallery-medium,
   .site-illustrated .editorial-gallery-medium .photo-clearing,
-  .site-illustrated .editorial-gallery-medium .photo-clearing-frame {
+  .site-illustrated .editorial-gallery-medium .editorial-gallery-frame {
     min-height: 0;
     height: 100%;
   }
@@ -379,7 +379,7 @@
     gap: var(--ui-space-6);
   }
 
-  .site-illustrated .ritual-step:nth-child(3) {
+  .site-illustrated .ritual-sequence-steps > :nth-child(3) {
     grid-column: auto;
   }
 
