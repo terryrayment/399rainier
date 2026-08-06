@@ -653,6 +653,42 @@ test.describe("interaction and preservation", () => {
     await expect(page.locator(".booking-dock--mobile")).toBeHidden();
   });
 
+  test("live reduced motion clears parallax and stops decorative motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await openHome(page, { width: 1440, height: 1000 });
+
+    const parallaxLayer = page.locator(".photo-clearing-parallax-wrap .parallax-frame > div").first();
+    await parallaxLayer.scrollIntoViewIfNeeded();
+    await page.evaluate(() => window.scrollBy(0, 240));
+    await expect
+      .poll(() => parallaxLayer.evaluate((element) => getComputedStyle(element).transform))
+      .not.toBe("none");
+
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await expect
+      .poll(() => parallaxLayer.evaluate((element) => getComputedStyle(element).transform))
+      .toBe("none");
+
+    await page.evaluate(() => window.scrollBy(0, 240));
+    await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    expect(await parallaxLayer.evaluate((element) => getComputedStyle(element).transform)).toBe("none");
+
+    const stoppedDecorations = page.locator(
+      ".forest-scene-mist, .ritual-steam, .editorial-gallery img",
+    );
+    for (let index = 0; index < (await stoppedDecorations.count()); index += 1) {
+      const style = await stoppedDecorations.nth(index).evaluate((element) => {
+        const computed = getComputedStyle(element);
+        return {
+          animationName: computed.animationName,
+          transitionDuration: computed.transitionDuration,
+        };
+      });
+      expect.soft(style.animationName, `decoration ${index + 1} animation`).toBe("none");
+      expect.soft(style.transitionDuration, `decoration ${index + 1} transition`).toBe("0s");
+    }
+  });
+
   test("mobile sticky booking hides when the final booking enters before the footer", async ({
     page,
   }) => {
@@ -743,9 +779,95 @@ test.describe("interaction and preservation", () => {
     await dispatchHeroBatch([true, false]);
     await expect.soft(page.locator(".booking-dock--mobile")).toBeVisible();
 
+    const closingThreshold = await page.evaluate(() => {
+      const finalBooking = document.getElementById("reviews");
+      const footer = document.querySelector(".site-footer");
+      type ObserverRecord = {
+        options?: IntersectionObserverInit;
+        targets: Element[];
+      };
+      const records = Reflect.get(window, "__stickyObserverRecords") as ObserverRecord[];
+      return records.find(
+        (record) =>
+          finalBooking != null &&
+          footer != null &&
+          record.targets.includes(finalBooking) &&
+          record.targets.includes(footer),
+      )?.options?.threshold;
+    });
+    expect.soft(closingThreshold, "closing observer uses the entry threshold").toBe(0);
+
+    const dispatchClosingBatch = async (
+      states: Array<{ target: "final" | "footer"; isIntersecting: boolean }>,
+    ) => {
+      await page.evaluate((intersectionStates) => {
+        const finalBooking = document.getElementById("reviews");
+        const footer = document.querySelector(".site-footer");
+        if (!finalBooking || !footer) throw new Error("Closing booking targets are missing");
+        type ObserverRecord = {
+          callback: IntersectionObserverCallback;
+          observer: IntersectionObserver;
+          targets: Element[];
+        };
+        const records = Reflect.get(window, "__stickyObserverRecords") as ObserverRecord[];
+        const closingRecord = records.find(
+          (record) => record.targets.includes(finalBooking) && record.targets.includes(footer),
+        );
+        if (!closingRecord) throw new Error("Closing observer is missing");
+        const entries: IntersectionObserverEntry[] = intersectionStates.map((state) => {
+          const target = state.target === "final" ? finalBooking : footer;
+          const boundingClientRect = target.getBoundingClientRect();
+          return {
+            boundingClientRect,
+            intersectionRatio: state.isIntersecting ? 1 : 0,
+            intersectionRect: state.isIntersecting ? boundingClientRect : new DOMRectReadOnly(),
+            isIntersecting: state.isIntersecting,
+            rootBounds: new DOMRectReadOnly(0, 0, window.innerWidth, window.innerHeight),
+            target,
+            time: performance.now(),
+          };
+        });
+        closingRecord.callback(entries, closingRecord.observer);
+      }, states);
+    };
+
+    await dispatchClosingBatch([
+      { target: "final", isIntersecting: true },
+      { target: "footer", isIntersecting: false },
+    ]);
+    await expect.soft(page.locator(".booking-dock--mobile")).toBeHidden();
+
+    await dispatchClosingBatch([
+      { target: "final", isIntersecting: false },
+      { target: "footer", isIntersecting: true },
+    ]);
+    await expect.soft(page.locator(".booking-dock--mobile")).toBeHidden();
+
+    await dispatchClosingBatch([
+      { target: "final", isIntersecting: false },
+      { target: "footer", isIntersecting: false },
+    ]);
+    await expect.soft(page.locator(".booking-dock--mobile")).toBeVisible();
+
     await dispatchHeroBatch([false, true]);
     await expect.soft(page.locator(".booking-dock--mobile")).toBeHidden();
   });
+});
+
+test.describe("late surface continuity", () => {
+  for (const viewport of [
+    { name: "desktop", width: 1440, height: 1000 },
+    { name: "mobile", width: 390, height: 844 },
+  ] as const) {
+    test(`${viewport.name} final booking meets the footer without a gap`, async ({ page }) => {
+      await openHome(page, viewport);
+      const finalBox = await requiredBox(page.locator("#reviews"), "Final booking section");
+      const footerBox = await requiredBox(page.locator(".site-footer"), "Site footer");
+      expect(Math.abs(footerBox.y - (finalBox.y + finalBox.height))).toBeLessThanOrEqual(
+        geometryTolerance,
+      );
+    });
+  }
 });
 
 test.describe("future responsive surface contracts", () => {
