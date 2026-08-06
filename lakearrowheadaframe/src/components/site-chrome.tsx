@@ -75,6 +75,15 @@ export function SiteNav() {
     return () => window.removeEventListener("popstate", closeOnHistoryNavigation);
   }, []);
 
+  useEffect(() => {
+    const desktopQuery = window.matchMedia("(min-width: 900px)");
+    const closeOnDesktop = (event: MediaQueryListEvent) => {
+      if (event.matches) setOpen(false);
+    };
+    desktopQuery.addEventListener("change", closeOnDesktop);
+    return () => desktopQuery.removeEventListener("change", closeOnDesktop);
+  }, []);
+
   return (
     <header className={`site-nav ${condensed ? "site-nav--condensed" : "site-nav--clear"}`}>
       <div className="site-nav-inner">

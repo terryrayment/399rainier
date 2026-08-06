@@ -329,8 +329,22 @@
     display: contents;
   }
 
+  .site-illustrated
+    .editorial-gallery-mediums:has(> :only-child)
+    > .editorial-gallery-medium {
+    grid-column: 1 / -1;
+  }
+
   .site-illustrated .editorial-gallery-details {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .site-illustrated .editorial-gallery-details:has(> :only-child) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-illustrated .editorial-gallery-details:has(> :nth-child(2):last-child) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .site-illustrated .ritual-sequence-steps {
@@ -359,6 +373,10 @@
     grid-template-rows: repeat(2, minmax(0, 1fr));
   }
 
+  .site-illustrated .editorial-gallery-mediums:has(> :only-child) {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
   .site-illustrated .editorial-gallery-medium,
   .site-illustrated .editorial-gallery-medium .photo-clearing,
   .site-illustrated .editorial-gallery-medium .editorial-gallery-frame {
@@ -372,6 +390,14 @@
 
   .site-illustrated .editorial-gallery-details {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .site-illustrated .editorial-gallery-details:has(> :only-child) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .site-illustrated .editorial-gallery-details:has(> :nth-child(2):last-child) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .site-illustrated .ritual-sequence-steps {
