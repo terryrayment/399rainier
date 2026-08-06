@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import * as editorialGalleryModule from "../src/components/illustration/editorial-gallery";
 import {
   allowedSeasonalHrefs,
   stableInternalHrefs,
@@ -322,6 +323,101 @@ test.describe("responsive geometry", () => {
       await expectResponsiveGeometry(page, width);
     });
   }
+});
+
+test.describe("adaptive gallery sizing", () => {
+  test("photo counts map to measured responsive source slots", () => {
+    const getSizes = (
+      editorialGalleryModule as typeof editorialGalleryModule & {
+        getEditorialGallerySizes?: (
+          displayedMediumCount: number,
+          displayedDetailCount: number,
+        ) => { dominant: string; supporting: string; detail: string };
+      }
+    ).getEditorialGallerySizes;
+    expect(typeof getSizes).toBe("function");
+    if (!getSizes) throw new Error("getEditorialGallerySizes must be exported");
+
+    expect(getSizes(2, 3)).toEqual({
+      dominant:
+        "(max-width: 599px) 100vw, (max-width: 899px) 100vw, (min-width: 1440px) 52rem, 56vw",
+      supporting:
+        "(max-width: 599px) 100vw, (max-width: 899px) 50vw, (min-width: 1440px) 28rem, 31vw",
+      detail:
+        "(max-width: 599px) 100vw, (max-width: 899px) 33vw, (min-width: 1440px) 26rem, 29vw",
+    });
+    expect(getSizes(1, 0).supporting).toBe(
+      "(max-width: 599px) 100vw, (max-width: 899px) 100vw, (min-width: 1440px) 28rem, 31vw",
+    );
+    expect(getSizes(0, 0).dominant).toBe(
+      "(max-width: 599px) 100vw, (max-width: 899px) 100vw, (min-width: 1440px) 80rem, 92vw",
+    );
+    expect(getSizes(2, 1).detail).toBe(
+      "(max-width: 599px) 100vw, (max-width: 899px) 100vw, (min-width: 1440px) 80rem, 92vw",
+    );
+    expect(getSizes(2, 2).detail).toBe(
+      "(max-width: 599px) 100vw, (max-width: 899px) 50vw, (min-width: 1440px) 40rem, 46vw",
+    );
+  });
+
+  test("current photo roles declare measured responsive source slots", async ({ page }) => {
+    await openHome(page, { width: 1440, height: 1000 });
+
+    await expect(
+      page.locator(".editorial-gallery-dominant .photo-clearing-frame > img"),
+    ).toHaveAttribute(
+      "sizes",
+      "(max-width: 599px) 100vw, (max-width: 899px) 100vw, (min-width: 1440px) 52rem, 56vw",
+    );
+    expect(
+      await page.locator(".editorial-gallery-medium img").evaluateAll((images) =>
+        images.map((image) => image.getAttribute("sizes")),
+      ),
+    ).toEqual([
+      "(max-width: 599px) 100vw, (max-width: 899px) 50vw, (min-width: 1440px) 28rem, 31vw",
+      "(max-width: 599px) 100vw, (max-width: 899px) 50vw, (min-width: 1440px) 28rem, 31vw",
+    ]);
+    expect(
+      await page.locator(".editorial-gallery-detail img").evaluateAll((images) =>
+        images.map((image) => image.getAttribute("sizes")),
+      ),
+    ).toEqual([
+      "(max-width: 599px) 100vw, (max-width: 899px) 33vw, (min-width: 1440px) 26rem, 29vw",
+      "(max-width: 599px) 100vw, (max-width: 899px) 33vw, (min-width: 1440px) 26rem, 29vw",
+      "(max-width: 599px) 100vw, (max-width: 899px) 33vw, (min-width: 1440px) 26rem, 29vw",
+    ]);
+  });
+
+  test("desktop gallery collapses an empty supporting wrapper", async ({ page }) => {
+    await openHome(page, { width: 1440, height: 1000 });
+
+    const grid = page.locator(".editorial-gallery-grid");
+    const mediums = page.locator(".editorial-gallery-mediums");
+    await mediums.locator(".editorial-gallery-medium").evaluateAll((items) =>
+      items.forEach((item) => item.remove()),
+    );
+
+    const gridBox = await requiredBox(grid, "gallery grid without supporting photos");
+    const dominantBox = await requiredBox(
+      page.locator(".editorial-gallery-dominant"),
+      "dominant gallery without supporting photos",
+    );
+    const detailsBox = await requiredBox(
+      page.locator(".editorial-gallery-details"),
+      "detail gallery without supporting photos",
+    );
+    expect.soft(await gridColumnCount(grid), "empty supporting column collapses").toBe(1);
+    expect.soft(await mediums.isHidden(), "empty supporting wrapper is hidden").toBe(true);
+    expect
+      .soft(dominantBox.width, "dominant gallery fills the collapsed grid")
+      .toBeGreaterThanOrEqual(gridBox.width - geometryTolerance);
+    expect
+      .soft(detailsBox.width, "detail gallery remains full width")
+      .toBeGreaterThanOrEqual(gridBox.width - geometryTolerance);
+    expect
+      .soft(detailsBox.y, "detail gallery remains below the dominant photo")
+      .toBeGreaterThanOrEqual(dominantBox.y + dominantBox.height - geometryTolerance);
+  });
 });
 
 test.describe("visual integrity", () => {

@@ -11,6 +11,31 @@ type EditorialGalleryProps = {
   title?: string;
 };
 
+const fullGallerySizes =
+  "(max-width: 599px) 100vw, (max-width: 899px) 100vw, (min-width: 1440px) 80rem, 92vw";
+
+export function getEditorialGallerySizes(
+  displayedMediumCount: number,
+  displayedDetailCount: number,
+) {
+  return {
+    dominant:
+      displayedMediumCount === 0
+        ? fullGallerySizes
+        : "(max-width: 599px) 100vw, (max-width: 899px) 100vw, (min-width: 1440px) 52rem, 56vw",
+    supporting:
+      displayedMediumCount <= 1
+        ? "(max-width: 599px) 100vw, (max-width: 899px) 100vw, (min-width: 1440px) 28rem, 31vw"
+        : "(max-width: 599px) 100vw, (max-width: 899px) 50vw, (min-width: 1440px) 28rem, 31vw",
+    detail:
+      displayedDetailCount <= 1
+        ? fullGallerySizes
+        : displayedDetailCount === 2
+          ? "(max-width: 599px) 100vw, (max-width: 899px) 50vw, (min-width: 1440px) 40rem, 46vw"
+          : "(max-width: 599px) 100vw, (max-width: 899px) 33vw, (min-width: 1440px) 26rem, 29vw",
+  };
+}
+
 /**
  * Dominant / medium / detail roles. Not six equal ecommerce cards.
  * Captions stay in alt text only so the grid can stay tight.
@@ -23,6 +48,11 @@ export function EditorialGallery({
 
   if (!dominant) return null;
 
+  const displayedMediumCount = [mediumA, mediumB].filter(Boolean).length;
+  const displayedDetails = details.slice(0, 3);
+  const displayedDetailCount = displayedDetails.length;
+  const imageSizes = getEditorialGallerySizes(displayedMediumCount, displayedDetailCount);
+
   return (
     <div className="editorial-gallery">
       <h2 className="font-display editorial-gallery-title">{title}</h2>
@@ -33,7 +63,7 @@ export function EditorialGallery({
             src={dominant.src}
             alt={dominant.alt}
             aspectClassName="aspect-[3/4] editorial-gallery-frame"
-            sizes="(max-width: 599px) 100vw, (max-width: 899px) 100vw, (min-width: 1440px) 52rem, 56vw"
+            sizes={imageSizes.dominant}
             overlap="tl"
           />
         </div>
@@ -45,7 +75,7 @@ export function EditorialGallery({
                 src={mediumA.src}
                 alt={mediumA.alt}
                 aspectClassName="aspect-[4/3] editorial-gallery-frame"
-                sizes="(max-width: 599px) 100vw, (max-width: 899px) 50vw, (min-width: 1440px) 28rem, 31vw"
+                sizes={imageSizes.supporting}
                 overlap="none"
               />
             </div>
@@ -56,16 +86,16 @@ export function EditorialGallery({
                 src={mediumB.src}
                 alt={mediumB.alt}
                 aspectClassName="aspect-[4/3] editorial-gallery-frame"
-                sizes="(max-width: 599px) 100vw, (max-width: 899px) 50vw, (min-width: 1440px) 28rem, 31vw"
+                sizes={imageSizes.supporting}
                 overlap="none"
               />
             </div>
           ) : null}
         </div>
 
-        {details.length > 0 ? (
+        {displayedDetailCount > 0 ? (
           <div className="editorial-gallery-details">
-            {details.slice(0, 3).map((photo) => (
+            {displayedDetails.map((photo) => (
               <div key={photo.src} className="editorial-gallery-detail">
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
@@ -73,7 +103,7 @@ export function EditorialGallery({
                     alt={photo.alt}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 599px) 100vw, (max-width: 899px) 33vw, (min-width: 1440px) 26rem, 29vw"
+                    sizes={imageSizes.detail}
                   />
                 </div>
               </div>

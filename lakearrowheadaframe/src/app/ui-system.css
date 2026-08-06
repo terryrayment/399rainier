@@ -248,6 +248,10 @@
   margin-top: var(--ui-space-12);
 }
 
+.site-illustrated .editorial-gallery-mediums:empty {
+  display: none;
+}
+
 .site-illustrated .editorial-gallery-details {
   grid-column: 1 / -1;
 }
@@ -364,8 +368,19 @@
     gap: var(--ui-space-4) var(--ui-space-6);
   }
 
+  .site-illustrated .editorial-gallery-grid:has(> .editorial-gallery-mediums:empty) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .site-illustrated .editorial-gallery-dominant {
     grid-area: 1 / 1;
+  }
+
+  .site-illustrated
+    .editorial-gallery-grid:has(> .editorial-gallery-mediums:empty)
+    > .editorial-gallery-dominant {
+    grid-area: auto;
+    grid-column: 1 / -1;
   }
 
   .site-illustrated .editorial-gallery-mediums {
