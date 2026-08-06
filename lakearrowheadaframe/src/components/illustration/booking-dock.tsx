@@ -74,11 +74,13 @@ function MobileStickyBooking({
       setVisible(heroOut && ![...closingIntersections.values()].some(Boolean));
 
     const heroObserver = new IntersectionObserver(
-      ([entry]) => {
-        heroOut = !entry.isIntersecting;
+      (entries) => {
+        for (const entry of entries) {
+          heroOut = !entry.isIntersecting;
+        }
         update();
       },
-      { threshold: 0.05 },
+      { threshold: 0 },
     );
     heroObserver.observe(hero);
 

@@ -668,6 +668,84 @@ test.describe("interaction and preservation", () => {
     ).toBeGreaterThanOrEqual(844);
     await expect(page.locator(".booking-dock--mobile")).toBeHidden();
   });
+
+  test("mobile sticky hero observer uses the entry threshold and processes batched updates", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      const NativeIntersectionObserver = window.IntersectionObserver;
+      type ObserverRecord = {
+        callback: IntersectionObserverCallback;
+        observer: IntersectionObserver;
+        options?: IntersectionObserverInit;
+        targets: Element[];
+      };
+      const records: ObserverRecord[] = [];
+      Reflect.set(window, "__stickyObserverRecords", records);
+
+      window.IntersectionObserver = class extends NativeIntersectionObserver {
+        private readonly record: ObserverRecord;
+
+        constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
+          super(callback, options);
+          this.record = { callback, observer: this, options, targets: [] };
+          records.push(this.record);
+        }
+
+        override observe(target: Element) {
+          this.record.targets.push(target);
+          super.observe(target);
+        }
+      };
+    });
+    await openHome(page, { width: 390, height: 844 });
+
+    const observerThreshold = await page.evaluate(() => {
+      const hero = document.getElementById("hero-booking");
+      type ObserverRecord = {
+        options?: IntersectionObserverInit;
+        targets: Element[];
+      };
+      const records = Reflect.get(window, "__stickyObserverRecords") as ObserverRecord[];
+      return records.find((record) => hero != null && record.targets.includes(hero))?.options
+        ?.threshold;
+    });
+    expect.soft(observerThreshold, "hero observer reacts as soon as the hero crosses the viewport").toBe(0);
+
+    const dispatchHeroBatch = async (states: boolean[]) => {
+      await page.evaluate((intersectionStates) => {
+        const hero = document.getElementById("hero-booking");
+        if (!hero) throw new Error("Hero booking target is missing");
+        type ObserverRecord = {
+          callback: IntersectionObserverCallback;
+          observer: IntersectionObserver;
+          targets: Element[];
+        };
+        const records = Reflect.get(window, "__stickyObserverRecords") as ObserverRecord[];
+        const heroRecord = records.find((record) => record.targets.includes(hero));
+        if (!heroRecord) throw new Error("Hero observer is missing");
+        const boundingClientRect = hero.getBoundingClientRect();
+        const entries: IntersectionObserverEntry[] = intersectionStates.map(
+          (isIntersecting) => ({
+            boundingClientRect,
+            intersectionRatio: isIntersecting ? 1 : 0,
+            intersectionRect: isIntersecting ? boundingClientRect : new DOMRectReadOnly(),
+            isIntersecting,
+            rootBounds: new DOMRectReadOnly(0, 0, window.innerWidth, window.innerHeight),
+            target: hero,
+            time: performance.now(),
+          }),
+        );
+        heroRecord.callback(entries, heroRecord.observer);
+      }, states);
+    };
+
+    await dispatchHeroBatch([true, false]);
+    await expect.soft(page.locator(".booking-dock--mobile")).toBeVisible();
+
+    await dispatchHeroBatch([false, true]);
+    await expect.soft(page.locator(".booking-dock--mobile")).toBeHidden();
+  });
 });
 
 test.describe("future responsive surface contracts", () => {
