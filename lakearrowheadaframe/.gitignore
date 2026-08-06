@@ -1,0 +1,8 @@
+/node_modules/
+/.next/
+/.next-playwright/
+/.superpowers/
+/docs/screenshots/
+/docs/ui-audit/
+*.tsbuildinfo
+next-env.d.ts
