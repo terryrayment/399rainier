@@ -68,6 +68,7 @@ Use the existing woodland palette with explicit roles:
 
 - **Parchment `#eae7d8`:** primary page field.
 - **Elevated parchment `#f1e9d2`:** booking and decision surfaces.
+- **Sage `#e3e6d8`:** interior chapter field and forest-to-interior transition endpoint.
 - **Ink `#241f1a`:** main light-surface text.
 - **Muted `#5f5a52`:** supporting light-surface text.
 - **Pine `#2f523c`:** links, actions, focus, and restrained accents.
@@ -82,7 +83,7 @@ Gradients may bridge two adjacent surface colors only. Transparent gradients ove
 
 Retain DM Sans and Familjen Grotesk. Use one display treatment and one body treatment with a small hierarchy:
 
-- hero headline: responsive, bold display, tight leading, maximum 13–15 characters per line;
+- hero headline: responsive, bold display, tight leading, and `max-width: min(14ch, 100%)`, with the rendered wrap verified at every target width;
 - section headline: responsive display, consistent line height and tracking;
 - card headline: one shared size and weight;
 - body copy: 16px-equivalent, approximately 1.7 line height, generally 55–75 characters per line;
@@ -144,22 +145,26 @@ Use a controlled parchment-to-dusk background transition. The ritual section own
 The sauna, cool-air deck, and hot-tub proof cards use the same structure and styling.
 
 - desktop: three columns;
-- tablet: two columns with the third card spanning the row when useful;
+- tablet: two columns with the third card spanning both columns;
 - mobile: one column.
 
 Each card grows naturally with content. Image geometry comes from `aspect-ratio`; copy is not absolutely positioned.
 
 ### Place, FAQ, and Booking Truth
 
-Return to a clean parchment reading field. Environmental artwork does not overlap practical decision content. The location panel, feature list, and FAQ share container alignment and type hierarchy.
+Return to a clean parchment reading field. The Place chapter owns the Ritual-to-Place boundary with one dusk-to-parchment gradient at its opening; there is no separate bridge component at that boundary. Environmental artwork does not overlap practical decision content. The location panel, feature list, and FAQ share container alignment and type hierarchy.
 
 ### Final CTA and Footer
 
-The final CTA and footer share one continuous night base. The mobile sticky booking bar disappears before footer actions enter view and accounts for safe-area insets.
+The final CTA owns the Place-to-Final boundary with one parchment-to-night gradient at its opening; there is no separate bridge component at that boundary. The final CTA and footer then share one continuous night base. The mobile sticky booking bar disappears before footer actions enter view and accounts for safe-area insets.
 
 ## Responsive and Interaction Rules
 
-- Validate required widths plus 769px and 767px to cover the current discontinuity.
+- Use three deterministic layout ranges:
+  - mobile below 600px: single-column gallery and ritual sequence; compact mobile navigation;
+  - tablet from 600px through 899px: two-column gallery with the dominant image spanning both columns, two-column ritual sequence with the third card spanning both columns, and compact mobile navigation;
+  - desktop at 900px and above: dominant/supporting gallery composition, three-column ritual sequence, and full desktop navigation.
+- Validate the required widths plus 599px, 600px, 767px, 768px, 769px, 899px, 900px, and 901px. The 767/768/769 widths intentionally share the same tablet layout so the current discontinuity is removed.
 - Do not hide meaningful content to make a layout fit.
 - Primary layout uses document flow, Grid, and Flexbox. Absolute positioning is reserved for decorative layers and image overlays.
 - No horizontal scroll, clipped text, escaping media, or controls against viewport edges.
