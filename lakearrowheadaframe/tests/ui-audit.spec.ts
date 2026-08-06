@@ -251,6 +251,10 @@ async function expectResponsiveGeometry(page: Page, width: (typeof boundaryWidth
     expect.soft(await gridColumnCount(galleryDetails), "gallery detail columns").toBe(1);
     expect.soft(await gridColumnCount(ritualGrid), "ritual columns").toBe(1);
   } else if (width < 900) {
+    const supportingItems = page.locator(".editorial-gallery-medium");
+    expect.soft(await supportingItems.count(), "gallery renders two supporting items").toBe(2);
+    const firstSupportingBox = await requiredBox(supportingItems.nth(0), "first supporting gallery item");
+    const secondSupportingBox = await requiredBox(supportingItems.nth(1), "second supporting gallery item");
     expect.soft(await gridColumnCount(galleryGrid), "gallery columns").toBe(2);
     expect.soft(await gridColumnCount(galleryDetails), "gallery detail columns").toBe(3);
     expect.soft(await gridColumnCount(ritualGrid), "ritual columns").toBe(2);
@@ -260,6 +264,18 @@ async function expectResponsiveGeometry(page: Page, width: (typeof boundaryWidth
     expect.soft(thirdRitualBox.width, "third ritual card spans both columns").toBeGreaterThanOrEqual(
       ritualBox.width - geometryTolerance,
     );
+    expect
+      .soft(
+        Math.abs(firstSupportingBox.width - secondSupportingBox.width),
+        "supporting gallery item widths",
+      )
+      .toBeLessThanOrEqual(geometryTolerance);
+    expect
+      .soft(firstSupportingBox.x, "supporting gallery items have distinct horizontal positions")
+      .toBeLessThan(secondSupportingBox.x);
+    expect
+      .soft(firstSupportingBox.x + firstSupportingBox.width, "supporting gallery items do not overlap")
+      .toBeLessThanOrEqual(secondSupportingBox.x + geometryTolerance);
     await expectEqualGalleryDetails(page, galleryDetails);
   } else {
     const supportingBox = await requiredBox(
@@ -418,6 +434,27 @@ test.describe("visual integrity", () => {
 });
 
 test.describe("interaction and preservation", () => {
+  test("desktop transition closes compact navigation and restores body scroll", async ({ page }) => {
+    await openHome(page, { width: 899, height: 900 });
+
+    const trigger = page.locator(".site-nav-menu-trigger");
+    const panel = page.locator(".site-nav-mobile-panel");
+    const initialBodyOverflow = await page.evaluate(() => document.body.style.overflow);
+    await trigger.click();
+    await expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(await page.evaluate(() => document.body.style.overflow)).toBe("hidden");
+
+    await page.setViewportSize({ width: 900, height: 900 });
+    await page.waitForFunction(() => window.matchMedia("(min-width: 900px)").matches);
+    await page.waitForTimeout(50);
+
+    await expect.soft(trigger).toHaveAttribute("aria-expanded", "false");
+    expect.soft(await page.evaluate(() => document.body.style.overflow)).toBe(initialBodyOverflow);
+    await expect.soft(trigger).toBeHidden();
+    await expect.soft(panel).toBeHidden();
+    await expect.soft(page.locator(".site-nav-links")).toBeVisible();
+  });
+
   test("mobile navigation, links, sticky booking, and reduced motion preserve contracts", async ({
     page,
   }) => {
