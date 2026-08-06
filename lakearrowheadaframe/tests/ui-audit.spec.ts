@@ -1,4 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { existsSync } from "node:fs";
+import { mkdir } from "node:fs/promises";
+import path from "node:path";
 import * as editorialGalleryModule from "../src/components/illustration/editorial-gallery";
 import {
   allowedSeasonalHrefs,
@@ -17,6 +20,26 @@ const requiredViewports = [
   { name: "mobile-390x844", width: 390, height: 844 },
   { name: "mobile-375x667", width: 375, height: 667 },
 ] as const;
+
+const auditRoot = path.resolve(process.cwd(), "docs/ui-audit/after");
+const capturePath = (viewportName: string, fileName: string) =>
+  path.join(auditRoot, viewportName, fileName);
+const sectionCaptureViewportNames = new Set([
+  "desktop-1440x1000",
+  "tablet-768x1024",
+  "mobile-390x844",
+]);
+const sectionCaptureNames = ["hero", "gallery", "ritual", "place", "final"] as const;
+const sectionCaptureSelectors: Record<(typeof sectionCaptureNames)[number], string> = {
+  hero: ".arrival-clearing",
+  gallery: "#gallery",
+  ritual: "#ritual",
+  place: "#location",
+  final: "#reviews",
+};
+const fullPageCaptureStyle = "nextjs-portal { display: none !important; }";
+const sectionCaptureStyle = `${fullPageCaptureStyle}
+  .site-nav, .booking-dock--mobile { display: none !important; }`;
 
 const boundaryWidths = [599, 600, 767, 768, 769, 899, 900, 901] as const;
 
@@ -53,6 +76,30 @@ async function lazyScrollAndWaitForImages(page: Page) {
     ),
   );
   await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForFunction(() => window.scrollY === 0);
+}
+
+async function captureAuditEvidence(page: Page, viewportName: string) {
+  if (process.env.UPDATE_UI_SCREENSHOTS !== "1") return;
+
+  const fullPagePath = capturePath(viewportName, "full-page.png");
+  await mkdir(path.dirname(fullPagePath), { recursive: true });
+  await page.screenshot({ path: fullPagePath, fullPage: true, style: fullPageCaptureStyle });
+
+  if (sectionCaptureViewportNames.has(viewportName)) {
+    for (const sectionName of sectionCaptureNames) {
+      await page
+        .locator(sectionCaptureSelectors[sectionName])
+        .screenshot({
+          path: capturePath(viewportName, `${sectionName}.png`),
+          style: sectionCaptureStyle,
+        });
+    }
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForFunction(() => window.scrollY === 0);
+  }
+
+  return { auditRoot, fullPageStyle: fullPageCaptureStyle, sectionStyle: sectionCaptureStyle };
 }
 
 async function computedGridTracks(
@@ -425,6 +472,35 @@ test.describe("visual integrity", () => {
     test(`${viewport.name} preserves content, controls, and chapter flow`, async ({ page }) => {
       await openHome(page, viewport);
       await lazyScrollAndWaitForImages(page);
+      const captureConfig = await captureAuditEvidence(page, viewport.name);
+
+      if (process.env.UPDATE_UI_SCREENSHOTS === "1") {
+        expect(captureConfig).toEqual({
+          auditRoot,
+          fullPageStyle: expect.stringContaining("nextjs-portal"),
+          sectionStyle: expect.stringContaining(".site-nav"),
+        });
+        expect(captureConfig?.sectionStyle).toContain(".booking-dock--mobile");
+        expect(path.relative(process.cwd(), auditRoot)).toBe(path.join("docs", "ui-audit", "after"));
+        expect(capturePath(viewport.name, "full-page.png")).toBe(
+          path.join(auditRoot, viewport.name, "full-page.png"),
+        );
+        const expectedFullPage = path.resolve(
+          process.cwd(),
+          "docs/ui-audit/after",
+          viewport.name,
+          "full-page.png",
+        );
+        expect(existsSync(expectedFullPage), `${viewport.name} opt-in full-page capture`).toBe(true);
+        if (sectionCaptureViewportNames.has(viewport.name)) {
+          for (const sectionName of sectionCaptureNames) {
+            expect(
+              existsSync(capturePath(viewport.name, `${sectionName}.png`)),
+              `${viewport.name} ${sectionName} capture`,
+            ).toBe(true);
+          }
+        }
+      }
 
       expect.soft(await horizontalOverflow(page), "horizontal overflow").toBeLessThanOrEqual(1);
 
