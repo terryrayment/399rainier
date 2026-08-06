@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { cabin } from "@/data/cabin";
 import { absoluteUrl, siteConfig } from "@/lib/site";
 import "./globals.css";
+import "./ui-system.css";
 
 const GOOGLE_SITE_VERIFICATION = process.env.GOOGLE_SITE_VERIFICATION;
 const BING_SITE_VERIFICATION = process.env.BING_SITE_VERIFICATION;

@@ -1,0 +1,152 @@
+:root {
+  --ui-parchment: #eae7d8;
+  --ui-elevated: #f1e9d2;
+  --ui-sage: #e3e6d8;
+  --ui-ink: #241f1a;
+  --ui-muted: #5f5a52;
+  --ui-pine: #2f523c;
+  --ui-forest: #1e231f;
+  --ui-dusk: #1c2a38;
+  --ui-night: #0e1412;
+  --ui-line-light: rgb(36 31 26 / 14%);
+  --ui-line-dark: rgb(234 231 216 / 18%);
+  --ui-space-1: 0.25rem;
+  --ui-space-2: 0.5rem;
+  --ui-space-3: 0.75rem;
+  --ui-space-4: 1rem;
+  --ui-space-6: 1.5rem;
+  --ui-space-8: 2rem;
+  --ui-space-12: 3rem;
+  --ui-space-16: 4rem;
+  --ui-space-24: 6rem;
+  --ui-gutter: clamp(1rem, 4vw, 3rem);
+  --ui-section: clamp(4.5rem, 9vw, 8rem);
+  --ui-content: 72rem;
+  --ui-wide: 86rem;
+  --ui-radius: 1rem;
+  --ui-shadow: 0 18px 45px rgb(36 31 26 / 12%);
+}
+
+.site-illustrated {
+  color: var(--ui-ink);
+  background: var(--ui-parchment);
+}
+
+.clearing-home {
+  --color-forest-deep: var(--ui-forest);
+}
+
+.site-illustrated :where(h1, h2) {
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.site-illustrated :where(p, dd, li) {
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.site-illustrated
+  :where(
+    .inside-glass-truth-title,
+    .ritual-step-title,
+    .place-truth-item-title,
+    .place-truth-faq-q
+  ) {
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  line-height: 1.2;
+}
+
+.site-illustrated :focus-visible {
+  outline: 2px solid var(--ui-pine);
+  outline-offset: 3px;
+}
+
+.site-illustrated
+  :is(
+    .scene-chapter--tone-dusk,
+    .scene-chapter--tone-forest,
+    .scene-chapter--tone-night,
+    .site-footer--night
+  )
+  :focus-visible {
+  outline-color: var(--ui-parchment);
+}
+
+.site-illustrated
+  :where(button, .airbnb-button, .booking-pill-submit, .site-nav-brand, .site-nav-menu-trigger) {
+  min-block-size: 44px;
+}
+
+.site-illustrated .scene-chapter-inner {
+  width: min(100%, var(--ui-content));
+  max-width: none;
+  margin-inline: auto;
+  padding-inline: var(--ui-gutter);
+}
+
+.site-illustrated :is(.photographic-clearing-inner, .ritual-at-dusk-inner) {
+  width: min(100%, var(--ui-wide));
+}
+
+.clearing-home .arrival-clearing .scene-chapter-inner {
+  width: min(100%, var(--ui-content));
+  max-width: none;
+  min-height: auto;
+  padding-top: clamp(5.5rem, 10vw, 7.5rem);
+  padding-inline: var(--ui-gutter);
+}
+
+.clearing-home .arrival-clearing-headline {
+  max-width: min(14ch, 100%);
+  font-size: clamp(2.35rem, 6vw, 4.6rem);
+  line-height: 1.02;
+}
+
+.clearing-home :is(.booking-pill, .illustrated-map-panel, .night-cta) {
+  border: 1px solid var(--ui-line-light);
+  border-radius: var(--ui-radius);
+  box-shadow: var(--ui-shadow);
+}
+
+.clearing-home :is(.illustrated-map-panel, .night-cta) {
+  border-color: var(--ui-line-dark);
+}
+
+.clearing-home
+  :is(
+    .scene-chapter--trust,
+    .scene-chapter--interior,
+    .scene-chapter--gallery
+  )
+  .scene-chapter-inner {
+  padding-top: var(--ui-section);
+  padding-bottom: var(--ui-section);
+}
+
+.clearing-home .inside-glass-photo {
+  margin-top: 0;
+}
+
+.clearing-home
+  :is(.scene-chapter--trust, .scene-chapter--interior)
+  .forest-scene-rail {
+  opacity: 0.28;
+}
+
+.clearing-home
+  :is(.scene-chapter--trust, .scene-chapter--interior)
+  .forest-scene-rail
+  .forest-scene-plate {
+  opacity: 0.45;
+}
+
+.clearing-home
+  .scene-chapter--interior
+  :is(.forest-scene-mist, .forest-scene-canopy),
+.clearing-home
+  .scene-chapter--gallery
+  :is(.forest-scene-mist, .forest-scene-canopy, .forest-scene-foreground) {
+  opacity: 0.18;
+}
