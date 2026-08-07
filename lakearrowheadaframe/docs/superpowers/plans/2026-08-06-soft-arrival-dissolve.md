@@ -56,7 +56,7 @@ In the existing `restrained treeline transitions` test, change only arrival expe
 For each fixture—2048×1246, 768×1024, and 390×844—assert:
 
 - `.scene-bridge--arrival-trust .scene-bridge-art` and both `.scene-bridge-pines` have `display: none`;
-- the isolated wash has the expected 96, 72, or 56 rows;
+- the isolated wash has the expected 96, 72, or 56 CSS-pixel rows, allowing one additional screenshot raster row when the element begins at a fractional document Y-coordinate;
 - first/last rows match parchment/forest within the existing 8-channel screenshot tolerance;
 - for rows 28% through 88%, `max(rgb) - min(rgb) >= 8`, green is at least red, and green is at least blue;
 - every adjacent-row Euclidean RGB distance is `<= 12`;

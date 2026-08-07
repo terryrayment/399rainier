@@ -1231,7 +1231,8 @@ test.describe("visual integrity", () => {
       ).toBeLessThanOrEqual(0);
 
       const rows = await sampleCenterColumn(bridge.locator(".scene-bridge-wash"));
-      expect.soft(rows, `arrival row count at ${fixture.viewport.width}px`).toHaveLength(fixture.height);
+      expect.soft(rows.length, `arrival minimum row count at ${fixture.viewport.width}px`).toBeGreaterThanOrEqual(fixture.height);
+      expect.soft(rows.length, `arrival maximum row count at ${fixture.viewport.width}px`).toBeLessThanOrEqual(fixture.height + 1);
       expectRgbClose(rows[0], [234, 231, 216], `arrival top endpoint at ${fixture.viewport.width}px`);
       expectRgbClose(rows.at(-1)!, [30, 35, 31], `arrival bottom endpoint at ${fixture.viewport.width}px`);
 
