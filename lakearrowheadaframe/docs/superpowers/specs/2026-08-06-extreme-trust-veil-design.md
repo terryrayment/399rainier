@@ -20,14 +20,15 @@ The exit is intentionally slightly shorter and lighter than the entrance, but bo
 
 ## Visual Contract
 
-- Both washes use seven or more evenly paced, green-biased color stops.
-- Color and luminance progress continuously through the full bridge height. Neither wash may hold its endpoint across a large percentage of the bridge.
+- Both washes use exactly seven stops at 0%, 16%, 32%, 48%, 64%, 80%, and 100%. No adjacent stop-position gap exceeds 20 percentage points.
+- Color and luminance progress continuously through the full bridge height. Endpoints occur only at 0% and 100%; there are no duplicated-color hold ranges.
 - Maximum adjacent-row Rec. 709 luminance delta is 3 at every required viewport.
 - Maximum adjacent-row RGB distance is 8 at every required viewport.
-- Intermediate rows remain chromatic and green-biased; no neutral gray band is allowed.
+- For sampled rows from 16% through 90%, green is greater than or equal to red and blue, and `max(r,g,b) - min(r,g,b) >= 5`.
 - The deepest forest endpoint appears only at the edge touching the trust surface.
 - No bridge artwork, pines, plates, filters, blur, or pseudo-element overlays may contribute to either taper.
-- Preserve exact adjacent-surface endpoint colors, hidden overflow, zero margins, exact adjacency, and zero horizontal overflow.
+- Computed CSS gradients must begin and end with the exact adjacent-surface colors. Raster endpoint samples may differ by at most 8 values per 8-bit channel because Chromium screenshot color conversion shifts known CSS colors.
+- Preserve hidden overflow, zero margins, exact adjacency within 2 CSS pixels, and zero horizontal overflow.
 - The trust content, spacing, typography, proof points, interior chapter, and all later transitions remain unchanged.
 
 ## Scope
@@ -42,9 +43,11 @@ Do not modify `src/app/globals.css`, React markup, assets, content, or parent-si
 ## Regression and QC
 
 - Demonstrate RED against current 96/72/56px entrance and 56/48/36px exit geometry plus the compressed exit gradient.
-- Measure every center-column raster row for both washes at 2048×1246, 768×1024, and 390×844.
+- Measure every center-column raster row for both washes at 2048×1246, 768×1024, and 390×844 using Chromium screenshots with `deviceScaleFactor: 1`, opaque page compositing, and PNG output. Sample `x = floor(image.width / 2)` for each integer row from 0 through `image.height - 1`. When a bridge begins at a fractional document Y-coordinate, allow the element screenshot to contain one extra raster row beyond its exact CSS height.
+- Define adjacent-row RGB distance in 8-bit sRGB as `sqrt((r2-r1)^2 + (g2-g1)^2 + (b2-b1)^2)`.
+- Define Rec. 709 luminance on the same 0–255 channel scale as `0.2126*r + 0.7152*g + 0.0722*b`; compare the absolute difference between adjacent rows without intermediate rounding.
 - Enforce endpoint tolerance, green-bias, RGB-distance, luminance-delta, art removal, geometry, adjacency, margins, clipping, and horizontal overflow for both tapers at all three widths.
 - Run lint, typecheck, the 15-route production build, and the complete Playwright suite.
 - Capture and inspect identical full-page plus left/center/right trust-composition crops at 2048×1246, 1440×1000, 768×1024, and 390×844.
-- Reject any crop with a dark rectangle, bright rim, stripe, muddy gray, asset edge, visible blur boundary, or asymmetric pacing.
+- The user-selected option C visual companion mockup is the reference for taper proportions. Automated thresholds are necessary but not sufficient: Codex must visually compare local left/center/right crops against that reference and reject visible single-row bands, rectangular asset boundaries, or a fully-dark hold inside either bridge. The user remains the final aesthetic approver of production.
 - Publish through a focused PR, merge with an expected-head-SHA guard, wait for the post-merge production deployment, then repeat all row measurements and visual crop inspection on `https://lakearrowheadaframe.com/`.
