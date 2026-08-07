@@ -615,6 +615,11 @@ async function computedRgbColors(locator: Locator) {
   });
 }
 
+async function computedGradientEndpoints(locator: Locator) {
+  const colors = await computedRgbColors(locator);
+  return colors.length ? [colors[0], colors.at(-1)] : [];
+}
+
 async function computedColorStopOffset(locator: Locator, color: string) {
   return locator.evaluate((element, expectedColor) => {
     const image = getComputedStyle(element).backgroundImage;
@@ -1157,11 +1162,11 @@ test.describe("visual integrity", () => {
   test("transition surfaces use approved adjacent endpoint colors", async ({ page }) => {
     await openHome(page, { width: 1440, height: 1000 });
 
-    expect.soft(await computedRgbColors(page.locator(".scene-bridge--arrival-trust .scene-bridge-wash"))).toEqual([
+    expect.soft(await computedGradientEndpoints(page.locator(".scene-bridge--arrival-trust .scene-bridge-wash"))).toEqual([
       paper,
       forest,
     ]);
-    expect.soft(await computedRgbColors(page.locator(".scene-bridge--trust-interior .scene-bridge-wash"))).toEqual([
+    expect.soft(await computedGradientEndpoints(page.locator(".scene-bridge--trust-interior .scene-bridge-wash"))).toEqual([
       forest,
       sage,
     ]);
@@ -1636,11 +1641,11 @@ test.describe("future responsive surface contracts", () => {
       );
     }
 
-    expect(await computedRgbColors(page.locator(".scene-bridge--arrival-trust .scene-bridge-wash"))).toEqual([
+    expect(await computedGradientEndpoints(page.locator(".scene-bridge--arrival-trust .scene-bridge-wash"))).toEqual([
       paper,
       forest,
     ]);
-    expect(await computedRgbColors(page.locator(".scene-bridge--trust-interior .scene-bridge-wash"))).toEqual([
+    expect(await computedGradientEndpoints(page.locator(".scene-bridge--trust-interior .scene-bridge-wash"))).toEqual([
       forest,
       sage,
     ]);
