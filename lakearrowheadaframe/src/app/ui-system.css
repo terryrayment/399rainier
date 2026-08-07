@@ -162,6 +162,10 @@
   padding-bottom: clamp(4.5rem, 5vw, 6rem);
 }
 
+.site-illustrated .clearing-home .trust-forest-floor .forest-scene-bg {
+  background: var(--ui-forest);
+}
+
 .site-illustrated .clearing-home .scene-chapter--gallery .scene-chapter-inner {
   padding-bottom: var(--ui-section);
 }

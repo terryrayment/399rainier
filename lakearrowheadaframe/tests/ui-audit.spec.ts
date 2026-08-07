@@ -144,6 +144,32 @@ async function sampleCenterColumn(locator: Locator) {
   }, `data:image/png;base64,${screenshot.toString("base64")}`);
 }
 
+async function sampleVerticalJoin(page: Page, upperSelector: string, lowerSelector: string) {
+  const clip = await page.evaluate(({ upperSelector, lowerSelector }) => {
+    const upper = document.querySelector(upperSelector);
+    const lower = document.querySelector(lowerSelector);
+    if (!(upper instanceof HTMLElement) || !(lower instanceof HTMLElement)) {
+      throw new Error(`Missing join elements: ${upperSelector} -> ${lowerSelector}`);
+    }
+    lower.scrollIntoView({ block: "center" });
+    const boundary = Math.round(upper.getBoundingClientRect().bottom);
+    return { x: Math.floor(window.innerWidth / 2), y: boundary - 1, width: 1, height: 2 };
+  }, { upperSelector, lowerSelector });
+  const screenshot = await page.screenshot({ clip });
+  return page.evaluate(async (dataUrl) => {
+    const image = new Image();
+    image.src = dataUrl;
+    await image.decode();
+    const canvas = document.createElement("canvas");
+    canvas.width = image.width;
+    canvas.height = image.height;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    if (!context) throw new Error("Canvas context unavailable");
+    context.drawImage(image, 0, 0);
+    return [0, 1].map((y) => Array.from(context.getImageData(0, y, 1, 1).data.slice(0, 3)));
+  }, `data:image/png;base64,${screenshot.toString("base64")}`);
+}
+
 function rgbDistance(first: number[], second: number[]) {
   return Math.hypot(...first.map((channel, index) => channel - second[index]));
 }
@@ -230,6 +256,20 @@ async function verifyMaximumVeil(
     expectRgbClose(rows[0], taper.rasterEndpoints[0], `${taper.label} first row`);
     expectRgbClose(rows.at(-1)!, taper.rasterEndpoints[1], `${taper.label} last row`);
 
+    let lowerJoinRgbDistance: number | undefined;
+    if (taper.label === "entrance") {
+      const joinRows = await sampleVerticalJoin(
+        page,
+        taper.selector,
+        ".trust-forest-floor",
+      );
+      lowerJoinRgbDistance = rgbDistance(joinRows[0], joinRows[1]);
+      expect.soft(
+        lowerJoinRgbDistance,
+        `entrance-to-trust raster seam at ${fixture.viewport.width}px`,
+      ).toBeLessThanOrEqual(2);
+    }
+
     let maximumRgbDistance = 0;
     let maximumLuminanceDelta = 0;
     for (let row = 0; row < rows.length; row += 1) {
@@ -254,6 +294,7 @@ async function verifyMaximumVeil(
       endpoints: [rows[0], rows.at(-1)],
       maximumRgbDistance,
       maximumLuminanceDelta,
+      lowerJoinRgbDistance,
       ...contract,
     });
   }
