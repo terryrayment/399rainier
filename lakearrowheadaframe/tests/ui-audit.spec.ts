@@ -1159,6 +1159,30 @@ test.describe("visual integrity", () => {
     }
   });
 
+  test("arrival foreground plate feathers its rectangular boundary", async ({ page }) => {
+    await openHome(page, { width: 2048, height: 1246 });
+
+    const foreground = page.locator(".arrival-clearing .forest-scene-foreground");
+    const treatment = await foreground.evaluate((element) => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      const chapter = element.closest(".arrival-clearing")!.getBoundingClientRect();
+      return {
+        maskImage: style.maskImage,
+        webkitMaskImage: style.webkitMaskImage,
+        startsBeforeChapterEnd: rect.top < chapter.bottom,
+      };
+    });
+
+    expect(treatment.startsBeforeChapterEnd, "foreground overlaps the outgoing chapter boundary").toBe(true);
+    expect(treatment.maskImage, "foreground owns a vertical feather instead of a hard image edge").toContain(
+      "rgba(0, 0, 0, 0) 0%",
+    );
+    expect(treatment.webkitMaskImage, "WebKit receives the same vertical feather").toContain(
+      "rgba(0, 0, 0, 0) 0%",
+    );
+  });
+
   test("transition surfaces use approved adjacent endpoint colors", async ({ page }) => {
     await openHome(page, { width: 1440, height: 1000 });
 
