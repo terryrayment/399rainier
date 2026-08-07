@@ -122,6 +122,36 @@ async function sampleVerticalPixels(locator: Locator, fractions: number[]) {
   );
 }
 
+async function sampleCenterColumn(locator: Locator) {
+  const screenshot = await locator.screenshot({
+    style: ".scene-bridge-art, .scene-bridge-pines { visibility: hidden !important; }",
+  });
+  return locator.page().evaluate(async (dataUrl) => {
+    const image = new Image();
+    image.src = dataUrl;
+    await image.decode();
+    const canvas = document.createElement("canvas");
+    canvas.width = image.width;
+    canvas.height = image.height;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    if (!context) throw new Error("Canvas context unavailable");
+    context.drawImage(image, 0, 0);
+    return Array.from({ length: image.height }, (_, y) =>
+      Array.from(
+        context.getImageData(Math.floor(image.width / 2), y, 1, 1).data.slice(0, 3),
+      ),
+    );
+  }, `data:image/png;base64,${screenshot.toString("base64")}`);
+}
+
+function rgbDistance(first: number[], second: number[]) {
+  return Math.hypot(...first.map((channel, index) => channel - second[index]));
+}
+
+function rec709Luminance([red, green, blue]: number[]) {
+  return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+}
+
 function expectRgbClose(actual: number[], expected: number[], label: string) {
   for (let channel = 0; channel < 3; channel += 1) {
     expect.soft(Math.abs(actual[channel] - expected[channel]), `${label} channel ${channel}`).toBeLessThanOrEqual(8);
@@ -1079,9 +1109,9 @@ test.describe("visual integrity", () => {
 
   test("restrained treeline transitions replace broad gray bands", async ({ page }) => {
     const cases = [
-      { viewport: { width: 2048, height: 1246 }, arrival: 60, trust: 56 },
-      { viewport: { width: 768, height: 1024 }, arrival: 52, trust: 48 },
-      { viewport: { width: 390, height: 844 }, arrival: 40, trust: 36 },
+      { viewport: { width: 2048, height: 1246 }, arrival: 96, trust: 56 },
+      { viewport: { width: 768, height: 1024 }, arrival: 72, trust: 48 },
+      { viewport: { width: 390, height: 844 }, arrival: 56, trust: 36 },
     ] as const;
 
     for (const fixture of cases) {
@@ -1156,6 +1186,70 @@ test.describe("visual integrity", () => {
     expect.soft(artworkOpacity.art, "arrival floor artwork opacity").toBeLessThanOrEqual(0.18);
     for (const [index, opacity] of artworkOpacity.pines.entries()) {
       expect.soft(opacity, `arrival pine opacity ${index + 1}`).toBeLessThanOrEqual(0.24);
+    }
+  });
+
+  test("arrival uses a long atmospheric dissolve without a harsh row", async ({ page }) => {
+    const cases = [
+      { viewport: { width: 2048, height: 1246 }, height: 96 },
+      { viewport: { width: 768, height: 1024 }, height: 72 },
+      { viewport: { width: 390, height: 844 }, height: 56 },
+    ] as const;
+
+    for (const fixture of cases) {
+      await openHome(page, fixture.viewport);
+      const bridge = page.locator(".scene-bridge--arrival-trust");
+      const box = await requiredBox(bridge, `arrival dissolve at ${fixture.viewport.width}px`);
+      const contract = await bridge.evaluate((element) => {
+        const style = getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        const previous = element.previousElementSibling!.getBoundingClientRect();
+        const next = element.nextElementSibling!.getBoundingClientRect();
+        return {
+          art: getComputedStyle(element.querySelector(".scene-bridge-art")!).display,
+          pines: [...element.querySelectorAll(".scene-bridge-pines")].map(
+            (pine) => getComputedStyle(pine).display,
+          ),
+          overflow: style.overflow,
+          marginTop: Number.parseFloat(style.marginTop),
+          marginBottom: Number.parseFloat(style.marginBottom),
+          previousDelta: rect.top - previous.bottom,
+          nextDelta: next.top - rect.bottom,
+        };
+      });
+      expect.soft(box.height, `arrival dissolve height at ${fixture.viewport.width}px`).toBe(fixture.height);
+      expect.soft(contract.art, `arrival art at ${fixture.viewport.width}px`).toBe("none");
+      expect.soft(contract.pines, `arrival pines at ${fixture.viewport.width}px`).toEqual(["none", "none"]);
+      expect.soft(contract.overflow, `arrival clipping at ${fixture.viewport.width}px`).toBe("hidden");
+      expect.soft(contract.marginTop, `arrival top margin at ${fixture.viewport.width}px`).toBe(0);
+      expect.soft(contract.marginBottom, `arrival bottom margin at ${fixture.viewport.width}px`).toBe(0);
+      expect.soft(Math.abs(contract.previousDelta), `arrival upper adjacency at ${fixture.viewport.width}px`).toBeLessThanOrEqual(geometryTolerance);
+      expect.soft(Math.abs(contract.nextDelta), `arrival lower adjacency at ${fixture.viewport.width}px`).toBeLessThanOrEqual(geometryTolerance);
+      expect.soft(
+        await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth),
+        `arrival horizontal overflow at ${fixture.viewport.width}px`,
+      ).toBeLessThanOrEqual(0);
+
+      const rows = await sampleCenterColumn(bridge.locator(".scene-bridge-wash"));
+      expect.soft(rows, `arrival row count at ${fixture.viewport.width}px`).toHaveLength(fixture.height);
+      expectRgbClose(rows[0], [234, 231, 216], `arrival top endpoint at ${fixture.viewport.width}px`);
+      expectRgbClose(rows.at(-1)!, [30, 35, 31], `arrival bottom endpoint at ${fixture.viewport.width}px`);
+
+      const firstIntermediate = Math.floor(rows.length * 0.28);
+      const lastIntermediate = Math.floor(rows.length * 0.88);
+      for (let row = firstIntermediate; row <= lastIntermediate; row += 1) {
+        expectGreenBiased(rows[row], `arrival row ${row} at ${fixture.viewport.width}px`);
+      }
+      for (let row = 1; row < rows.length; row += 1) {
+        expect.soft(
+          rgbDistance(rows[row - 1], rows[row]),
+          `arrival RGB delta row ${row} at ${fixture.viewport.width}px`,
+        ).toBeLessThanOrEqual(12);
+        expect.soft(
+          Math.abs(rec709Luminance(rows[row - 1]) - rec709Luminance(rows[row])),
+          `arrival luminance delta row ${row} at ${fixture.viewport.width}px`,
+        ).toBeLessThanOrEqual(5);
+      }
     }
   });
 
