@@ -93,6 +93,47 @@ async function openHome(page: Page, viewport: Viewport) {
   await page.waitForFunction(() => document.fonts.ready.then(() => true));
 }
 
+async function sampleVerticalPixels(locator: Locator, fractions: number[]) {
+  const screenshot = await locator.screenshot({
+    style: ".scene-bridge-art, .scene-bridge-pines { visibility: hidden !important; }",
+  });
+  return locator.page().evaluate(
+    async ({ dataUrl, fractions }) => {
+      const image = new Image();
+      image.src = dataUrl;
+      await image.decode();
+      const canvas = document.createElement("canvas");
+      canvas.width = image.width;
+      canvas.height = image.height;
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      if (!context) throw new Error("Canvas context unavailable");
+      context.drawImage(image, 0, 0);
+      return fractions.map((fraction) => {
+        const y = Math.min(
+          image.height - 1,
+          Math.max(0, Math.round((image.height - 1) * fraction)),
+        );
+        return Array.from(
+          context.getImageData(Math.floor(image.width / 2), y, 1, 1).data.slice(0, 3),
+        );
+      });
+    },
+    { dataUrl: `data:image/png;base64,${screenshot.toString("base64")}`, fractions },
+  );
+}
+
+function expectRgbClose(actual: number[], expected: number[], label: string) {
+  for (let channel = 0; channel < 3; channel += 1) {
+    expect.soft(Math.abs(actual[channel] - expected[channel]), `${label} channel ${channel}`).toBeLessThanOrEqual(8);
+  }
+}
+
+function expectGreenBiased(actual: number[], label: string) {
+  expect.soft(Math.max(...actual) - Math.min(...actual), `${label} channel spread`).toBeGreaterThanOrEqual(8);
+  expect.soft(actual[1], `${label} green >= red`).toBeGreaterThanOrEqual(actual[0]);
+  expect.soft(actual[1], `${label} green >= blue`).toBeGreaterThanOrEqual(actual[2]);
+}
+
 async function lazyScrollAndWaitForImages(page: Page) {
   const step = Math.max(1, Math.floor((await page.evaluate(() => window.innerHeight)) * 0.75));
   let y = 0;
@@ -574,6 +615,11 @@ async function computedRgbColors(locator: Locator) {
   });
 }
 
+async function computedGradientEndpoints(locator: Locator) {
+  const colors = await computedRgbColors(locator);
+  return colors.length ? [colors[0], colors.at(-1)] : [];
+}
+
 async function computedColorStopOffset(locator: Locator, color: string) {
   return locator.evaluate((element, expectedColor) => {
     const image = getComputedStyle(element).backgroundImage;
@@ -1031,14 +1077,96 @@ test.describe("visual integrity", () => {
     });
   }
 
+  test("restrained treeline transitions replace broad gray bands", async ({ page }) => {
+    const cases = [
+      { viewport: { width: 2048, height: 1246 }, arrival: 60, trust: 56 },
+      { viewport: { width: 768, height: 1024 }, arrival: 52, trust: 48 },
+      { viewport: { width: 390, height: 844 }, arrival: 40, trust: 36 },
+    ] as const;
+
+    for (const fixture of cases) {
+      await openHome(page, fixture.viewport);
+      const bridges = [
+        { locator: page.locator(".scene-bridge--arrival-trust"), height: fixture.arrival },
+        { locator: page.locator(".scene-bridge--trust-interior"), height: fixture.trust },
+      ];
+
+      for (const [index, bridge] of bridges.entries()) {
+        const box = await requiredBox(bridge.locator, `transition ${index + 1}`);
+        expect.soft(box.height, `transition ${index + 1} height at ${fixture.viewport.width}px`).toBe(bridge.height);
+        const flow = await bridge.locator.evaluate((element) => {
+          const style = getComputedStyle(element);
+          const rect = element.getBoundingClientRect();
+          const previous = element.previousElementSibling?.getBoundingClientRect();
+          const next = element.nextElementSibling?.getBoundingClientRect();
+          return {
+            overflow: style.overflow,
+            marginTop: Number.parseFloat(style.marginTop),
+            marginBottom: Number.parseFloat(style.marginBottom),
+            previousDelta: previous ? rect.top - previous.bottom : Number.NaN,
+            nextDelta: next ? next.top - rect.bottom : Number.NaN,
+          };
+        });
+        expect.soft(flow.overflow, `transition ${index + 1} clipping`).toBe("hidden");
+        expect.soft(flow.marginTop, `transition ${index + 1} top margin`).toBe(0);
+        expect.soft(flow.marginBottom, `transition ${index + 1} bottom margin`).toBe(0);
+        expect.soft(Math.abs(flow.previousDelta), `transition ${index + 1} upper adjacency`).toBeLessThanOrEqual(geometryTolerance);
+        expect.soft(Math.abs(flow.nextDelta), `transition ${index + 1} lower adjacency`).toBeLessThanOrEqual(geometryTolerance);
+      }
+
+      const horizontalOverflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - window.innerWidth,
+      );
+      expect.soft(horizontalOverflow, `horizontal overflow at ${fixture.viewport.width}px`).toBeLessThanOrEqual(0);
+    }
+
+    await openHome(page, { width: 2048, height: 1246 });
+    const trustSpacing = await page.locator(".trust-forest-floor .scene-chapter-inner").evaluate((element) => {
+      const style = getComputedStyle(element);
+      return [Number.parseFloat(style.paddingTop), Number.parseFloat(style.paddingBottom)];
+    });
+    for (const [index, spacing] of trustSpacing.entries()) {
+      expect.soft(spacing, `trust spacing ${index + 1}`).toBeGreaterThanOrEqual(72);
+      expect.soft(spacing, `trust spacing ${index + 1}`).toBeLessThanOrEqual(96);
+    }
+
+    const arrivalSamples = await sampleVerticalPixels(
+      page.locator(".scene-bridge--arrival-trust .scene-bridge-wash"),
+      [0, 0.6, 0.82, 1],
+    );
+    const trustSamples = await sampleVerticalPixels(
+      page.locator(".scene-bridge--trust-interior .scene-bridge-wash"),
+      [0, 0.64, 0.84, 1],
+    );
+    expectRgbClose(arrivalSamples[0], [234, 231, 216], "arrival parchment endpoint");
+    expectGreenBiased(arrivalSamples[1], "arrival 60% sample");
+    expectGreenBiased(arrivalSamples[2], "arrival 82% sample");
+    expectRgbClose(arrivalSamples[3], [30, 35, 31], "arrival forest endpoint");
+    expectRgbClose(trustSamples[0], [30, 35, 31], "trust forest endpoint");
+    expectGreenBiased(trustSamples[1], "trust 64% sample");
+    expectGreenBiased(trustSamples[2], "trust 84% sample");
+    expectRgbClose(trustSamples[3], [227, 230, 216], "trust sage endpoint");
+
+    const artworkOpacity = await page.locator(".scene-bridge--arrival-trust").evaluate((element) => ({
+      art: Number.parseFloat(getComputedStyle(element.querySelector(".scene-bridge-art")!).opacity),
+      pines: [...element.querySelectorAll(".scene-bridge-pines")].map((pine) =>
+        Number.parseFloat(getComputedStyle(pine).opacity),
+      ),
+    }));
+    expect.soft(artworkOpacity.art, "arrival floor artwork opacity").toBeLessThanOrEqual(0.18);
+    for (const [index, opacity] of artworkOpacity.pines.entries()) {
+      expect.soft(opacity, `arrival pine opacity ${index + 1}`).toBeLessThanOrEqual(0.24);
+    }
+  });
+
   test("transition surfaces use approved adjacent endpoint colors", async ({ page }) => {
     await openHome(page, { width: 1440, height: 1000 });
 
-    expect.soft(await computedRgbColors(page.locator(".scene-bridge--arrival-trust .scene-bridge-wash"))).toEqual([
+    expect.soft(await computedGradientEndpoints(page.locator(".scene-bridge--arrival-trust .scene-bridge-wash"))).toEqual([
       paper,
       forest,
     ]);
-    expect.soft(await computedRgbColors(page.locator(".scene-bridge--trust-interior .scene-bridge-wash"))).toEqual([
+    expect.soft(await computedGradientEndpoints(page.locator(".scene-bridge--trust-interior .scene-bridge-wash"))).toEqual([
       forest,
       sage,
     ]);
@@ -1513,11 +1641,11 @@ test.describe("future responsive surface contracts", () => {
       );
     }
 
-    expect(await computedRgbColors(page.locator(".scene-bridge--arrival-trust .scene-bridge-wash"))).toEqual([
+    expect(await computedGradientEndpoints(page.locator(".scene-bridge--arrival-trust .scene-bridge-wash"))).toEqual([
       paper,
       forest,
     ]);
-    expect(await computedRgbColors(page.locator(".scene-bridge--trust-interior .scene-bridge-wash"))).toEqual([
+    expect(await computedGradientEndpoints(page.locator(".scene-bridge--trust-interior .scene-bridge-wash"))).toEqual([
       forest,
       sage,
     ]);

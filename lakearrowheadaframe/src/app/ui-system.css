@@ -151,11 +151,15 @@
   background: var(--ui-elevated);
 }
 
-.site-illustrated .trust-forest-floor .scene-chapter-inner,
 .site-illustrated .inside-glass-inner,
 .site-illustrated .photographic-clearing-inner {
   padding-top: var(--ui-section);
   padding-bottom: var(--ui-section);
+}
+
+.site-illustrated .trust-forest-floor .scene-chapter-inner {
+  padding-top: clamp(4.5rem, 5vw, 6rem);
+  padding-bottom: clamp(4.5rem, 5vw, 6rem);
 }
 
 .site-illustrated .clearing-home .scene-chapter--gallery .scene-chapter-inner {
@@ -211,13 +215,15 @@
 }
 
 .site-illustrated .clearing-home .scene-bridge--arrival-trust {
-  height: 7rem;
-  min-height: 7rem;
+  height: 3.75rem;
+  min-height: 3.75rem;
   overflow: hidden;
 }
 
 .site-illustrated .clearing-home .scene-bridge--trust-interior {
-  height: 6rem;
+  height: 3.5rem;
+  min-height: 3.5rem;
+  overflow: hidden;
 }
 
 .site-illustrated .clearing-home .scene-bridge--interior-gallery {
@@ -231,27 +237,67 @@
   background: linear-gradient(180deg, var(--bridge-from) 0%, var(--bridge-to) 100%);
 }
 
+.site-illustrated .clearing-home .scene-bridge--arrival-trust .scene-bridge-wash {
+  background: linear-gradient(
+    180deg,
+    var(--bridge-from) 0 52%,
+    #cfd3c2 66%,
+    #748476 80%,
+    #3d5042 91%,
+    var(--bridge-to) 100%
+  );
+}
+
+.site-illustrated .clearing-home .scene-bridge--trust-interior .scene-bridge-wash {
+  background: linear-gradient(
+    180deg,
+    var(--bridge-from) 0 56%,
+    #3b493e 70%,
+    #718071 83%,
+    #b9c1b1 94%,
+    var(--bridge-to) 100%
+  );
+}
+
 .site-illustrated .clearing-home .scene-bridge--forest-floor .scene-bridge-art {
   inset: 35% 0 -10%;
-  opacity: 0.35;
+  opacity: 0.18;
 }
 
 .site-illustrated .clearing-home .scene-bridge--forest-floor .scene-bridge-pines {
-  opacity: 0.42;
+  opacity: 0.24;
 }
 
 .site-illustrated .clearing-home .scene-bridge-edge {
   display: none;
 }
 
-@media (max-width: 599px) {
+@media (min-width: 600px) and (max-width: 899px) {
   .site-illustrated .clearing-home .scene-bridge--arrival-trust {
-    height: 4.5rem;
-    min-height: 4.5rem;
+    height: 3.25rem;
+    min-height: 3.25rem;
   }
 
   .site-illustrated .clearing-home .scene-bridge--trust-interior {
-    height: 4rem;
+    height: 3rem;
+    min-height: 3rem;
+  }
+}
+
+@media (max-width: 599px) {
+  .site-illustrated .trust-forest-floor .scene-chapter-inner {
+    padding-top: 4.5rem;
+    padding-bottom: 4.5rem;
+  }
+
+  .site-illustrated .clearing-home .scene-bridge--arrival-trust {
+    height: 2.5rem;
+    min-height: 2.5rem;
+  }
+
+  .site-illustrated .clearing-home .scene-bridge--trust-interior {
+    height: 2.25rem;
+    min-height: 2.25rem;
   }
 
   .site-illustrated .clearing-home .scene-bridge--interior-gallery {
