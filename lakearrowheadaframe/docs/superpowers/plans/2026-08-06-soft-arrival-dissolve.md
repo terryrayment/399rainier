@@ -53,16 +53,19 @@ In the existing `restrained treeline transitions` test, change only arrival expe
 
 - [ ] **Step 3: Add the smooth-dissolve behavior test**
 
-At 2048×1246 assert:
+For each fixture—2048×1246, 768×1024, and 390×844—assert:
 
 - `.scene-bridge--arrival-trust .scene-bridge-art` and both `.scene-bridge-pines` have `display: none`;
-- the isolated wash has 96 rows;
+- the isolated wash has the expected 96, 72, or 56 rows;
 - first/last rows match parchment/forest within the existing 8-channel screenshot tolerance;
 - for rows 28% through 88%, `max(rgb) - min(rgb) >= 8`, green is at least red, and green is at least blue;
 - every adjacent-row Euclidean RGB distance is `<= 12`;
 - every adjacent-row Rec. 709 luminance delta is `<= 5`.
 
-Repeat the row-distance and luminance checks at 768×1024 and 390×844 to cover 72px and 56px rasterization.
+- artwork is `display: none`;
+- height, hidden overflow, zero margins, exact adjacency, and no horizontal overflow match the existing transition contract.
+
+Structure the test around the three fixtures so no responsive assertion is desktop-only.
 
 - [ ] **Step 4: Run the focused tests and verify RED**
 
@@ -103,17 +106,16 @@ Use this endpoint-owned gradient:
 background: linear-gradient(
   180deg,
   var(--bridge-from) 0%,
-  #e2e3d7 16%,
-  #d4d9cc 32%,
-  #bbc5b8 48%,
-  #98a697 64%,
-  #718071 78%,
-  #465548 90%,
+  #c8cec1 16%,
+  #abb6a8 32%,
+  #8a9a8b 48%,
+  #69796b 64%,
+  #465548 80%,
   var(--bridge-to) 100%
 );
 ```
 
-Do not add filters, blur, pseudo-elements, or overlapping art.
+These stops distribute luminance across the full height rather than compressing the darkest change into the final 10%. Before committing, the focused pixel test must prove the gradient satisfies `RGB distance <= 12` and `luminance delta <= 5` at the 56px mobile raster; if it does not, revise the stop colors/positions—not the approved thresholds. Do not add filters, blur, pseudo-elements, or overlapping art.
 
 - [ ] **Step 4: Run focused tests and verify GREEN**
 
@@ -145,25 +147,41 @@ Expected: all commands pass and the production build generates all 15 routes.
 
 - [ ] **Step 2: Capture QC evidence outside the repository**
 
-Capture full pages and identical left/center/right boundary crops at 2048×1246, 1440×1000, 768×1024, and 390×844 under `/tmp/lakearrow-soft-dissolve/`.
+Start the production build locally and run a temporary Playwright script from the nested app directory with Chromium, `deviceScaleFactor: 1`, reduced motion, and animations disabled. For each of 2048×1246, 1440×1000, 768×1024, and 390×844:
+
+- navigate with `waitUntil: "domcontentloaded"`, wait for `document.fonts.ready`, and wait one render frame;
+- obtain the arrival bridge bounding box;
+- save a full-page image as `/tmp/lakearrow-soft-dissolve/local-<width>x<height>-full.png`;
+- save 320px-wide crops at left (`x=0`), center (`x=(viewportWidth-320)/2`), and right (`x=viewportWidth-320`), with `y=bridge.y-160` and height `bridge.height+320`, named `local-<width>x<height>-<edge>.png`;
+- run the same center-column RGB/luminance analysis used by the regression and print JSON results.
 
 Inspect all captures for dark stripes, abrupt row changes, neutral gray, rectangular asset edges, muddy overlaps, clipping, and horizontal overflow. Reject the implementation if any edge crop reads as a separate bar.
 
 - [ ] **Step 3: Verify protected scope**
 
 ```bash
-cd lakearrowheadaframe
-git diff --check -- .
-git diff fecd5ecd..HEAD -- src/app/globals.css
-git status --short -- .
+cd /Users/terryrayment/Documents/GitHub/399rainier
+git diff --check -- lakearrowheadaframe
+git diff --name-only origin/main...HEAD
 ```
 
-Expected: no protected baseline change and a clean nested-app scope.
+Expected branch diff allowlist after implementation:
+
+```text
+lakearrowheadaframe/docs/superpowers/plans/2026-08-06-soft-arrival-dissolve.md
+lakearrowheadaframe/docs/superpowers/specs/2026-08-06-soft-arrival-dissolve-design.md
+lakearrowheadaframe/src/app/ui-system.css
+lakearrowheadaframe/tests/ui-audit.spec.ts
+```
+
+No markup, asset, `globals.css`, or parent-site path is permitted. The nested app must have no uncommitted changes.
 
 ### Task 4: Publish and verify production
 
-- [ ] Push `codex/soft-arrival-dissolve`, open a focused PR to `main`, and wait for both Vercel checks.
-- [ ] Merge with an expected-head-SHA guard.
+- [ ] Push `codex/soft-arrival-dissolve`, open a focused PR to `main`, and verify `git diff --name-only origin/main...HEAD` exactly matches the four-file allowlist above.
+- [ ] Wait for `Vercel – 399rainier`, `Vercel – lakearrowheadaframe`, and `Vercel Preview Comments` to pass with `gh pr checks <PR> --watch`.
+- [ ] Read the PR `headRefOid`, then merge with `gh pr merge <PR> --merge --match-head-commit <headRefOid>`.
 - [ ] Wait for the post-merge production deployment on `https://lakearrowheadaframe.com/`.
-- [ ] Re-run the responsive geometry, full-row RGB/luminance analysis, overflow checks, and identical left/center/right crops against the custom domain.
+- [ ] Read the PR `mergeCommit.oid`, fetch `origin/main`, require the remote SHA to match, and poll that commit's GitHub status until both Vercel contexts report success.
+- [ ] Re-run the exact temporary Playwright procedure from Task 3 against the custom domain, changing the artifact prefix from `local-` to `production-`; repeat responsive geometry, full-row RGB/luminance analysis, overflow checks, and identical left/center/right crops.
 - [ ] Visually inspect the production crops before declaring completion.
