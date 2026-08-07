@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { existsSync } from "node:fs";
-import { lstat, mkdir, mkdtemp, readdir, rm, symlink } from "node:fs/promises";
+import { lstat, mkdir, mkdtemp, readdir, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import * as editorialGalleryModule from "../src/components/illustration/editorial-gallery";
@@ -150,6 +150,118 @@ function rgbDistance(first: number[], second: number[]) {
 
 function rec709Luminance([red, green, blue]: number[]) {
   return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+}
+
+const maximumVeilFixtures = [
+  { viewport: { width: 2048, height: 1246 }, entrance: 224, exit: 192 },
+  { viewport: { width: 768, height: 1024 }, entrance: 168, exit: 144 },
+  { viewport: { width: 390, height: 844 }, entrance: 112, exit: 96 },
+] as const;
+
+async function verifyMaximumVeil(
+  page: Page,
+  fixture: { readonly viewport: Viewport; readonly entrance: number; readonly exit: number },
+  targetUrl = "/",
+) {
+  await page.setViewportSize(fixture.viewport);
+  await page.goto(targetUrl);
+  await page.waitForFunction(() => document.fonts.ready.then(() => true));
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.addStyleTag({
+    content: "*,*::before,*::after{animation:none!important;transition:none!important}",
+  });
+  await page.evaluate(() => new Promise(requestAnimationFrame));
+
+  const tapers = [
+    {
+      label: "entrance",
+      selector: ".scene-bridge--arrival-trust",
+      height: fixture.entrance,
+      endpoints: [paper, forest],
+      rasterEndpoints: [
+        [234, 231, 216],
+        [30, 35, 31],
+      ],
+    },
+    {
+      label: "exit",
+      selector: ".scene-bridge--trust-interior",
+      height: fixture.exit,
+      endpoints: [forest, sage],
+      rasterEndpoints: [
+        [30, 35, 31],
+        [227, 230, 216],
+      ],
+    },
+  ] as const;
+
+  const metrics = [];
+  for (const taper of tapers) {
+    const bridge = page.locator(taper.selector);
+    const box = await requiredBox(bridge, `${taper.label} veil at ${fixture.viewport.width}px`);
+    const contract = await bridge.evaluate((element) => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      const previous = element.previousElementSibling!.getBoundingClientRect();
+      const next = element.nextElementSibling!.getBoundingClientRect();
+      return {
+        art: [...element.querySelectorAll(".scene-bridge-art, .scene-bridge-pines")].map(
+          (layer) => getComputedStyle(layer).display,
+        ),
+        overflow: style.overflow,
+        marginTop: Number.parseFloat(style.marginTop),
+        marginBottom: Number.parseFloat(style.marginBottom),
+        previousDelta: rect.top - previous.bottom,
+        nextDelta: next.top - rect.bottom,
+      };
+    });
+    expect.soft(box.height, `${taper.label} height at ${fixture.viewport.width}px`).toBe(taper.height);
+    expect.soft(contract.art.every((display) => display === "none"), `${taper.label} artwork hidden`).toBe(true);
+    expect.soft(contract.overflow, `${taper.label} clipping`).toBe("hidden");
+    expect.soft(contract.marginTop, `${taper.label} top margin`).toBe(0);
+    expect.soft(contract.marginBottom, `${taper.label} bottom margin`).toBe(0);
+    expect.soft(Math.abs(contract.previousDelta), `${taper.label} upper adjacency`).toBeLessThanOrEqual(2);
+    expect.soft(Math.abs(contract.nextDelta), `${taper.label} lower adjacency`).toBeLessThanOrEqual(2);
+    expect.soft(await computedGradientEndpoints(bridge.locator(".scene-bridge-wash"))).toEqual(taper.endpoints);
+
+    const rows = await sampleCenterColumn(bridge.locator(".scene-bridge-wash"));
+    expect.soft(rows.length, `${taper.label} minimum raster height`).toBeGreaterThanOrEqual(taper.height);
+    expect.soft(rows.length, `${taper.label} maximum raster height`).toBeLessThanOrEqual(taper.height + 1);
+    expectRgbClose(rows[0], taper.rasterEndpoints[0], `${taper.label} first row`);
+    expectRgbClose(rows.at(-1)!, taper.rasterEndpoints[1], `${taper.label} last row`);
+
+    let maximumRgbDistance = 0;
+    let maximumLuminanceDelta = 0;
+    for (let row = 0; row < rows.length; row += 1) {
+      const position = (row + 0.5) / rows.length;
+      if (position >= 0.16 && position <= 0.9) {
+        expectGreenBiased(rows[row], `${taper.label} row ${row} at ${fixture.viewport.width}px`);
+      }
+      if (row === 0) continue;
+      const distance = rgbDistance(rows[row - 1], rows[row]);
+      const luminanceDelta = Math.abs(
+        rec709Luminance(rows[row - 1]) - rec709Luminance(rows[row]),
+      );
+      maximumRgbDistance = Math.max(maximumRgbDistance, distance);
+      maximumLuminanceDelta = Math.max(maximumLuminanceDelta, luminanceDelta);
+      expect.soft(distance, `${taper.label} RGB row ${row} at ${fixture.viewport.width}px`).toBeLessThanOrEqual(8);
+      expect.soft(luminanceDelta, `${taper.label} luminance row ${row} at ${fixture.viewport.width}px`).toBeLessThanOrEqual(3);
+    }
+    metrics.push({
+      label: taper.label,
+      cssHeight: box.height,
+      sourceRows: rows.length,
+      endpoints: [rows[0], rows.at(-1)],
+      maximumRgbDistance,
+      maximumLuminanceDelta,
+      ...contract,
+    });
+  }
+  const horizontalOverflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - window.innerWidth,
+  );
+  expect.soft(horizontalOverflow, `veil horizontal overflow at ${fixture.viewport.width}px`).toBeLessThanOrEqual(0);
+  return { viewport: fixture.viewport, horizontalOverflow, tapers: metrics };
 }
 
 function expectRgbClose(actual: number[], expected: number[], label: string) {
@@ -1109,9 +1221,9 @@ test.describe("visual integrity", () => {
 
   test("restrained treeline transitions replace broad gray bands", async ({ page }) => {
     const cases = [
-      { viewport: { width: 2048, height: 1246 }, arrival: 96, trust: 56 },
-      { viewport: { width: 768, height: 1024 }, arrival: 72, trust: 48 },
-      { viewport: { width: 390, height: 844 }, arrival: 56, trust: 36 },
+      { viewport: { width: 2048, height: 1246 }, arrival: 224, trust: 192 },
+      { viewport: { width: 768, height: 1024 }, arrival: 168, trust: 144 },
+      { viewport: { width: 390, height: 844 }, arrival: 112, trust: 96 },
     ] as const;
 
     for (const fixture of cases) {
@@ -1189,69 +1301,74 @@ test.describe("visual integrity", () => {
     }
   });
 
-  test("arrival uses a long atmospheric dissolve without a harsh row", async ({ page }) => {
-    const cases = [
-      { viewport: { width: 2048, height: 1246 }, height: 96 },
-      { viewport: { width: 768, height: 1024 }, height: 72 },
-      { viewport: { width: 390, height: 844 }, height: 56 },
+  test("maximum trust veil tapers both chapter edges smoothly", async ({ page }) => {
+    for (const fixture of maximumVeilFixtures) await verifyMaximumVeil(page, fixture);
+  });
+
+  test("trust veil QC captures and reports metrics", async ({ page }) => {
+    const captureDirectory = process.env.UI_AUDIT_CAPTURE_DIR;
+    test.skip(!captureDirectory, "UI_AUDIT_CAPTURE_DIR enables deterministic QC artifacts");
+    if (!captureDirectory) return;
+
+    const prefix = process.env.UI_AUDIT_CAPTURE_PREFIX ?? "local";
+    const targetUrl = process.env.UI_AUDIT_TARGET_URL ?? "/";
+    const fixtures = [
+      { viewport: { width: 2048, height: 1246 }, entrance: 224, exit: 192 },
+      { viewport: { width: 1440, height: 1000 }, entrance: 224, exit: 192 },
+      { viewport: { width: 768, height: 1024 }, entrance: 168, exit: 144 },
+      { viewport: { width: 390, height: 844 }, entrance: 112, exit: 96 },
     ] as const;
+    await mkdir(captureDirectory, { recursive: true });
+    const artifacts: string[] = [];
+    const metrics = [];
 
-    for (const fixture of cases) {
-      await openHome(page, fixture.viewport);
-      const bridge = page.locator(".scene-bridge--arrival-trust");
-      const box = await requiredBox(bridge, `arrival dissolve at ${fixture.viewport.width}px`);
-      const contract = await bridge.evaluate((element) => {
-        const style = getComputedStyle(element);
-        const rect = element.getBoundingClientRect();
-        const previous = element.previousElementSibling!.getBoundingClientRect();
-        const next = element.nextElementSibling!.getBoundingClientRect();
-        return {
-          art: getComputedStyle(element.querySelector(".scene-bridge-art")!).display,
-          pines: [...element.querySelectorAll(".scene-bridge-pines")].map(
-            (pine) => getComputedStyle(pine).display,
-          ),
-          overflow: style.overflow,
-          marginTop: Number.parseFloat(style.marginTop),
-          marginBottom: Number.parseFloat(style.marginBottom),
-          previousDelta: rect.top - previous.bottom,
-          nextDelta: next.top - rect.bottom,
-        };
-      });
-      expect.soft(box.height, `arrival dissolve height at ${fixture.viewport.width}px`).toBe(fixture.height);
-      expect.soft(contract.art, `arrival art at ${fixture.viewport.width}px`).toBe("none");
-      expect.soft(contract.pines, `arrival pines at ${fixture.viewport.width}px`).toEqual(["none", "none"]);
-      expect.soft(contract.overflow, `arrival clipping at ${fixture.viewport.width}px`).toBe("hidden");
-      expect.soft(contract.marginTop, `arrival top margin at ${fixture.viewport.width}px`).toBe(0);
-      expect.soft(contract.marginBottom, `arrival bottom margin at ${fixture.viewport.width}px`).toBe(0);
-      expect.soft(Math.abs(contract.previousDelta), `arrival upper adjacency at ${fixture.viewport.width}px`).toBeLessThanOrEqual(geometryTolerance);
-      expect.soft(Math.abs(contract.nextDelta), `arrival lower adjacency at ${fixture.viewport.width}px`).toBeLessThanOrEqual(geometryTolerance);
-      expect.soft(
-        await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth),
-        `arrival horizontal overflow at ${fixture.viewport.width}px`,
-      ).toBeLessThanOrEqual(0);
-
-      const rows = await sampleCenterColumn(bridge.locator(".scene-bridge-wash"));
-      expect.soft(rows.length, `arrival minimum row count at ${fixture.viewport.width}px`).toBeGreaterThanOrEqual(fixture.height);
-      expect.soft(rows.length, `arrival maximum row count at ${fixture.viewport.width}px`).toBeLessThanOrEqual(fixture.height + 1);
-      expectRgbClose(rows[0], [234, 231, 216], `arrival top endpoint at ${fixture.viewport.width}px`);
-      expectRgbClose(rows.at(-1)!, [30, 35, 31], `arrival bottom endpoint at ${fixture.viewport.width}px`);
-
-      const firstIntermediate = Math.floor(rows.length * 0.28);
-      const lastIntermediate = Math.floor(rows.length * 0.88);
-      for (let row = firstIntermediate; row <= lastIntermediate; row += 1) {
-        expectGreenBiased(rows[row], `arrival row ${row} at ${fixture.viewport.width}px`);
+    for (const fixture of fixtures) {
+      const result = await verifyMaximumVeil(page, fixture, targetUrl);
+      await page.waitForFunction(() =>
+        [...document.querySelectorAll<HTMLImageElement>(
+          ".arrival-clearing img:not([alt='']), .trust-forest-floor img:not([alt='']), .inside-glass-chapter img:not([alt=''])",
+        )].every((image) => image.complete && image.naturalWidth > 0),
+      );
+      const entrance = await requiredBox(
+        page.locator(".scene-bridge--arrival-trust"),
+        "QC entrance bridge",
+      );
+      const exit = await requiredBox(
+        page.locator(".scene-bridge--trust-interior"),
+        "QC exit bridge",
+      );
+      const documentHeight = await page.evaluate(() => document.documentElement.scrollHeight);
+      const cropTop = Math.max(0, entrance.y - 160);
+      const cropBottom = Math.min(documentHeight, exit.y + exit.height + 160);
+      const cropWidth = Math.min(320, fixture.viewport.width);
+      const size = `${fixture.viewport.width}x${fixture.viewport.height}`;
+      const fullName = `${prefix}-${size}-full.png`;
+      await page.screenshot({ path: path.join(captureDirectory, fullName), fullPage: true });
+      artifacts.push(fullName);
+      for (const [edge, x] of [
+        ["left", 0],
+        ["center", Math.max(0, (fixture.viewport.width - cropWidth) / 2)],
+        ["right", Math.max(0, fixture.viewport.width - cropWidth)],
+      ] as const) {
+        const name = `${prefix}-${size}-${edge}.png`;
+        await page.screenshot({
+          path: path.join(captureDirectory, name),
+          clip: { x, y: cropTop, width: cropWidth, height: cropBottom - cropTop },
+        });
+        artifacts.push(name);
       }
-      for (let row = 1; row < rows.length; row += 1) {
-        expect.soft(
-          rgbDistance(rows[row - 1], rows[row]),
-          `arrival RGB delta row ${row} at ${fixture.viewport.width}px`,
-        ).toBeLessThanOrEqual(12);
-        expect.soft(
-          Math.abs(rec709Luminance(rows[row - 1]) - rec709Luminance(rows[row])),
-          `arrival luminance delta row ${row} at ${fixture.viewport.width}px`,
-        ).toBeLessThanOrEqual(5);
-      }
+      metrics.push(result);
     }
+
+    artifacts.sort();
+    await writeFile(
+      path.join(captureDirectory, `${prefix}-metrics.json`),
+      `${JSON.stringify({ targetUrl, metrics, artifacts }, null, 2)}\n`,
+    );
+    await writeFile(
+      path.join(captureDirectory, `${prefix}-manifest.json`),
+      `${JSON.stringify(artifacts, null, 2)}\n`,
+    );
   });
 
   test("arrival foreground plate feathers its rectangular boundary", async ({ page }) => {
