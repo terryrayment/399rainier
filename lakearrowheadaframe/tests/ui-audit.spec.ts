@@ -1278,6 +1278,24 @@ test.describe("visual integrity", () => {
     );
   });
 
+  test("arrival side rails feather their inward asset edges", async ({ page }) => {
+    await openHome(page, { width: 768, height: 1024 });
+
+    for (const [side, direction] of [
+      ["left", "90deg"],
+      ["right", "270deg"],
+    ] as const) {
+      const masks = await page
+        .locator(`.arrival-clearing .forest-scene-rail--${side}`)
+        .evaluate((element) => {
+          const style = getComputedStyle(element);
+          return { mask: style.maskImage, webkitMask: style.webkitMaskImage };
+        });
+      expect(masks.mask, `${side} rail has an inward ${direction} feather`).toContain(direction);
+      expect(masks.webkitMask, `${side} WebKit rail has an inward ${direction} feather`).toContain(direction);
+    }
+  });
+
   test("transition surfaces use approved adjacent endpoint colors", async ({ page }) => {
     await openHome(page, { width: 1440, height: 1000 });
 
