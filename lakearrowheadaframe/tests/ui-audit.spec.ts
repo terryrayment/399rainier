@@ -124,7 +124,7 @@ async function sampleVerticalPixels(locator: Locator, fractions: number[]) {
 
 function expectRgbClose(actual: number[], expected: number[], label: string) {
   for (let channel = 0; channel < 3; channel += 1) {
-    expect.soft(Math.abs(actual[channel] - expected[channel]), `${label} channel ${channel}`).toBeLessThanOrEqual(2);
+    expect.soft(Math.abs(actual[channel] - expected[channel]), `${label} channel ${channel}`).toBeLessThanOrEqual(8);
   }
 }
 

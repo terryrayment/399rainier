@@ -62,7 +62,7 @@ At 2048 × 1246 assert:
 - trust inner top/bottom padding is between 72px and 96px;
 - arrival bridge samples at 0%, 60%, 82%, and 100% start at parchment, remain green-biased, and finish at forest;
 - trust bridge samples at 0%, 64%, 84%, and 100% start at forest, remain green-biased, and finish at sage;
-- endpoints stay within 2 RGB channel values of the expected adjacent-surface color (to allow rasterization rounding);
+- endpoints stay within 8 RGB channel values of the expected adjacent-surface color (Chromium's PNG color-profile conversion shifts known exact computed CSS colors by up to 8 channel values); the existing computed-style endpoint test continues to require exact CSS colors;
 - every intermediate sample has `max(rgb) - min(rgb) >= 8` and its green channel is at least as large as its red and blue channels, preventing a broad neutral-gray band.
 
 At 768 × 1024 assert 52px and 48px bridge heights. At 390 × 844 assert 40px and 36px. At both responsive sizes assert computed `overflow: hidden`, zero block margins, exact adjacency with the neighboring surfaces within 2px, and no horizontal document overflow.
