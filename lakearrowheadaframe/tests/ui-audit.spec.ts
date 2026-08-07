@@ -264,7 +264,7 @@ async function verifyMaximumVeil(
   return { viewport: fixture.viewport, horizontalOverflow, tapers: metrics };
 }
 
-function expectRgbClose(actual: number[], expected: number[], label: string) {
+function expectRgbClose(actual: readonly number[], expected: readonly number[], label: string) {
   for (let channel = 0; channel < 3; channel += 1) {
     expect.soft(Math.abs(actual[channel] - expected[channel]), `${label} channel ${channel}`).toBeLessThanOrEqual(8);
   }
