@@ -23,7 +23,8 @@
 
 - [ ] Update transition fixture expectations at 2048×1246, 768×1024, and 390×844 to entrance/exit heights of 224/192px, 168/144px, and 112/96px.
 - [ ] Generalize the existing long-dissolve test over both `.scene-bridge--arrival-trust` and `.scene-bridge--trust-interior`.
-- [ ] For each bridge at each viewport assert: exact CSS height; screenshot row count of height or height+1; exact computed endpoint colors; raster endpoints within ±8/channel; every original adjacent-row Euclidean 8-bit-sRGB distance `<= 8`; Rec. 709 delta `<= 3`; rows 16–90% have green >= red/blue and channel spread >=5; art/pines `display:none`; hidden overflow; zero margins; adjacency within 2px; no horizontal overflow.
+- [ ] For each bridge at each viewport assert: exact CSS height; screenshot row count of height or height+1; exact computed endpoint colors; raster endpoints within ±8/channel; every original adjacent-row Euclidean 8-bit-sRGB distance `<= 8`; Rec. 709 delta `<= 3`; art/pines `display:none`; hidden overflow; zero margins; adjacency within 2px; no horizontal overflow.
+- [ ] Define intermediate green-bias membership using each source raster row's normalized pixel center: `position = (rowIndex + 0.5) / sourceRowCount`. Apply green >= red/blue and channel spread >=5 only when `position >= 0.16 && position <= 0.90`; keep first/last source rows for endpoints and every original adjacent source-row pair for deltas.
 - [ ] Run `cd lakearrowheadaframe && npx playwright test tests/ui-audit.spec.ts --grep "maximum trust veil"` and verify RED on current heights and compressed exit.
 - [ ] Commit with `test: define maximum trust veil`.
 
@@ -43,8 +44,10 @@
 ### Task 3: Full QC
 
 - [ ] Run `npm run lint`, `npm run typecheck`, `npm run build`, and `npm test` from `lakearrowheadaframe`; require all 15 routes and all tests.
-- [ ] Run a temporary Chromium script with `deviceScaleFactor:1`, reduced motion, disabled animation, fonts ready, and identical left/center/right crops spanning both tapers plus the complete trust section at 2048×1246, 1440×1000, 768×1024, and 390×844 under `/tmp/lakearrow-extreme-veil/`.
-- [ ] Print local JSON for height, row count, maximum RGB distance, maximum luminance delta, artwork display, margins, clipping, adjacency, and horizontal overflow for both tapers.
+- [ ] Add an environment-gated `trust veil QC captures and reports metrics` Playwright test inside `tests/ui-audit.spec.ts`. Skip unless `UI_AUDIT_CAPTURE_DIR` is set; use `UI_AUDIT_TARGET_URL` when present, otherwise `/`. This preserves the reusable capture/measurement implementation inside the existing allowed test file.
+- [ ] The QC test must use Chromium with project `deviceScaleFactor:1`, reduced motion, injected `animation:none/transition:none`, `document.fonts.ready`, one animation frame, and readiness of all non-empty-alt images inside arrival/trust/interior. For 2048×1246, 1440×1000, 768×1024, and 390×844, compute `compositionTop = arrivalBridge.y - 160` and `compositionBottom = exitBridge.y + exitBridge.height + 160`; clamp to document bounds. Capture full page plus 320px-wide left (`x=0`), center (`x=(viewportWidth-320)/2`), and right (`x=viewportWidth-320`) crops using that identical vertical clip.
+- [ ] Use deterministic names `<prefix>-<width>x<height>-full.png` and `<prefix>-<width>x<height>-<left|center|right>.png`, where `UI_AUDIT_CAPTURE_PREFIX` is `local` or `production`. Write `<prefix>-metrics.json` containing target URL, viewport, both bridge metrics (CSS height, source row count, endpoints, maximum RGB/luminance deltas, artwork display, margins, clipping, adjacency), horizontal overflow, and all artifact filenames. Write `<prefix>-manifest.json` as the sorted artifact filename list.
+- [ ] Run local QC with `UI_AUDIT_CAPTURE_DIR=/tmp/lakearrow-extreme-veil UI_AUDIT_CAPTURE_PREFIX=local npx playwright test tests/ui-audit.spec.ts --grep "trust veil QC"` against the configured local web server.
 - [ ] Inspect all 12 crops and reject any dark rectangular framing, bright rim, band, asset edge, endpoint hold, or visibly unbalanced taper.
 - [ ] Require `git diff --name-only origin/main...HEAD` to contain only the approved spec, plan, `src/app/ui-system.css`, and `tests/ui-audit.spec.ts`; require clean nested scope and `git diff --check`.
 
@@ -52,6 +55,8 @@
 
 - [ ] Push `codex/extreme-trust-veil`, create a focused PR to `main`, and wait for `Vercel – 399rainier`, `Vercel – lakearrowheadaframe`, and `Vercel Preview Comments`.
 - [ ] Read `headRefOid` and merge with `gh pr merge <PR> --merge --match-head-commit <headRefOid>`.
-- [ ] Fetch `origin/main`, require it to equal the PR merge commit, and poll both Vercel production contexts to success.
-- [ ] Repeat the same JSON measurements and 12 trust-composition crops on `https://lakearrowheadaframe.com/` using `production-` artifact names.
+- [ ] Before merge, record the vanity domain's `x-vercel-id` and sorted Next.js CSS/JS asset URLs as the old fingerprint. After merge, fetch `origin/main`, require it to equal the PR merge commit, and poll both Vercel commit contexts to success.
+- [ ] Query GitHub Deployments for the exact merge SHA and its deployment statuses. Select the successful `Production` deployment for `lakearrowheadaframe`, obtain its `environment_url`, require HTTP 200, and record its sorted Next.js CSS/JS asset fingerprint. This resolved deployment is the commit-bound source of truth.
+- [ ] Poll `https://lakearrowheadaframe.com/` until its `x-vercel-id` differs from the pre-merge value and its sorted Next.js CSS/JS asset fingerprint exactly matches the merge-SHA deployment URL. Only then is alias convergence proven.
+- [ ] Run `UI_AUDIT_CAPTURE_DIR=/tmp/lakearrow-extreme-veil UI_AUDIT_CAPTURE_PREFIX=production UI_AUDIT_TARGET_URL=https://lakearrowheadaframe.com/ npx playwright test tests/ui-audit.spec.ts --grep "trust veil QC"` and require all metrics/12 crops.
 - [ ] Visually inspect every production crop before completion.
