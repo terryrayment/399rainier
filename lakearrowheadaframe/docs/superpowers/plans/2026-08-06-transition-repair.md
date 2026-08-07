@@ -27,7 +27,9 @@ Add a helper that screenshots a locator, loads the PNG buffer into an in-page ca
 
 ```ts
 async function sampleVerticalPixels(locator: Locator, fractions: number[]) {
-  const screenshot = await locator.screenshot();
+  const screenshot = await locator.screenshot({
+    style: ".scene-bridge-art, .scene-bridge-pines { visibility: hidden !important; }",
+  });
   return locator.page().evaluate(
     async ({ dataUrl, fractions }) => {
       const image = new Image();
@@ -48,6 +50,8 @@ async function sampleVerticalPixels(locator: Locator, fractions: number[]) {
   );
 }
 ```
+
+The injected screenshot style isolates the painted wash from sibling artwork. Test the real composed bridge separately by asserting pine opacity `<= 0.24`, art opacity `<= 0.18`, and clipping on the bridge owner.
 
 - [ ] **Step 2: Add the supplied-viewport transition test**
 
@@ -77,6 +81,7 @@ Expected: FAIL because current bridge heights are 112px/96px at desktop and 72px
 - [ ] **Step 4: Commit the failing contract**
 
 ```bash
+cd lakearrowheadaframe
 git add tests/ui-audit.spec.ts
 git commit -m "test: cover restrained chapter transitions"
 ```
@@ -163,6 +168,7 @@ Run the focused test from Task 1. Expected: PASS.
 - [ ] **Step 6: Commit the implementation**
 
 ```bash
+cd lakearrowheadaframe
 git add src/app/ui-system.css
 git commit -m "fix: repair homepage transition bands"
 ```
@@ -207,9 +213,9 @@ Capture full-page and transition-focused PNGs at 2048 × 1246, 1440 × 1000, 768
 
 ```bash
 cd lakearrowheadaframe
-git diff --check
+git diff --check -- .
 git diff fecd5ecd..HEAD -- src/app/globals.css
-git status --short
+git status --short -- .
 ```
 
 Expected: no `globals.css` post-baseline diff and no uncommitted rental changes.
