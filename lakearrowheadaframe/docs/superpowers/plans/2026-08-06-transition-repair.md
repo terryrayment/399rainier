@@ -56,17 +56,19 @@ At 2048 × 1246 assert:
 - arrival-to-trust height is 60px and trust-to-interior height is 56px;
 - both bridges have `overflow: hidden`, zero block margins, and no layout gap/overlap;
 - trust inner top/bottom padding is between 72px and 96px;
-- arrival bridge samples at 25%, 60%, 82%, and 98% remain parchment/green-family and finish at exact forest;
-- trust bridge samples remain forest/green-family and finish at exact sage;
-- no sampled intermediate has approximately equal RGB channels characteristic of a broad neutral-gray band.
+- arrival bridge samples at 0%, 60%, 82%, and 100% start at parchment, remain green-biased, and finish at forest;
+- trust bridge samples at 0%, 64%, 84%, and 100% start at forest, remain green-biased, and finish at sage;
+- endpoints stay within 2 RGB channel values of the expected adjacent-surface color (to allow rasterization rounding);
+- every intermediate sample has `max(rgb) - min(rgb) >= 8` and its green channel is at least as large as its red and blue channels, preventing a broad neutral-gray band.
 
-At 390 × 844 assert 40px and 36px bridge heights and zero overflow.
+At 768 × 1024 assert 52px and 48px bridge heights. At 390 × 844 assert 40px and 36px. At both responsive sizes assert computed `overflow: hidden`, zero block margins, exact adjacency with the neighboring surfaces within 2px, and no horizontal document overflow.
 
 - [ ] **Step 3: Run the focused test and verify RED**
 
 Run:
 
 ```bash
+cd lakearrowheadaframe
 npx playwright test tests/ui-audit.spec.ts --grep "restrained treeline transitions"
 ```
 
@@ -75,7 +77,7 @@ Expected: FAIL because current bridge heights are 112px/96px at desktop and 72px
 - [ ] **Step 4: Commit the failing contract**
 
 ```bash
-git add lakearrowheadaframe/tests/ui-audit.spec.ts
+git add tests/ui-audit.spec.ts
 git commit -m "test: cover restrained chapter transitions"
 ```
 
@@ -118,6 +120,8 @@ Use:
 
 Below 600px use `2.5rem` and `2.25rem`. Preserve zero margins and normal-flow ownership.
 
+From 600px through 899px use `3.25rem` (52px) and `3rem` (48px), preserving the same clipping and flow ownership.
+
 - [ ] **Step 3: Replace the generic full-height wash for the two affected bridges**
 
 Use asymmetrical, endpoint-owned gradients:
@@ -159,7 +163,7 @@ Run the focused test from Task 1. Expected: PASS.
 - [ ] **Step 6: Commit the implementation**
 
 ```bash
-git add lakearrowheadaframe/src/app/ui-system.css
+git add src/app/ui-system.css
 git commit -m "fix: repair homepage transition bands"
 ```
 
@@ -171,6 +175,7 @@ git commit -m "fix: repair homepage transition bands"
 - [ ] **Step 1: Run static verification**
 
 ```bash
+cd lakearrowheadaframe
 npm run lint
 npm run typecheck
 npm run build
@@ -181,6 +186,7 @@ Expected: all pass; build emits all 15 rental pages.
 - [ ] **Step 2: Run the complete Playwright suite**
 
 ```bash
+cd lakearrowheadaframe
 npm test
 ```
 
@@ -200,9 +206,10 @@ Capture full-page and transition-focused PNGs at 2048 × 1246, 1440 × 1000, 768
 - [ ] **Step 4: Verify protected scope**
 
 ```bash
+cd lakearrowheadaframe
 git diff --check
-git diff fecd5ecd..HEAD -- lakearrowheadaframe/src/app/globals.css
-git status --short lakearrowheadaframe
+git diff fecd5ecd..HEAD -- src/app/globals.css
+git status --short
 ```
 
 Expected: no `globals.css` post-baseline diff and no uncommitted rental changes.
